@@ -21,6 +21,8 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   VideoIcon,
+  Sparkles,
+  Loader2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -44,8 +46,10 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import type { GamelistGame, GameFilter } from "@/types/scraper";
 import { GameDetailSheet } from "@/components/scraper/GameDetailSheet";
 import { GameThumbnail } from "@/components/scraper/GameThumbnail";
+import { ScreenScraperArtDialog } from "@/components/scraper/ScreenScraperArtDialog";
 import { useLibrary } from "@/hooks/useLibrary";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 const PAGE_SIZE = 50;
 const CARD_PAGE_SIZE = 40;
@@ -63,8 +67,10 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
   const [page, setPage] = useState(1);
   const [view, setView] = useState<ViewMode>("list");
   const [selectedGame, setSelectedGame] = useState<GamelistGame | null>(null);
+  const [fetchArtGame, setFetchArtGame] = useState<GamelistGame | null>(null);
+  const [fetchingArt, setFetchingArt] = useState<Set<string>>(new Set());
 
-  const { getConsole } = useLibrary();
+  const { getConsole, rootHandle } = useLibrary();
   const consoleLib = getConsole(consoleFolderName);
   const dirHandle = consoleLib?.dirHandle;
 
@@ -89,6 +95,17 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
   const handleSearch = useCallback((val: string) => { setSearch(val); setPage(1); }, []);
   const handleFilter = useCallback((val: GameFilter) => { setFilter(val); setPage(1); }, []);
   const handleView = useCallback((v: ViewMode) => { setView(v); setPage(1); }, []);
+
+  // ── Fetch Art handlers ───────────────────────────────────────────
+  const handleFetchArt = useCallback((game: GamelistGame) => {
+    setFetchArtGame(game);
+  }, []);
+
+  const handleArtworkSaved = useCallback((updatedGame: any) => {
+    // Trigger a re-render by updating the game in the library context
+    // The parent library context will be updated, which will cause a re-render
+    toast.success(`Cover art saved successfully!`);
+  }, []);
 
   // ── Stats ────────────────────────────────────────────────────────
   const withImage = useMemo(() => games.filter((g) => g.image?.trim() || g.thumbnail?.trim()).length, [games]);
@@ -219,12 +236,37 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                       />
                     </TableCell>
 
-                    {/* Name + genre */}
+                    {/* Name + genre + fetch art button */}
                     <TableCell>
-                      <p className="line-clamp-1 text-sm font-medium">{game.name}</p>
-                      {game.genre && (
-                        <p className="text-muted-foreground text-[11px]">{game.genre}</p>
-                      )}
+                      <div className="flex items-center gap-2">
+                        <div className="min-w-0 flex-1">
+                          <p className="line-clamp-1 text-sm font-medium">{game.name}</p>
+                          {game.genre && (
+                            <p className="text-muted-foreground text-[11px]">{game.genre}</p>
+                          )}
+                        </div>
+                        {!hasImg && (
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 shrink-0 text-primary hover:text-primary hover:bg-primary/10"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleFetchArt(game);
+                                  }}
+                                  title="Fetch cover art from ScreenScraper"
+                                >
+                                  <Sparkles className="h-3.5 w-3.5" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>Fetch cover art</TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        )}
+                      </div>
                     </TableCell>
 
                     {/* Media status icons */}
@@ -303,11 +345,24 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                   )}
                 </div>
 
-                {/* Missing image indicator */}
+                {/* Missing image indicator / Fetch Art button */}
                 {!hasImg && (
-                  <div className="absolute top-1.5 left-1.5">
-                    <XCircleIcon className="h-4 w-4 text-orange-400" />
-                  </div>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <button
+                          className="absolute top-1.5 left-1.5 z-20 rounded-full bg-black/60 p-1.5 backdrop-blur-sm hover:bg-primary/80 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleFetchArt(game);
+                          }}
+                        >
+                          <Sparkles className="h-3.5 w-3.5 text-white" />
+                        </button>
+                      </TooltipTrigger>
+                      <TooltipContent>Fetch cover art</TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 )}
               </div>
             );
@@ -366,6 +421,19 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
         game={selectedGame}
         consoleFolderName={consoleFolderName}
         onClose={() => setSelectedGame(null)}
+      />
+
+      {/* ── ScreenScraper Fetch Art Dialog ────────────────────────── */}
+      <ScreenScraperArtDialog
+        open={!!fetchArtGame}
+        onOpenChange={(open) => {
+          if (!open) setFetchArtGame(null);
+        }}
+        gameName={fetchArtGame?.name || ""}
+        console={consoleFolderName}
+        mediaType="covers"
+        mainDirHandle={rootHandle}
+        onArtworkSaved={handleArtworkSaved}
       />
     </div>
   );

@@ -10,8 +10,23 @@ const nextConfig: NextConfig = {
         port: "",
         pathname: "/**",
       },
+      // Allow ScreenScraper images to be proxied
+      {
+        protocol: "https",
+        hostname: "www.screenscraper.fr",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "screenscraper.fr",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
+  // Silence webpack config warning - we're using Turbopack
+  turbopack: {},
 };
 
 export default nextConfig;
