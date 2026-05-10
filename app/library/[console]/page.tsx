@@ -13,7 +13,6 @@ import Image from "next/image";
 import {
   ChevronLeftIcon,
   GamepadIcon,
-  FolderOpenIcon,
   RefreshCwIcon,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -28,7 +27,7 @@ export default function ConsolePage({ params }: ConsolePageProps) {
   const { console: encodedName } = use(params);
   const folderName = decodeURIComponent(encodedName);
 
-  const { state, getConsole, openAndScan } = useLibrary();
+  const { state, getConsole } = useLibrary();
 
   // ── Library not ready ────────────────────────────────────────────
   if (state.status === "idle" || state.status === "error") {
@@ -37,12 +36,14 @@ export default function ConsolePage({ params }: ConsolePageProps) {
         <GamepadIcon className="text-muted-foreground h-10 w-10" />
         <h2 className="font-semibold">No library loaded</h2>
         <p className="text-muted-foreground text-sm">
-          Please open your SD card first.
+          Please open your SD card or ROM folder first.
         </p>
-        <Button onClick={openAndScan} className="gap-2">
-          <FolderOpenIcon className="h-4 w-4" />
-          Open SD Card
-        </Button>
+        <Link href="/library">
+          <Button variant="outline" className="gap-2">
+            <ChevronLeftIcon className="h-4 w-4" />
+            Go to Library
+          </Button>
+        </Link>
       </div>
     );
   }

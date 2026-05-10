@@ -80,10 +80,10 @@ export default function HomePage() {
               Open SD Card
             </Button>
           )}
-          <Link href="/library">
+          <Link href="/generator">
             <Button size="lg" variant="outline" className="gap-2 px-8">
-              <LibraryIcon className="h-5 w-5" />
-              {isReady ? "Library" : "Browse Library"}
+              <PencilIcon className="h-5 w-5" />
+              Generate Media
             </Button>
           </Link>
         </div>
@@ -152,10 +152,12 @@ export default function HomePage() {
         </div>
 
         <div className="flex justify-center">
-          <Button size="lg" onClick={openAndScan} className="gap-2 px-10">
-            <FolderOpenIcon className="h-5 w-5" />
-            Get Started — Open SD Card
-          </Button>
+          <Link href="/library">
+            <Button size="lg" className="gap-2 px-10">
+              <LibraryIcon className="h-5 w-5" />
+              {isReady ? "Go to Library" : "Get Started"}
+            </Button>
+          </Link>
         </div>
       </section>
     </div>

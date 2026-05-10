@@ -8,7 +8,6 @@ import {
   HomeIcon,
   LibraryIcon,
   GamepadIcon,
-  FolderOpenIcon,
 } from "lucide-react";
 import { useLibrary } from "@/hooks/useLibrary";
 import { Badge } from "@/components/ui/badge";
@@ -24,7 +23,7 @@ interface NavItem {
  */
 export function Navigation() {
   const pathname = usePathname();
-  const { state, openAndScan } = useLibrary();
+  const { state } = useLibrary();
 
   const isReady = state.status === "ready";
   const totalConsoles = isReady ? state.consoles.length : 0;
@@ -74,21 +73,6 @@ export function Navigation() {
               </Link>
             );
           })}
-
-          {/* Quick open SD button */}
-          <button
-            onClick={openAndScan}
-            className={cn(
-              "flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-              "text-muted-foreground hover:text-foreground hover:bg-accent"
-            )}
-            title="Open SD card / ROM folder"
-          >
-            <FolderOpenIcon className="h-4 w-4" />
-            <span className="hidden md:inline">
-              {isReady ? "Change Folder" : "Open SD Card"}
-            </span>
-          </button>
 
           <ThemeToggle className="ml-1" />
         </nav>

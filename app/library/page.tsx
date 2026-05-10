@@ -30,20 +30,36 @@ export default function LibraryPage() {
           <GamepadIcon className="gradient-icon h-12 w-12" />
         </div>
         <div className="space-y-2">
-          <h1 className="text-2xl font-bold">No SD Card Selected</h1>
+          <h1 className="text-2xl font-bold">Welcome to Your Library</h1>
           <p className="text-muted-foreground max-w-md text-sm">
-            Click below to open your SD card or retro ROM folder. The app will
-            automatically detect all consoles and parse your gamelists.
+            Select your SD card or ROM folder to scan your game collection.
+            The app will automatically detect all consoles and parse your
+            gamelists.
           </p>
         </div>
-        <Button size="lg" onClick={openAndScan} className="gap-2">
-          <FolderOpenIcon className="h-5 w-5" />
-          Open SD Card / ROM Folder
-        </Button>
-        <p className="text-muted-foreground text-xs">
-          Requires Chrome or Edge 86+. Read-write access is needed to save
-          changes.
-        </p>
+        <div className="flex flex-col gap-3 items-center">
+          <Button size="lg" onClick={openAndScan} className="gap-2">
+            <FolderOpenIcon className="h-5 w-5" />
+            Open SD Card / ROM Folder
+          </Button>
+          <p className="text-muted-foreground text-xs">
+            Requires Chrome or Edge 86+. Read-write access is needed to save
+            changes.
+          </p>
+        </div>
+        <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg text-left">
+          {[
+            { step: "1", title: "Select Folder", desc: "Click the button above and choose your SD card root or ROM folder." },
+            { step: "2", title: "Auto-Scan", desc: "The app scans every console folder and reads your gamelists." },
+            { step: "3", title: "Manage", desc: "Browse, edit metadata, and manage artwork for all your games." },
+          ].map(({ step, title, desc }) => (
+            <div key={step} className="flex flex-col gap-1.5">
+              <div className="gradient-text text-sm font-bold">Step {step}</div>
+              <h3 className="font-semibold text-sm">{title}</h3>
+              <p className="text-muted-foreground text-xs">{desc}</p>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
