@@ -271,3 +271,185 @@ body::before {
   transition: none !important;
   animation: none !important;
 }
+
+/* ── Retro / Arcade Theme ────────────────────────────────────────── */
+
+/* Pixel font for headings and decorative text */
+.font-pixel {
+  font-family: "Micro 5", monospace;
+}
+
+/* Scanline overlay effect */
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.03) 2px,
+    rgba(0, 0, 0, 0.03) 4px
+  );
+  z-index: 1;
+}
+
+.dark .scanlines::after {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.08) 2px,
+    rgba(0, 0, 0, 0.08) 4px
+  );
+}
+
+/* Neon glow effect for text */
+.neon-glow {
+  text-shadow:
+    0 0 7px var(--gradient-1),
+    0 0 10px var(--gradient-1),
+    0 0 21px var(--gradient-1),
+    0 0 42px var(--gradient-2);
+}
+
+.dark .neon-glow {
+  text-shadow:
+    0 0 7px var(--gradient-1),
+    0 0 10px var(--gradient-1),
+    0 0 21px var(--gradient-1),
+    0 0 42px var(--gradient-2),
+    0 0 82px var(--gradient-2);
+}
+
+/* Subtle neon glow for borders */
+.neon-border {
+  box-shadow:
+    0 0 5px var(--gradient-1),
+    inset 0 0 5px var(--gradient-1);
+}
+
+.dark .neon-border {
+  box-shadow:
+    0 0 5px var(--gradient-1),
+    0 0 10px rgba(255, 75, 43, 0.3),
+    inset 0 0 5px var(--gradient-1);
+}
+
+/* Retro pixel border */
+.pixel-border {
+  border: 2px solid var(--border);
+  box-shadow:
+    2px 2px 0 0 var(--border),
+    -1px -1px 0 0 var(--border);
+}
+
+/* Retro card with pixel feel */
+.retro-card {
+  border: 2px solid var(--border);
+  background: var(--card);
+  position: relative;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.retro-card:hover {
+  border-color: var(--gradient-1);
+  box-shadow: 0 0 12px rgba(255, 75, 43, 0.15);
+}
+
+.dark .retro-card:hover {
+  box-shadow: 0 0 16px rgba(255, 75, 43, 0.25);
+}
+
+/* Retro step badge */
+.retro-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--gradient-1);
+  font-family: "Micro 5", monospace;
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--gradient-1);
+  background: transparent;
+  position: relative;
+}
+
+.retro-step::before {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border: 1px solid var(--gradient-1);
+  opacity: 0.4;
+}
+
+/* Retro divider line */
+.retro-divider {
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gradient-1),
+    var(--gradient-2),
+    transparent
+  );
+  opacity: 0.5;
+}
+
+/* Retro badge / tag */
+.retro-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--gradient-1);
+  font-family: "Micro 5", monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gradient-1);
+}
+
+/* Blinking cursor animation */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+/* CRT flicker (very subtle) */
+@keyframes crt-flicker {
+  0% { opacity: 0.97; }
+  5% { opacity: 0.95; }
+  10% { opacity: 0.98; }
+  15% { opacity: 0.96; }
+  20% { opacity: 0.99; }
+  100% { opacity: 1; }
+}
+
+.crt-flicker {
+  animation: crt-flicker 4s infinite;
+}
+
+/* Retro button hover glow */
+.retro-btn-glow:hover {
+  box-shadow:
+    0 0 8px var(--gradient-1),
+    0 0 16px rgba(255, 75, 43, 0.3);
+}
+
+/* Console icon grid animation */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 75, 43, 0); }
+  50% { box-shadow: 0 0 12px 2px rgba(255, 75, 43, 0.2); }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 3s ease-in-out infinite;
+}

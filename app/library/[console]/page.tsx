@@ -33,15 +33,17 @@ export default function ConsolePage({ params }: ConsolePageProps) {
   if (state.status === "idle" || state.status === "error") {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
-        <GamepadIcon className="text-muted-foreground h-10 w-10" />
-        <h2 className="font-semibold">No library loaded</h2>
+        <div className="retro-step">
+          <GamepadIcon className="gradient-icon h-6 w-6" />
+        </div>
+        <h2 className="font-pixel text-lg tracking-wider">NO LIBRARY LOADED</h2>
         <p className="text-muted-foreground text-sm">
           Please open your SD card or ROM folder first.
         </p>
         <Link href="/library">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2 font-pixel text-xs tracking-wider">
             <ChevronLeftIcon className="h-4 w-4" />
-            Go to Library
+            GO TO LIBRARY
           </Button>
         </Link>
       </div>
@@ -51,8 +53,10 @@ export default function ConsolePage({ params }: ConsolePageProps) {
   if (state.status === "scanning") {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3 text-center">
-        <GamepadIcon className="gradient-icon h-10 w-10 animate-pulse" />
-        <p className="text-muted-foreground text-sm">Scanning library…</p>
+        <div className="retro-step animate-pulse">
+          <GamepadIcon className="gradient-icon h-6 w-6" />
+        </div>
+        <p className="font-pixel text-sm tracking-wider text-muted-foreground">SCANNING...</p>
       </div>
     );
   }
@@ -62,15 +66,17 @@ export default function ConsolePage({ params }: ConsolePageProps) {
   if (!consoleLib) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
-        <GamepadIcon className="text-muted-foreground h-10 w-10" />
-        <h2 className="font-semibold">Console not found</h2>
+        <div className="retro-step">
+          <GamepadIcon className="gradient-icon h-6 w-6" />
+        </div>
+        <h2 className="font-pixel text-lg tracking-wider">CONSOLE NOT FOUND</h2>
         <p className="text-muted-foreground text-sm">
-          &ldquo;{folderName}&rdquo; was not detected in your library.
+          “{folderName}” was not detected in your library.
         </p>
         <Link href="/library">
-          <Button variant="outline" className="gap-2">
+          <Button variant="outline" className="gap-2 font-pixel text-xs tracking-wider">
             <ChevronLeftIcon className="h-4 w-4" />
-            Back to Library
+            BACK TO LIBRARY
           </Button>
         </Link>
       </div>
@@ -87,11 +93,11 @@ export default function ConsolePage({ params }: ConsolePageProps) {
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="text-xl font-bold">{consoleLib.label}</h1>
+          <h1 className="font-pixel text-xl tracking-wider">{consoleLib.label}</h1>
         </div>
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20 text-center">
           <GamepadIcon className="text-muted-foreground mb-3 h-10 w-10" />
-          <p className="font-medium">No gamelist.xml found</p>
+          <p className="font-pixel text-sm tracking-wider">NO GAMELIST.XML FOUND</p>
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
             This console has {consoleLib.totalRoms} ROM
             {consoleLib.totalRoms !== 1 ? "s" : ""} but no gamelist.xml. Run
@@ -131,7 +137,7 @@ export default function ConsolePage({ params }: ConsolePageProps) {
           )}
 
           <div>
-            <h1 className="text-xl font-bold leading-tight">{consoleLib.label}</h1>
+            <h1 className="font-pixel text-xl tracking-wider">{consoleLib.label}</h1>
             <p className="text-muted-foreground font-mono text-xs">
               {consoleLib.folderName}
             </p>

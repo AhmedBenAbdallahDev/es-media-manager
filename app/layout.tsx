@@ -65,9 +65,9 @@ export default function RootLayout({
             <footer className="border-t py-6">
               <div className="text-muted-foreground mx-auto flex items-center justify-center px-4 text-sm">
                 <GamepadIcon className="gradient-icon mr-2 h-4 w-4" />
-                <p>
-                  Retro Scraper &copy; {new Date().getFullYear()} — made with
-                  ❤️ for the retro gaming community
+                <p className="font-pixel text-xs tracking-wider">
+                  RETRO SCRAPER © {new Date().getFullYear()} — MADE WITH
+                  ❤️ FOR THE RETRO GAMING COMMUNITY
                 </p>
               </div>
             </footer>

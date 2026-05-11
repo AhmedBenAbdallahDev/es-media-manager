@@ -39,7 +39,7 @@ export function Navigation() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 shrink-0">
           <GamepadIcon className="gradient-icon h-6 w-6" />
-          <span className="font-semibold hidden sm:inline">Retro Scraper</span>
+          <span className="font-pixel text-sm tracking-wider hidden sm:inline">RETRO SCRAPER</span>
         </Link>
 
         {/* Nav links */}
