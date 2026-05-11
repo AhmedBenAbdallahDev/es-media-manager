@@ -12,7 +12,7 @@ import {
 } from "@/lib/gameMediaHelpers";
 import { toast } from "sonner";
 import Image from "next/image";
-import { ImageOff, Loader2, AlertCircle, Upload, X, ExternalLink, Check } from "lucide-react";
+import { ImageOff, Loader2, AlertCircle, Upload, X, ExternalLink, Check, Search, Trash2, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
@@ -23,8 +23,17 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useDropzone } from "react-dropzone";
 import { fromBlob } from "image-resize-compress";
+import { ScreenScraperArtDialog } from "@/components/scraper/ScreenScraperArtDialog";
 
 interface GameMediaFormProps {
   game: Game;
@@ -32,6 +41,8 @@ interface GameMediaFormProps {
   currentMediaUrls: Record<string, string>;
   isLoadingUrls: boolean;
   onGameUpdate: (updatedGame: Game) => void;
+  /** Callback to clear a broken asset reference from the gamelist */
+  onClearBrokenAsset?: (mediaKey: string) => void;
 }
 
 export function GameMediaForm({
@@ -40,6 +51,7 @@ export function GameMediaForm({
   currentMediaUrls,
   isLoadingUrls,
   onGameUpdate,
+  onClearBrokenAsset,
 }: GameMediaFormProps) {
   const [editableMediaFiles, setEditableMediaFiles] = useState<
     Record<string, File | null>
@@ -49,6 +61,27 @@ export function GameMediaForm({
   const [uploadingKeys, setUploadingKeys] = useState<Set<string>>(new Set());
   const [urlInputs, setUrlInputs] = useState<Record<string, string>>({});
   const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
+
+  // Broken asset dialog state
+  const [brokenAssetDialog, setBrokenAssetDialog] = useState<{
+    open: boolean;
+    mediaKey: string;
+    mediaLabel: string;
+  }>({ open: false, mediaKey: "", mediaLabel: "" });
+
+  // ScreenScraper dialog state
+  const [scraperDialog, setScraperDialog] = useState<{
+    open: boolean;
+    mediaKey: string;
+    mediaType: string;
+  }>({ open: false, mediaKey: "", mediaType: "covers" });
+
+  // Image viewer state
+  const [imageViewer, setImageViewer] = useState<{
+    open: boolean;
+    url: string;
+    alt: string;
+  }>({ open: false, url: "", alt: "" });
 
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
 
@@ -167,6 +200,7 @@ export function GameMediaForm({
     const fileExistsOnDisk = !!currentUrl;
     const hasContent = !!currentUrl || !!newFile || (isReferencedInGamelist && !fileExistsOnDisk);
     const hasDisplayableContent = !!currentUrl || !!newFile;
+    const isBroken = isReferencedInGamelist && !fileExistsOnDisk && !newFile;
 
     const { getRootProps, getInputProps, isDragActive } = useDropzone({
       onDrop: async (acceptedFiles) => {
@@ -187,6 +221,7 @@ export function GameMediaForm({
           group relative overflow-hidden rounded-xl border-2 transition-all duration-300 flex flex-col h-full
           ${isDragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:border-primary/50"}
           ${hasDisplayableContent ? "bg-card" : "bg-muted/30"}
+          ${isBroken ? "border-orange-500/50" : ""}
         `}
       >
         <input {...getInputProps()} />
@@ -198,12 +233,34 @@ export function GameMediaForm({
             {hasDisplayableContent && (
               <Check className="h-3.5 w-3.5 text-green-600" />
             )}
+            {isBroken && (
+              <Badge variant="outline" className="border-orange-500/50 text-orange-600 text-xs">
+                BROKEN
+              </Badge>
+            )}
           </div>
           <div className="flex items-center gap-1.5">
-            {isReferencedInGamelist && !fileExistsOnDisk && !newFile && (
-              <Badge variant="outline" className="border-orange-500/50 text-orange-600 text-xs">
-                Missing
-              </Badge>
+            {isBroken && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 text-orange-500 hover:text-orange-700"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setBrokenAssetDialog({
+                        open: true,
+                        mediaKey: mediaType.key,
+                        mediaLabel: mediaType.label,
+                      });
+                    }}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>Clear broken asset</TooltipContent>
+              </Tooltip>
             )}
             {hasDisplayableContent && (
               <Tooltip>
@@ -259,7 +316,19 @@ export function GameMediaForm({
               <p className="text-muted-foreground mt-2 text-sm">Uploading...</p>
             </div>
           ) : hasDisplayableContent && !newFile ? (
-            <div className="relative h-full w-full bg-muted">
+            <div
+              className="relative h-full w-full bg-muted cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                if (currentUrl) {
+                  setImageViewer({
+                    open: true,
+                    url: currentUrl,
+                    alt: `${mediaType.label} for ${game.name}`,
+                  });
+                }
+              }}
+            >
               {isVideo ? (
                 <video
                   src={currentUrl}
@@ -282,25 +351,59 @@ export function GameMediaForm({
               )}
               {/* Hover overlay */}
               <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/20 group-hover:opacity-100">
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  className="gap-2"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    fileInputRefs.current[mediaType.key]?.click();
-                  }}
-                >
-                  <Upload className="h-4 w-4" />
-                  Replace
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="gap-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setImageViewer({
+                        open: true,
+                        url: currentUrl,
+                        alt: `${mediaType.label} for ${game.name}`,
+                      });
+                    }}
+                  >
+                    <Eye className="h-4 w-4" />
+                    View
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="gap-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      fileInputRefs.current[mediaType.key]?.click();
+                    }}
+                  >
+                    <Upload className="h-4 w-4" />
+                    Replace
+                  </Button>
+                </div>
               </div>
             </div>
-          ) : isReferencedInGamelist && !fileExistsOnDisk && !newFile ? (
-            <div className="bg-destructive/5 border-destructive/30 flex h-full w-full flex-col items-center justify-center border border-dashed">
-              <AlertCircle className="text-destructive mb-2 h-8 w-8" />
-              <p className="text-destructive text-sm font-medium">File missing</p>
-              <p className="text-muted-foreground text-xs mt-1">Referenced in gamelist</p>
+          ) : isBroken ? (
+            <div className="bg-orange-500/5 border-orange-500/30 flex h-full w-full flex-col items-center justify-center border border-dashed">
+              <AlertCircle className="text-orange-500 mb-2 h-8 w-8" />
+              <p className="text-orange-600 text-sm font-medium">Asset link broken</p>
+              <p className="text-muted-foreground text-xs mt-1">Referenced in gamelist but file not found</p>
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-3 gap-2 text-orange-600 border-orange-500/50 hover:bg-orange-500/10"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setBrokenAssetDialog({
+                    open: true,
+                    mediaKey: mediaType.key,
+                    mediaLabel: mediaType.label,
+                  });
+                }}
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                Clear Reference
+              </Button>
             </div>
           ) : (
             <div className="bg-muted/50 border-border flex h-full w-full flex-col items-center justify-center border border-dashed">
@@ -355,6 +458,28 @@ export function GameMediaForm({
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Paste image URL</TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="default"
+                  className="gap-2 h-10 min-w-[90px] border-primary/50 text-primary hover:bg-primary/10"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setScraperDialog({
+                      open: true,
+                      mediaKey: mediaType.key,
+                      mediaType: mediaType.key,
+                    });
+                  }}
+                  disabled={isUploading}
+                >
+                  <Search className="h-4 w-4" />
+                  Fetch Online
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Search ScreenScraper for {mediaType.label}</TooltipContent>
             </Tooltip>
           </div>
 
@@ -436,6 +561,106 @@ export function GameMediaForm({
           </div>
         </div>
       </div>
+
+      {/* ── Broken Asset Dialog ──────────────────────────────────── */}
+      <Dialog
+        open={brokenAssetDialog.open}
+        onOpenChange={(open) => setBrokenAssetDialog((prev) => ({ ...prev, open }))}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-orange-500" />
+              Broken Asset Detected
+            </DialogTitle>
+            <DialogDescription>
+              The <span className="font-semibold">{brokenAssetDialog.mediaLabel}</span> reference
+              exists in your gamelist.xml but the actual file was not found on disk.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3 py-2">
+            <p className="text-sm text-muted-foreground">
+              This can happen if the image was deleted, moved, or the path in the
+              gamelist is incorrect.
+            </p>
+            <p className="text-sm font-medium">
+              Do you want to clear this broken reference from the index?
+            </p>
+          </div>
+          <DialogFooter className="gap-2 sm:justify-end">
+            <Button
+              variant="outline"
+              onClick={() => setBrokenAssetDialog((prev) => ({ ...prev, open: false }))}
+            >
+              Ignore
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (onClearBrokenAsset) {
+                  onClearBrokenAsset(brokenAssetDialog.mediaKey);
+                }
+                setBrokenAssetDialog((prev) => ({ ...prev, open: false }));
+                toast.success(`Cleared broken ${brokenAssetDialog.mediaLabel} reference`);
+              }}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Clear Reference
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* ── ScreenScraper Dialog ─────────────────────────────────── */}
+      <ScreenScraperArtDialog
+        open={scraperDialog.open}
+        onOpenChange={(open) => setScraperDialog((prev) => ({ ...prev, open }))}
+        gameName={game.name}
+        console={game.console}
+        mediaType={scraperDialog.mediaType}
+        mainDirHandle={mainDirHandle}
+        onArtworkSaved={(updatedGame) => {
+          onGameUpdate(updatedGame);
+          setScraperDialog((prev) => ({ ...prev, open: false }));
+        }}
+      />
+
+      {/* ── Image Viewer Dialog ──────────────────────────────────── */}
+      <Dialog
+        open={imageViewer.open}
+        onOpenChange={(open) => setImageViewer((prev) => ({ ...prev, open }))}
+      >
+        <DialogContent className="!m-0 !h-[90dvh] !w-[90dvw] !max-w-none border-none bg-black/95 p-0">
+          <DialogHeader className="sr-only">
+            <DialogTitle>{imageViewer.alt}</DialogTitle>
+          </DialogHeader>
+          <div className="relative flex h-full w-full items-center justify-center p-4">
+            {imageViewer.url && (
+              <Image
+                src={imageViewer.url}
+                alt={imageViewer.alt}
+                fill
+                className="object-contain"
+                unoptimized
+                onError={() => {
+                  toast.error("Failed to load image — it may be broken or corrupted.");
+                  setImageViewer((prev) => ({ ...prev, open: false }));
+                }}
+              />
+            )}
+          </div>
+          <div className="absolute top-4 right-4 z-10">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
+              onClick={() => setImageViewer((prev) => ({ ...prev, open: false }))}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </TooltipProvider>
   );
 }

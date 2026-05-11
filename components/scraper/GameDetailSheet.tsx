@@ -446,6 +446,38 @@ export function GameDetailSheet({
                       currentMediaUrls={currentMediaUrls}
                       isLoadingUrls={isLoadingUrls}
                       onGameUpdate={handleMediaUpdate}
+                      onClearBrokenAsset={(mediaKey) => {
+                        // Clear the broken asset reference from the draft
+                        if (!draft) return;
+                        const newDraft = { ...draft };
+                        switch (mediaKey) {
+                          case "covers":
+                            newDraft.image = undefined;
+                            newDraft.thumbnail = undefined;
+                            break;
+                          case "marquees":
+                            newDraft.marquee = undefined;
+                            break;
+                          case "videos":
+                            newDraft.video = undefined;
+                            break;
+                          case "fanart":
+                            newDraft.fanart = undefined;
+                            break;
+                          case "screenshots":
+                            newDraft.thumbnail = undefined;
+                            break;
+                          default:
+                            break;
+                        }
+                        setDraft(newDraft);
+                        // Auto-save the cleared reference
+                        if (game?.path) {
+                          saveGame(consoleFolderName, newDraft, game.path)
+                            .then(() => toast.success("Cleared broken reference"))
+                            .catch(() => toast.error("Failed to save changes"));
+                        }
+                      }}
                    />
                 </div>
              </div>
