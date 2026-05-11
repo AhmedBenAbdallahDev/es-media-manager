@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Game, MediaType as MediaTypeConfig } from "@/types";
 import { MEDIA_TYPES } from "@/lib/constants";
 import {
