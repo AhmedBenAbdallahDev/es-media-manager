@@ -200,6 +200,13 @@ export async function searchGame(
     signal: AbortSignal.timeout(15000),
   });
 
+  if (response.status === 404) {
+    console.log(
+      `[ScreenScraper] No results found for "${gameName}" (404 Not Found)`
+    );
+    return null;
+  }
+
   if (!response.ok) {
     console.error(
       `[ScreenScraper] API error: ${response.status} ${response.statusText}`

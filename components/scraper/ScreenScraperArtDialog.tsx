@@ -353,20 +353,11 @@ export function ScreenScraperArtDialog({
                 <>
                   <div className="bg-muted relative mb-4 aspect-[3/4] w-full overflow-hidden rounded-lg border">
                     <Image
-                      src={`/api/fetch-image-proxy?url=${encodeURIComponent(selectedArtwork.imageUrl)}`}
-                      // Fallback: use the direct URL but it might have CORS issues
-                      // The /api/fetch-image-proxy route doesn't exist yet, so we use a different approach
+                      src={selectedArtwork.imageUrl}
                       alt="Selected artwork"
                       fill
                       className="object-contain"
                       unoptimized
-                      // For direct display, we use the ScreenScraper URL directly in an img tag
-                      // The proxy is only needed for downloading (server-side)
-                      onError={(e) => {
-                        // If proxy fails, try direct URL
-                        (e.currentTarget as HTMLImageElement).src =
-                          selectedArtwork.imageUrl;
-                      }}
                     />
                   </div>
 

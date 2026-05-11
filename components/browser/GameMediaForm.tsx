@@ -90,9 +90,19 @@ export function GameMediaForm({
     open: boolean;
     url: string;
     alt: string;
-  }>({ open: false, url: "", alt: "" });
+    mediaKey: string;
+    mediaLabel: string;
+  }>({ open: false, url: "", alt: "", mediaKey: "", mediaLabel: "" });
+
+  const viewerErrorHandledRef = useRef(false);
 
   const fileInputRefs = useRef<Record<string, HTMLInputElement | null>>({});
+
+  useEffect(() => {
+    if (!imageViewer.open) {
+      viewerErrorHandledRef.current = false;
+    }
+  }, [imageViewer.open, imageViewer.url]);
 
   const handleMediaFileChange = useCallback(
     async (mediaKey: string, file: File | null) => {
@@ -352,6 +362,8 @@ export function GameMediaForm({
                     open: true,
                     url: currentUrl,
                     alt: `${mediaType.label} for ${game.name}`,
+                      mediaKey: mediaType.key,
+                      mediaLabel: mediaType.label,
                   });
                 }
               }}
@@ -389,6 +401,8 @@ export function GameMediaForm({
                         open: true,
                         url: currentUrl,
                         alt: `${mediaType.label} for ${game.name}`,
+                        mediaKey: mediaType.key,
+                        mediaLabel: mediaType.label,
                       });
                     }}
                   >
@@ -696,9 +710,15 @@ export function GameMediaForm({
                 className="object-contain"
                 unoptimized
                 onError={() => {
-                  toast.error(
-                    "Failed to load image — it may be broken or corrupted."
-                  );
+                  if (viewerErrorHandledRef.current) return;
+                  viewerErrorHandledRef.current = true;
+
+                  setBrokenAssetDialog({
+                    open: true,
+                    mediaKey: imageViewer.mediaKey,
+                    mediaLabel: imageViewer.mediaLabel,
+                  });
+
                   setImageViewer((prev) => ({ ...prev, open: false }));
                 }}
               />
