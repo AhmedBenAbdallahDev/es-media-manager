@@ -54,14 +54,14 @@ export function Navigation() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                  "flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-pixel tracking-wider transition-colors",
                   active
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent"
                 )}
               >
                 <item.icon className="h-4 w-4" />
-                <span className="hidden md:inline">{item.label}</span>
+                <span className="hidden md:inline">{item.label.toUpperCase()}</span>
                 {item.href === "/library" && isReady && totalConsoles > 0 && (
                   <Badge
                     variant="secondary"

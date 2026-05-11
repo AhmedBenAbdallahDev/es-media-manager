@@ -269,13 +269,13 @@ export default function MediaGenerator() {
   };
 
   return (
-    <Card className="mx-auto max-w-4xl border shadow-sm dark:border-slate-800 dark:shadow-slate-950/20">
+    <Card className="mx-auto max-w-4xl retro-card">
       {/* Confetti component */}
       <Confetti active={showConfetti} duration={6000} />
 
       <CardHeader className="pt-8 pb-6 text-center">
-        <CardTitle className="font-pixel mb-4 bg-gradient-to-r from-[var(--gradient-1)] to-[var(--gradient-2)] bg-clip-text text-4xl text-transparent md:text-6xl">
-          ESDE Media Generator
+        <CardTitle className="font-pixel mb-4 gradient-text text-4xl md:text-6xl tracking-wider">
+          ESDE MEDIA GENERATOR
         </CardTitle>
         <CardDescription className="mx-auto max-w-lg text-base md:text-lg">
           Generate the correct folder structure for Emulation Station Desktop
@@ -320,8 +320,8 @@ export default function MediaGenerator() {
         {/* Media Folder Selection */}
         <div className="space-y-4">
           <div className="mb-2 flex items-center gap-3">
-            <h3 className="font-pixel bg-gradient-to-r from-[var(--gradient-1)] to-[var(--gradient-2)] bg-clip-text text-2xl text-transparent">
-              Step 1: Select Folder
+            <h3 className="font-pixel gradient-text text-2xl tracking-wider">
+              STEP 1: SELECT FOLDER
             </h3>
             <div className="h-px flex-1 bg-gradient-to-r from-[var(--gradient-1)]/20 to-transparent"></div>
           </div>
@@ -352,8 +352,8 @@ export default function MediaGenerator() {
         {/* ROM Name */}
         <div className="space-y-4">
           <div className="mb-2 flex items-center gap-3">
-            <h3 className="font-pixel bg-gradient-to-r from-[var(--gradient-1)] to-[var(--gradient-2)] bg-clip-text text-2xl text-transparent">
-              Step 2: Game Details
+            <h3 className="font-pixel gradient-text text-2xl tracking-wider">
+              STEP 2: GAME DETAILS
             </h3>
             <div className="h-px flex-1 bg-gradient-to-r from-[var(--gradient-1)]/20 to-transparent"></div>
           </div>
@@ -392,8 +392,8 @@ export default function MediaGenerator() {
         {/* Media Upload Sections */}
         <div className="space-y-4">
           <div className="mb-2 flex items-center gap-3">
-            <h3 className="font-pixel bg-gradient-to-r from-[var(--gradient-1)] to-[var(--gradient-2)] bg-clip-text text-2xl text-transparent">
-              Step 3: Media Files
+            <h3 className="font-pixel gradient-text text-2xl tracking-wider">
+              STEP 3: MEDIA FILES
             </h3>
             <div className="h-px flex-1 bg-gradient-to-r from-[var(--gradient-1)]/20 to-transparent"></div>
           </div>
@@ -444,8 +444,8 @@ export default function MediaGenerator() {
           </div>
           <SubmitButton
             isPending={isPending}
-            text="Create Media Files"
-            pendingText="Creating Files..."
+            text="CREATE MEDIA FILES"
+            pendingText="CREATING FILES..."
             onClick={createMediaFiles}
             disabled={
               isPending ||
@@ -454,7 +454,7 @@ export default function MediaGenerator() {
               !consoleName ||
               !hasFolderAccess
             }
-            className="w-full sm:w-auto"
+            className="w-full sm:w-auto retro-btn-glow font-pixel text-sm tracking-wider"
           />
         </div>
       </CardFooter>

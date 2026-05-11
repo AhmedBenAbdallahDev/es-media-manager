@@ -88,7 +88,7 @@ export function QuickFilterPills({
       {/* Header */}
       <div className="text-muted-foreground flex items-center gap-2 text-sm">
         <Filter className="h-4 w-4" />
-        <span className="font-medium">Quick Filters</span>
+        <span className="font-pixel text-xs tracking-wider">QUICK FILTERS</span>
       </div>
 
       {/* Core Filters */}

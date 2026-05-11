@@ -71,10 +71,10 @@ export function GameCompactView({
 
               {/* Game title */}
               <h3
-                className="line-clamp-2 min-h-[2.5rem] text-sm leading-tight font-medium"
+                className="font-pixel line-clamp-2 min-h-[2.5rem] text-xs tracking-wider leading-tight"
                 title={game.name}
               >
-                {game.name}
+                {game.name.toUpperCase()}
               </h3>
 
               {/* Media status - detailed view */}

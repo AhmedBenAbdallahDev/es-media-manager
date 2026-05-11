@@ -391,12 +391,10 @@ export function GameDetailSheet({
           <div className="mx-auto flex w-full max-w-[1600px] items-start justify-between">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3">
-                 <SheetTitle className="truncate text-2xl font-bold tracking-tight">
-                    {draft.name}
+                 <SheetTitle className="font-pixel truncate text-xl tracking-wider">
+                    {draft.name.toUpperCase()}
                  </SheetTitle>
-                 <Badge variant="outline" className="font-mono text-xs">
-                    {consoleFolderName}
-                 </Badge>
+                 <span className="retro-tag">{consoleFolderName}</span>
               </div>
               <SheetDescription className="text-muted-foreground mt-1 flex items-center gap-4 text-sm">
                  <span className="font-mono">{draft.path}</span>

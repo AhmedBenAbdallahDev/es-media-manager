@@ -116,25 +116,21 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
     <div className="flex flex-col gap-4">
       {/* ── Stats bar ─────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-2">
-        <Badge variant="outline" className="gap-1">
-          <span className="font-normal text-muted-foreground">Total</span>
-          <span className="font-semibold">{games.length}</span>
-        </Badge>
-        <Badge variant="outline" className="gap-1 border-green-500/40 bg-green-500/10 text-green-600 dark:text-green-400">
-          <CheckCircle2Icon className="h-3 w-3" />
-          {withImage} with image
-        </Badge>
+        <span className="retro-tag">
+          TOTAL: {games.length}
+        </span>
+        <span className="retro-tag" style={{ borderColor: "green", color: "green" }}>
+          ✓ {withImage} WITH IMAGE
+        </span>
         {missingImage > 0 && (
-          <Badge variant="outline" className="gap-1 border-orange-500/40 bg-orange-500/10 text-orange-600 dark:text-orange-400">
-            <XCircleIcon className="h-3 w-3" />
-            {missingImage} missing image
-          </Badge>
+          <span className="retro-tag" style={{ borderColor: "orange", color: "orange" }}>
+            ✗ {missingImage} MISSING
+          </span>
         )}
         {withVideo > 0 && (
-          <Badge variant="outline" className="gap-1 text-blue-600 dark:text-blue-400 border-blue-500/40 bg-blue-500/10">
-            <VideoIcon className="h-3 w-3" />
-            {withVideo} with video
-          </Badge>
+          <span className="retro-tag" style={{ borderColor: "blue", color: "blue" }}>
+            ▶ {withVideo} VIDEO
+          </span>
         )}
       </div>
 
@@ -203,11 +199,11 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/30">
-                <TableHead className="w-14">Art</TableHead>
-                <TableHead>Name</TableHead>
-                <TableHead className="hidden sm:table-cell w-36 text-center">Media</TableHead>
-                <TableHead className="hidden md:table-cell w-20">Year</TableHead>
-                <TableHead className="hidden lg:table-cell w-24">Rating</TableHead>
+                <TableHead className="w-14 font-pixel text-xs tracking-wider">ART</TableHead>
+                <TableHead className="font-pixel text-xs tracking-wider">NAME</TableHead>
+                <TableHead className="hidden sm:table-cell w-36 text-center font-pixel text-xs tracking-wider">MEDIA</TableHead>
+                <TableHead className="hidden md:table-cell w-20 font-pixel text-xs tracking-wider">YEAR</TableHead>
+                <TableHead className="hidden lg:table-cell w-24 font-pixel text-xs tracking-wider">RATING</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

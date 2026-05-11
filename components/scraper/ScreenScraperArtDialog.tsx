@@ -239,13 +239,13 @@ export function ScreenScraperArtDialog({
         <DialogHeader className="px-6 pt-6 pb-4">
           <div className="flex items-center gap-2">
             <Sparkles className="h-5 w-5 text-primary" />
-            <DialogTitle className="text-xl">
-              Fetch Cover Art — {mediaTypeLabel}
+            <DialogTitle className="font-pixel text-lg tracking-wider">
+              FETCH COVER ART — {mediaTypeLabel.toUpperCase()}
             </DialogTitle>
           </div>
           <DialogDescription className="text-sm">
             Searching ScreenScraper for <span className="font-semibold text-foreground">{gameName}</span> on{" "}
-            <span className="font-mono text-xs bg-muted px-1.5 py-0.5 rounded">{consoleFolder}</span>
+            <span className="retro-tag">{consoleFolder}</span>
           </DialogDescription>
           {matchedGameName && matchedGameName !== gameName && (
             <p className="text-xs text-muted-foreground mt-1">

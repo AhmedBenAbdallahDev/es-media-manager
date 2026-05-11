@@ -83,7 +83,7 @@ export function GamePreview({ game, isOpen, onClose }: GamePreviewProps) {
                   }}
                 />
                 <div>
-                  <h2 className="text-xl font-normal text-white">
+                  <h2 className="font-pixel text-xl tracking-wider text-white">
                     {consoleLabel.toUpperCase()}
                   </h2>
                   <p className="text-sm text-gray-400">1 game selected</p>

@@ -37,7 +37,7 @@ function ConsoleCard({ console: c }: { console: ConsoleLibrary }) {
 
   return (
     <Link href={`/library/${encodeURIComponent(c.folderName)}`}>
-      <Card className="group hover:border-primary/40 relative h-full cursor-pointer overflow-hidden transition-all duration-200 hover:shadow-md">
+      <Card className="group retro-card relative h-full cursor-pointer overflow-hidden transition-all duration-200 hover:shadow-md">
         <CardContent className="flex flex-col items-center gap-2 p-3">
           {/* Logo / fallback icon */}
           <div className="relative flex h-14 w-full items-center justify-center rounded-md bg-muted/40">
@@ -59,14 +59,12 @@ function ConsoleCard({ console: c }: { console: ConsoleLibrary }) {
           </div>
 
           {/* Console name */}
-          <p className="w-full text-center text-xs leading-tight font-semibold line-clamp-2">
-            {c.label}
+          <p className="w-full text-center font-pixel text-xs tracking-wider leading-tight line-clamp-2">
+            {c.label.toUpperCase()}
           </p>
 
           {/* Folder name badge */}
-          <Badge variant="secondary" className="font-mono text-[10px] px-1.5 py-0">
-            {c.folderName}
-          </Badge>
+          <span className="retro-tag">{c.folderName}</span>
 
           {/* Stats */}
           {c.hasGamelist && total > 0 ? (

@@ -81,14 +81,14 @@ export function GameFilters({
             variant="outline"
             size="sm"
             className={cn(
-              "h-11 gap-2 border-red-500/60 px-4 text-red-600 transition-colors hover:border-red-500 hover:bg-red-50 hover:text-red-700",
+              "h-11 gap-2 border-red-500/60 px-4 text-red-600 transition-colors hover:border-red-500 hover:bg-red-50 hover:text-red-700 font-pixel text-xs tracking-wider",
               !filtersActive ? "cursor-not-allowed opacity-50" : ""
             )}
             onClick={onResetFilters}
             disabled={!filtersActive}
           >
             <X className="h-4 w-4" />
-            <span className="hidden sm:inline">Clear</span>
+            <span className="hidden sm:inline">CLEAR</span>
           </Button>
         </div>
       </div>

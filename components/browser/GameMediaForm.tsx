@@ -194,7 +194,7 @@ export function GameMediaForm({
         {/* Header */}
         <div className="flex items-center justify-between border-b border-border/50 bg-muted/30 px-5 py-3">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold">{mediaType.label}</h3>
+            <h3 className="font-pixel text-xs tracking-wider">{mediaType.label.toUpperCase()}</h3>
             {hasDisplayableContent && (
               <Check className="h-3.5 w-3.5 text-green-600" />
             )}

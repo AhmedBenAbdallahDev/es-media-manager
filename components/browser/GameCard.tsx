@@ -140,7 +140,7 @@ export default function GameCard({ game, onView }: GameCardProps) {
     CONSOLES.find((c) => c.value === game.console)?.label || game.console;
 
   return (
-    <Card className="group hover:shadow-primary/10 hover:border-primary/30 relative gap-0 overflow-hidden rounded-xl border p-0 transition-all duration-300 hover:shadow-lg">
+    <Card className="group retro-card relative gap-0 overflow-hidden rounded-xl p-0 transition-all duration-300 hover:shadow-lg">
       {/* Background Image Container - 4:3 aspect ratio */}
       <div className="relative aspect-[4/3] w-full overflow-hidden">
         {/* Screenshot Background */}
@@ -175,12 +175,9 @@ export default function GameCard({ game, onView }: GameCardProps) {
         {/* Header Section with Tags - Side by Side */}
         <div className="absolute top-3 right-3 left-3 z-10 flex items-center justify-between">
           {/* Console Badge - Left */}
-          <Badge
-            variant="outline"
-            className="border-white/10 bg-black/40 py-1 font-medium text-white backdrop-blur-md"
-          >
-            {consoleLabel}
-          </Badge>
+          <span className="retro-tag bg-black/40 text-white backdrop-blur-md">
+            {consoleLabel.toUpperCase()}
+          </span>
 
           {/* Media Status Badge - Right */}
           <MediaStatusBadge
@@ -204,8 +201,8 @@ export default function GameCard({ game, onView }: GameCardProps) {
 
         {/* Game Title Overlay at bottom */}
         <div className="absolute right-0 bottom-0 left-0 z-10 p-4">
-          <h3 className="truncate text-xl font-semibold text-white drop-shadow-md">
-            {game.name}
+          <h3 className="font-pixel truncate text-sm tracking-wider text-white drop-shadow-md">
+            {game.name.toUpperCase()}
           </h3>
         </div>
 
@@ -238,10 +235,10 @@ export default function GameCard({ game, onView }: GameCardProps) {
           variant="secondary"
           size="sm"
           onClick={() => onView(game)}
-          className="hover:bg-primary hover:text-primary-foreground w-full font-medium transition-colors duration-200"
+          className="hover:bg-primary hover:text-primary-foreground w-full font-pixel text-xs tracking-wider transition-colors duration-200"
         >
           <Eye className="mr-1.5 h-4 w-4" />
-          View Details
+          VIEW DETAILS
         </Button>
       </CardFooter>
     </Card>
