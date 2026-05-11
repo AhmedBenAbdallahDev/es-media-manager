@@ -362,8 +362,8 @@ export function GameMediaForm({
                     open: true,
                     url: currentUrl,
                     alt: `${mediaType.label} for ${game.name}`,
-                      mediaKey: mediaType.key,
-                      mediaLabel: mediaType.label,
+                    mediaKey: mediaType.key,
+                    mediaLabel: mediaType.label,
                   });
                 }
               }}
