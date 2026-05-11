@@ -7,12 +7,21 @@ import {
   saveMediaFile,
   getOrCreateConsoleDirectory,
 } from "@/lib/mediaFileOperations";
-import {
-  updateGameWithMediaFile,
-} from "@/lib/gameMediaHelpers";
+import { updateGameWithMediaFile } from "@/lib/gameMediaHelpers";
 import { toast } from "sonner";
 import Image from "next/image";
-import { ImageOff, Loader2, AlertCircle, Upload, X, ExternalLink, Check, Search, Trash2, Eye } from "lucide-react";
+import {
+  ImageOff,
+  Loader2,
+  AlertCircle,
+  Upload,
+  X,
+  ExternalLink,
+  Check,
+  Search,
+  Trash2,
+  Eye,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Input } from "@/components/ui/input";
@@ -111,7 +120,12 @@ export function GameMediaForm({
           file
         );
 
-        const updatedGame = updateGameWithMediaFile({ ...game }, mediaKey, fileHandle, mediaType.folder);
+        const updatedGame = updateGameWithMediaFile(
+          { ...game },
+          mediaKey,
+          fileHandle,
+          mediaType.folder
+        );
 
         setEditableMediaFiles((prev) => ({ ...prev, [mediaKey]: null }));
         setUrlInputs((prev) => ({ ...prev, [mediaKey]: "" }));
@@ -151,7 +165,11 @@ export function GameMediaForm({
         if (!response.ok) throw new Error("Failed to fetch image");
 
         let blob = await response.blob();
-        let file = new File([blob], `image.${mediaType.extension.replace(".", "")}`, { type: mediaType.accept });
+        let file = new File(
+          [blob],
+          `image.${mediaType.extension.replace(".", "")}`,
+          { type: mediaType.accept }
+        );
 
         // Convert WebP to JPG if needed
         if (blob.type === "image/webp" && mediaType.accept === "image/jpeg") {
@@ -195,10 +213,14 @@ export function GameMediaForm({
 
     const isReferencedInGamelist = isVideo
       ? game.hasVideo
-      : game.mediaStatus?.[mediaType.key as keyof typeof game.mediaStatus] ?? false;
+      : (game.mediaStatus?.[mediaType.key as keyof typeof game.mediaStatus] ??
+        false);
 
     const fileExistsOnDisk = !!currentUrl;
-    const hasContent = !!currentUrl || !!newFile || (isReferencedInGamelist && !fileExistsOnDisk);
+    const hasContent =
+      !!currentUrl ||
+      !!newFile ||
+      (isReferencedInGamelist && !fileExistsOnDisk);
     const hasDisplayableContent = !!currentUrl || !!newFile;
     const isBroken = isReferencedInGamelist && !fileExistsOnDisk && !newFile;
 
@@ -208,7 +230,13 @@ export function GameMediaForm({
           await handleMediaFileChange(mediaType.key, acceptedFiles[0]);
         }
       },
-      accept: isVideo ? { "video/mp4": [".mp4"] } : { "image/jpeg": [".jpg", ".jpeg"], "image/png": [".png"], "image/webp": [".webp"] },
+      accept: isVideo
+        ? { "video/mp4": [".mp4"] }
+        : {
+            "image/jpeg": [".jpg", ".jpeg"],
+            "image/png": [".png"],
+            "image/webp": [".webp"],
+          },
       maxFiles: 1,
       noClick: true,
     });
@@ -217,24 +245,24 @@ export function GameMediaForm({
       <div
         key={mediaType.key}
         {...getRootProps()}
-        className={`
-          group relative overflow-hidden rounded-xl border-2 transition-all duration-300 flex flex-col h-full
-          ${isDragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:border-primary/50"}
-          ${hasDisplayableContent ? "bg-card" : "bg-muted/30"}
-          ${isBroken ? "border-orange-500/50" : ""}
-        `}
+        className={`group relative flex h-full flex-col overflow-hidden rounded-xl border-2 transition-all duration-300 ${isDragActive ? "border-primary bg-primary/5 scale-[1.02]" : "border-border hover:border-primary/50"} ${hasDisplayableContent ? "bg-card" : "bg-muted/30"} ${isBroken ? "border-orange-500/50" : ""} `}
       >
         <input {...getInputProps()} />
 
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border/50 bg-muted/30 px-5 py-3">
+        <div className="border-border/50 bg-muted/30 flex items-center justify-between border-b px-5 py-3">
           <div className="flex items-center gap-2">
-            <h3 className="font-pixel text-xs tracking-wider">{mediaType.label.toUpperCase()}</h3>
+            <h3 className="font-pixel text-xs tracking-wider">
+              {mediaType.label.toUpperCase()}
+            </h3>
             {hasDisplayableContent && (
               <Check className="h-3.5 w-3.5 text-green-600" />
             )}
             {isBroken && (
-              <Badge variant="outline" className="border-orange-500/50 text-orange-600 text-xs">
+              <Badge
+                variant="outline"
+                className="border-orange-500/50 text-xs text-orange-600"
+              >
                 BROKEN
               </Badge>
             )}
@@ -268,7 +296,7 @@ export function GameMediaForm({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                    className="text-muted-foreground hover:text-destructive h-8 w-8"
                     onClick={(e) => {
                       e.stopPropagation();
                       alert(`Delete for ${mediaType.label} to be implemented.`);
@@ -294,17 +322,16 @@ export function GameMediaForm({
                   <ExternalLink className="h-4 w-4" />
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>{isExpanded ? "Collapse" : "Expand"}</TooltipContent>
+              <TooltipContent>
+                {isExpanded ? "Collapse" : "Expand"}
+              </TooltipContent>
             </Tooltip>
           </div>
         </div>
 
         {/* Preview Area - Larger */}
         <div
-          className={`
-            relative overflow-hidden transition-all duration-300
-            ${isExpanded ? "h-64" : "h-52"}
-          `}
+          className={`relative overflow-hidden transition-all duration-300 ${isExpanded ? "h-64" : "h-52"} `}
         >
           {isLoadingUrls && !newFile ? (
             <div className="bg-muted flex h-full w-full animate-pulse items-center justify-center">
@@ -317,7 +344,7 @@ export function GameMediaForm({
             </div>
           ) : hasDisplayableContent && !newFile ? (
             <div
-              className="relative h-full w-full bg-muted cursor-pointer"
+              className="bg-muted relative h-full w-full cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
                 if (currentUrl) {
@@ -384,14 +411,18 @@ export function GameMediaForm({
               </div>
             </div>
           ) : isBroken ? (
-            <div className="bg-orange-500/5 border-orange-500/30 flex h-full w-full flex-col items-center justify-center border border-dashed">
-              <AlertCircle className="text-orange-500 mb-2 h-8 w-8" />
-              <p className="text-orange-600 text-sm font-medium">Asset link broken</p>
-              <p className="text-muted-foreground text-xs mt-1">Referenced in gamelist but file not found</p>
+            <div className="flex h-full w-full flex-col items-center justify-center border border-dashed border-orange-500/30 bg-orange-500/5">
+              <AlertCircle className="mb-2 h-8 w-8 text-orange-500" />
+              <p className="text-sm font-medium text-orange-600">
+                Asset link broken
+              </p>
+              <p className="text-muted-foreground mt-1 text-xs">
+                Referenced in gamelist but file not found
+              </p>
               <Button
                 variant="outline"
                 size="sm"
-                className="mt-3 gap-2 text-orange-600 border-orange-500/50 hover:bg-orange-500/10"
+                className="mt-3 gap-2 border-orange-500/50 text-orange-600 hover:bg-orange-500/10"
                 onClick={(e) => {
                   e.stopPropagation();
                   setBrokenAssetDialog({
@@ -408,14 +439,16 @@ export function GameMediaForm({
           ) : (
             <div className="bg-muted/50 border-border flex h-full w-full flex-col items-center justify-center border border-dashed">
               <ImageOff className="text-muted-foreground/40 mb-2 h-10 w-10" />
-              <p className="text-muted-foreground text-sm">No {mediaType.label}</p>
+              <p className="text-muted-foreground text-sm">
+                No {mediaType.label}
+              </p>
             </div>
           )}
         </div>
 
         {/* Upload Actions - Always visible with proper spacing */}
-        <div className="border-t border-border/50 bg-muted/20 px-5 py-4">
-          <div className="flex gap-3 flex-wrap">
+        <div className="border-border/50 bg-muted/20 border-t px-5 py-4">
+          <div className="flex flex-wrap gap-3">
             <input
               ref={(el) => {
                 fileInputRefs.current[mediaType.key] = el;
@@ -431,7 +464,7 @@ export function GameMediaForm({
             <Button
               variant={hasContent ? "outline" : "default"}
               size="default"
-              className="flex-1 gap-2 h-10 min-w-[90px]"
+              className="h-10 min-w-[90px] flex-1 gap-2"
               onClick={(e) => {
                 e.stopPropagation();
                 fileInputRefs.current[mediaType.key]?.click();
@@ -446,7 +479,7 @@ export function GameMediaForm({
                 <Button
                   variant="outline"
                   size="default"
-                  className="gap-2 h-10 min-w-[90px]"
+                  className="h-10 min-w-[90px] gap-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleCard(mediaType.key);
@@ -464,7 +497,7 @@ export function GameMediaForm({
                 <Button
                   variant="outline"
                   size="default"
-                  className="gap-2 h-10 min-w-[90px] border-primary/50 text-primary hover:bg-primary/10"
+                  className="border-primary/50 text-primary hover:bg-primary/10 h-10 min-w-[90px] gap-2"
                   onClick={(e) => {
                     e.stopPropagation();
                     setScraperDialog({
@@ -479,39 +512,49 @@ export function GameMediaForm({
                   Fetch Online
                 </Button>
               </TooltipTrigger>
-              <TooltipContent>Search ScreenScraper for {mediaType.label}</TooltipContent>
+              <TooltipContent>
+                Search ScreenScraper for {mediaType.label}
+              </TooltipContent>
             </Tooltip>
           </div>
 
           {/* URL Input - Expandable */}
           {isExpanded && (
-            <div className="mt-4 animate-in slide-in-from-top-2">
+            <div className="animate-in slide-in-from-top-2 mt-4">
               <div className="relative">
                 <Input
                   type="url"
                   placeholder="Paste image URL..."
                   value={urlInput}
-                  onChange={(e) => setUrlInputs((prev) => ({ ...prev, [mediaType.key]: e.target.value }))}
+                  onChange={(e) =>
+                    setUrlInputs((prev) => ({
+                      ...prev,
+                      [mediaType.key]: e.target.value,
+                    }))
+                  }
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && urlInput.trim()) {
                       handleUrlUpload(mediaType.key, urlInput);
                     }
                   }}
                   disabled={isUploading}
-                  className="pr-24 h-10"
+                  className="h-10 pr-24"
                 />
                 <Button
                   size="sm"
                   variant="default"
-                  className="absolute right-1.5 top-1.5 h-7 px-3"
-                  onClick={() => urlInput.trim() && handleUrlUpload(mediaType.key, urlInput)}
+                  className="absolute top-1.5 right-1.5 h-7 px-3"
+                  onClick={() =>
+                    urlInput.trim() && handleUrlUpload(mediaType.key, urlInput)
+                  }
                   disabled={isUploading || !urlInput.trim()}
                 >
                   Go
                 </Button>
               </div>
               <p className="text-muted-foreground mt-2 text-xs">
-                Supports JPG, PNG, WebP (auto-converts to {mediaType.extension.replace(".", "").toUpperCase()})
+                Supports JPG, PNG, WebP (auto-converts to{" "}
+                {mediaType.extension.replace(".", "").toUpperCase()})
               </p>
             </div>
           )}
@@ -522,8 +565,8 @@ export function GameMediaForm({
 
   const CORE_MEDIA_KEYS = ["covers", "marquees", "videos", "screenshots"];
   const coreMedia = MEDIA_TYPES.filter((m) => CORE_MEDIA_KEYS.includes(m.key));
-  const optionalMedia = MEDIA_TYPES.filter((m) =>
-    !CORE_MEDIA_KEYS.includes(m.key)
+  const optionalMedia = MEDIA_TYPES.filter(
+    (m) => !CORE_MEDIA_KEYS.includes(m.key)
   );
 
   return (
@@ -565,7 +608,9 @@ export function GameMediaForm({
       {/* ── Broken Asset Dialog ──────────────────────────────────── */}
       <Dialog
         open={brokenAssetDialog.open}
-        onOpenChange={(open) => setBrokenAssetDialog((prev) => ({ ...prev, open }))}
+        onOpenChange={(open) =>
+          setBrokenAssetDialog((prev) => ({ ...prev, open }))
+        }
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -574,14 +619,18 @@ export function GameMediaForm({
               Broken Asset Detected
             </DialogTitle>
             <DialogDescription>
-              The <span className="font-semibold">{brokenAssetDialog.mediaLabel}</span> reference
-              exists in your gamelist.xml but the actual file was not found on disk.
+              The{" "}
+              <span className="font-semibold">
+                {brokenAssetDialog.mediaLabel}
+              </span>{" "}
+              reference exists in your gamelist.xml but the actual file was not
+              found on disk.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-2">
-            <p className="text-sm text-muted-foreground">
-              This can happen if the image was deleted, moved, or the path in the
-              gamelist is incorrect.
+            <p className="text-muted-foreground text-sm">
+              This can happen if the image was deleted, moved, or the path in
+              the gamelist is incorrect.
             </p>
             <p className="text-sm font-medium">
               Do you want to clear this broken reference from the index?
@@ -590,7 +639,9 @@ export function GameMediaForm({
           <DialogFooter className="gap-2 sm:justify-end">
             <Button
               variant="outline"
-              onClick={() => setBrokenAssetDialog((prev) => ({ ...prev, open: false }))}
+              onClick={() =>
+                setBrokenAssetDialog((prev) => ({ ...prev, open: false }))
+              }
             >
               Ignore
             </Button>
@@ -601,7 +652,9 @@ export function GameMediaForm({
                   onClearBrokenAsset(brokenAssetDialog.mediaKey);
                 }
                 setBrokenAssetDialog((prev) => ({ ...prev, open: false }));
-                toast.success(`Cleared broken ${brokenAssetDialog.mediaLabel} reference`);
+                toast.success(
+                  `Cleared broken ${brokenAssetDialog.mediaLabel} reference`
+                );
               }}
             >
               <Trash2 className="mr-2 h-4 w-4" />
@@ -643,7 +696,9 @@ export function GameMediaForm({
                 className="object-contain"
                 unoptimized
                 onError={() => {
-                  toast.error("Failed to load image — it may be broken or corrupted.");
+                  toast.error(
+                    "Failed to load image — it may be broken or corrupted."
+                  );
                   setImageViewer((prev) => ({ ...prev, open: false }));
                 }}
               />
@@ -654,7 +709,9 @@ export function GameMediaForm({
               variant="ghost"
               size="icon"
               className="h-10 w-10 rounded-full bg-black/50 text-white hover:bg-black/70"
-              onClick={() => setImageViewer((prev) => ({ ...prev, open: false }))}
+              onClick={() =>
+                setImageViewer((prev) => ({ ...prev, open: false }))
+              }
             >
               <X className="h-5 w-5" />
             </Button>

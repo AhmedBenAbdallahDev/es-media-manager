@@ -10,11 +10,7 @@
 import { use } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import {
-  ChevronLeftIcon,
-  GamepadIcon,
-  RefreshCwIcon,
-} from "lucide-react";
+import { ChevronLeftIcon, GamepadIcon, RefreshCwIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { GameTable } from "@/components/scraper/GameTable";
 import { useLibrary } from "@/hooks/useLibrary";
@@ -41,7 +37,10 @@ export default function ConsolePage({ params }: ConsolePageProps) {
           Please open your SD card or ROM folder first.
         </p>
         <Link href="/library">
-          <Button variant="outline" className="gap-2 font-pixel text-xs tracking-wider">
+          <Button
+            variant="outline"
+            className="font-pixel gap-2 text-xs tracking-wider"
+          >
             <ChevronLeftIcon className="h-4 w-4" />
             GO TO LIBRARY
           </Button>
@@ -56,7 +55,9 @@ export default function ConsolePage({ params }: ConsolePageProps) {
         <div className="retro-step animate-pulse">
           <GamepadIcon className="gradient-icon h-6 w-6" />
         </div>
-        <p className="font-pixel text-sm tracking-wider text-muted-foreground">SCANNING...</p>
+        <p className="font-pixel text-muted-foreground text-sm tracking-wider">
+          SCANNING...
+        </p>
       </div>
     );
   }
@@ -74,7 +75,10 @@ export default function ConsolePage({ params }: ConsolePageProps) {
           “{folderName}” was not detected in your library.
         </p>
         <Link href="/library">
-          <Button variant="outline" className="gap-2 font-pixel text-xs tracking-wider">
+          <Button
+            variant="outline"
+            className="font-pixel gap-2 text-xs tracking-wider"
+          >
             <ChevronLeftIcon className="h-4 w-4" />
             BACK TO LIBRARY
           </Button>
@@ -93,15 +97,19 @@ export default function ConsolePage({ params }: ConsolePageProps) {
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
           </Link>
-          <h1 className="font-pixel text-xl tracking-wider">{consoleLib.label}</h1>
+          <h1 className="font-pixel text-xl tracking-wider">
+            {consoleLib.label}
+          </h1>
         </div>
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-20 text-center">
           <GamepadIcon className="text-muted-foreground mb-3 h-10 w-10" />
-          <p className="font-pixel text-sm tracking-wider">NO GAMELIST.XML FOUND</p>
+          <p className="font-pixel text-sm tracking-wider">
+            NO GAMELIST.XML FOUND
+          </p>
           <p className="text-muted-foreground mt-1 max-w-sm text-sm">
             This console has {consoleLib.totalRoms} ROM
-            {consoleLib.totalRoms !== 1 ? "s" : ""} but no gamelist.xml. Run
-            the scraper on your device first, or create a gamelist manually.
+            {consoleLib.totalRoms !== 1 ? "s" : ""} but no gamelist.xml. Run the
+            scraper on your device first, or create a gamelist manually.
           </p>
         </div>
       </div>
@@ -137,7 +145,9 @@ export default function ConsolePage({ params }: ConsolePageProps) {
           )}
 
           <div>
-            <h1 className="font-pixel text-xl tracking-wider">{consoleLib.label}</h1>
+            <h1 className="font-pixel text-xl tracking-wider">
+              {consoleLib.label}
+            </h1>
             <p className="text-muted-foreground font-mono text-xs">
               {consoleLib.folderName}
             </p>

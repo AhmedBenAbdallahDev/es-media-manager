@@ -7,12 +7,7 @@
  * Wrap the app with <LibraryProvider> to make this available everywhere.
  */
 
-import React, {
-  createContext,
-  useCallback,
-  useContext,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useContext, useState } from "react";
 import type { ConsoleLibrary, ScanProgress } from "@/types/scraper";
 import type { GamelistGame } from "@/types/scraper";
 import { pickSdCardRoot, scanSdCard } from "@/lib/sdScanner";
@@ -62,28 +57,28 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
     useState<FileSystemDirectoryHandle | null>(null);
 
   /** Internal scan runner — used by both openAndScan and rescan */
-  const runScan = useCallback(
-    async (handle: FileSystemDirectoryHandle) => {
-      setState({ status: "scanning", progress: { current: 0, total: 0, currentFolder: "" } });
+  const runScan = useCallback(async (handle: FileSystemDirectoryHandle) => {
+    setState({
+      status: "scanning",
+      progress: { current: 0, total: 0, currentFolder: "" },
+    });
 
-      try {
-        const consoles = await scanSdCard(handle, (progress) => {
-          setState({ status: "scanning", progress });
-        });
+    try {
+      const consoles = await scanSdCard(handle, (progress) => {
+        setState({ status: "scanning", progress });
+      });
 
-        setState({
-          status: "ready",
-          consoles,
-          rootName: handle.name,
-        });
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : String(err);
-        setState({ status: "error", message: msg });
-        toast.error(`Scan failed: ${msg}`);
-      }
-    },
-    []
-  );
+      setState({
+        status: "ready",
+        consoles,
+        rootName: handle.name,
+      });
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setState({ status: "error", message: msg });
+      toast.error(`Scan failed: ${msg}`);
+    }
+  }, []);
 
   /** Opens a directory picker, stores the handle, and runs the scan */
   const openAndScan = useCallback(async () => {
@@ -145,7 +140,9 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
 
       // Recalculate stats
       const gamesWithImages = updatedGames.filter(
-        (g) => (g.image && g.image.trim() !== "") || (g.thumbnail && g.thumbnail.trim() !== "")
+        (g) =>
+          (g.image && g.image.trim() !== "") ||
+          (g.thumbnail && g.thumbnail.trim() !== "")
       ).length;
 
       // Build updated consoles array
@@ -174,7 +171,11 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
         // Revert on error
         const revertedConsoles = [...updatedConsoles];
         revertedConsoles[consoleIndex] = consoleEntry;
-        setState({ status: "ready", consoles: revertedConsoles, rootName: state.rootName });
+        setState({
+          status: "ready",
+          consoles: revertedConsoles,
+          rootName: state.rootName,
+        });
       }
     },
     [state]

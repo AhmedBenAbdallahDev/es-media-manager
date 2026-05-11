@@ -328,7 +328,9 @@ export default function FileUploadDropzone({
   return (
     <Card className="flex w-full flex-col">
       <CardHeader className="pb-2">
-        <CardTitle className="font-pixel text-sm tracking-wider">{label.toUpperCase()}</CardTitle>
+        <CardTitle className="font-pixel text-sm tracking-wider">
+          {label.toUpperCase()}
+        </CardTitle>
         {description && <CardDescription>{description}</CardDescription>}
       </CardHeader>
       <CardContent className="flex flex-grow flex-col justify-center space-y-3">

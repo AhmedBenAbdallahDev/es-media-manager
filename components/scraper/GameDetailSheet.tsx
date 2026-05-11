@@ -6,7 +6,7 @@
  * Full-screen modal that combines:
  * - Media management (upload/view covers, videos, etc.)
  * - Metadata editing (gamelist.xml)
- * 
+ *
  * Provides a "dashboard" view for a single game.
  */
 
@@ -45,7 +45,10 @@ import { GameMediaForm } from "@/components/browser/GameMediaForm";
 import { Game } from "@/types";
 import { MEDIA_TYPES } from "@/lib/constants";
 import { sanitizeBasenameForSave } from "@/lib/gameMediaHelpers";
-import { loadFileAsUrl, resolveMediaFileHandle } from "@/lib/mediaFileOperations";
+import {
+  loadFileAsUrl,
+  resolveMediaFileHandle,
+} from "@/lib/mediaFileOperations";
 
 interface GameDetailSheetProps {
   game: GamelistGame | null;
@@ -89,7 +92,7 @@ function FieldRow({
       <div className="flex items-center gap-2">
         <Label className="text-xs">{label}</Label>
         {present ? (
-          <CheckCircle2Icon className="h-3 w-3 text-green-500 shrink-0" />
+          <CheckCircle2Icon className="h-3 w-3 shrink-0 text-green-500" />
         ) : (
           <Badge
             variant="outline"
@@ -116,7 +119,9 @@ export function GameDetailSheet({
   const [isSaving, setIsSaving] = useState(false);
 
   // Media Form State
-  const [currentMediaUrls, setCurrentMediaUrls] = useState<Record<string, string>>({});
+  const [currentMediaUrls, setCurrentMediaUrls] = useState<
+    Record<string, string>
+  >({});
   const [isLoadingUrls, setIsLoadingUrls] = useState(false);
 
   // Initialize draft when game opens
@@ -142,12 +147,12 @@ export function GameDetailSheet({
 
   // Load Media URLs - using the same proven logic as GameThumbnail
   useEffect(() => {
-    console.log(`[Media] Effect triggered:`, { 
-      hasDraft: !!draft, 
-      hasDirHandle: !!dirHandle, 
-      draftName: draft?.name 
+    console.log(`[Media] Effect triggered:`, {
+      hasDraft: !!draft,
+      hasDirHandle: !!dirHandle,
+      draftName: draft?.name,
     });
-    
+
     if (!draft || !dirHandle) {
       console.warn(`[Media] Early return - missing draft or dirHandle`);
       return;
@@ -172,12 +177,17 @@ export function GameDetailSheet({
           for (let i = 0; i < parts.length - 1; i++) {
             current = await current.getDirectoryHandle(parts[i]);
           }
-          const fileHandle = await current.getFileHandle(parts[parts.length - 1]);
+          const fileHandle = await current.getFileHandle(
+            parts[parts.length - 1]
+          );
           const file = await fileHandle.getFile();
           return URL.createObjectURL(file);
         } catch (e) {
           // Direct resolution failed — try tolerant lookup across known media folders
-          console.log(`[Media] Direct resolution failed for ${relativePath}, trying fallback...`, e);
+          console.log(
+            `[Media] Direct resolution failed for ${relativePath}, trying fallback...`,
+            e
+          );
         }
 
         // Fallback: tolerant lookup
@@ -194,15 +204,17 @@ export function GameDetailSheet({
 
       const loadPath = async (key: string, path?: string) => {
         if (!path || !path.trim()) return;
-        
+
         console.log(`[Media] Loading ${key} for "${draft.name}": ${path}`);
         const url = await resolveImageUrl(path);
-        
+
         if (url && isMounted) {
           urls[key] = url;
           console.log(`[Media] SUCCESS: Found ${key} for "${draft.name}"`);
         } else {
-          console.warn(`[Media] FAILED: Could not find ${key} for "${draft.name}": ${path}`);
+          console.warn(
+            `[Media] FAILED: Could not find ${key} for "${draft.name}": ${path}`
+          );
         }
       };
 
@@ -212,7 +224,7 @@ export function GameDetailSheet({
       } else if (draft.thumbnail?.trim()) {
         await loadPath("covers", draft.thumbnail);
       }
-      
+
       await Promise.all([
         loadPath("marquees", draft.marquee),
         loadPath("videos", draft.video),
@@ -222,7 +234,11 @@ export function GameDetailSheet({
       if (isMounted) {
         setCurrentMediaUrls(urls);
         setIsLoadingUrls(false);
-        console.log(`[Media] Final URLs for "${draft.name}":`, Object.keys(urls), urls);
+        console.log(
+          `[Media] Final URLs for "${draft.name}":`,
+          Object.keys(urls),
+          urls
+        );
       }
     };
 
@@ -241,11 +257,14 @@ export function GameDetailSheet({
   // Adapter to convert GamelistGame to Game (for GameMediaForm)
   const gameAdapter: Game = useMemo(() => {
     if (!draft) return {} as Game;
-    
+
     // Determine media status based on draft fields
     const status = {
       // Consider `thumbnail` as a valid fallback for covers so UI shows it where appropriate
-      covers: !!((draft.image && draft.image.trim()) || (draft.thumbnail && draft.thumbnail.trim())),
+      covers: !!(
+        (draft.image && draft.image.trim()) ||
+        (draft.thumbnail && draft.thumbnail.trim())
+      ),
       marquees: !!(draft.marquee && draft.marquee.trim()),
       videos: !!(draft.video && draft.video.trim()),
       fanart: !!(draft.fanart && draft.fanart.trim()),
@@ -270,9 +289,12 @@ export function GameDetailSheet({
     };
   }, [draft, consoleFolderName]);
 
-  const set = useCallback(<K extends keyof GamelistGame>(k: K, v: GamelistGame[K]) => {
-    setDraft((p) => (p ? { ...p, [k]: v } : p));
-  }, []);
+  const set = useCallback(
+    <K extends keyof GamelistGame>(k: K, v: GamelistGame[K]) => {
+      setDraft((p) => (p ? { ...p, [k]: v } : p));
+    },
+    []
+  );
 
   async function handleSave() {
     if (!draft || !game) return;
@@ -296,7 +318,7 @@ export function GameDetailSheet({
     // Update paths for core supported types
     // We assume the standard ES-DE folder structure: ./media/covers/Game Name.png
     // NOTE: We trust GameMediaForm saved it to the standard location.
-    
+
     if (updatedGame.mediaStatus.covers) {
       const mt = MEDIA_TYPES.find((m) => m.key === "covers");
       if (mt) {
@@ -352,32 +374,37 @@ export function GameDetailSheet({
     Promise.all([
       updateUrl("covers", "coverFileHandle"),
       updateUrl("marquees", "logoFileHandle"),
-      updateUrl("videos", "hasVideo" as any), // Video handle isn't stored in hasVideo prop, wait. 
+      updateUrl("videos", "hasVideo" as any), // Video handle isn't stored in hasVideo prop, wait.
       // types/index.ts doesn't have videoFileHandle explicitly in Game interface shown earlier?
       // actually GameMediaForm doesn't store video handle in Game object in the interface I saw.
       // But updateGameWithMediaFile might?
       // Let's just rely on re-render for now or the local state of GameMediaForm.
       // GameMediaForm has its own local preview state (editableMediaFiles).
     ]).then(() => {
-       setCurrentMediaUrls(newUrls);
+      setCurrentMediaUrls(newUrls);
     });
   };
 
   if (!draft) return null;
 
-  const hasImg = Boolean((draft.image && draft.image.trim()) || (draft.thumbnail && draft.thumbnail.trim()));
+  const hasImg = Boolean(
+    (draft.image && draft.image.trim()) ||
+    (draft.thumbnail && draft.thumbnail.trim())
+  );
   const hasVideo = Boolean(draft.video?.trim());
   const hasMarquee = Boolean(draft.marquee?.trim());
   const hasFanart = Boolean(draft.fanart?.trim());
-  
+
   const missingCount = [
-    hasImg, hasVideo, hasMarquee, 
-    Boolean(draft.desc?.trim()), 
-    Boolean(draft.developer?.trim()), 
-    Boolean(draft.publisher?.trim()), 
-    Boolean(draft.genre?.trim()), 
-    Boolean(draft.rating?.trim()), 
-    Boolean(draft.releasedate?.trim())
+    hasImg,
+    hasVideo,
+    hasMarquee,
+    Boolean(draft.desc?.trim()),
+    Boolean(draft.developer?.trim()),
+    Boolean(draft.publisher?.trim()),
+    Boolean(draft.genre?.trim()),
+    Boolean(draft.rating?.trim()),
+    Boolean(draft.releasedate?.trim()),
   ].filter((x) => !x).length;
 
   return (
@@ -391,14 +418,14 @@ export function GameDetailSheet({
           <div className="mx-auto flex w-full max-w-[1600px] items-start justify-between">
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-3">
-                 <SheetTitle className="font-pixel truncate text-xl tracking-wider">
-                    {draft.name.toUpperCase()}
-                 </SheetTitle>
-                 <span className="retro-tag">{consoleFolderName}</span>
+                <SheetTitle className="font-pixel truncate text-xl tracking-wider">
+                  {draft.name.toUpperCase()}
+                </SheetTitle>
+                <span className="retro-tag">{consoleFolderName}</span>
               </div>
               <SheetDescription className="text-muted-foreground mt-1 flex items-center gap-4 text-sm">
-                 <span className="font-mono">{draft.path}</span>
-                 {missingCount === 0 ? (
+                <span className="font-mono">{draft.path}</span>
+                {missingCount === 0 ? (
                   <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
                     <CheckCircle2Icon className="h-3.5 w-3.5" />
                     Fully scraped
@@ -411,13 +438,17 @@ export function GameDetailSheet({
                 )}
               </SheetDescription>
             </div>
-            
+
             <div className="ml-4 flex flex-shrink-0 gap-2">
               <Button variant="outline" onClick={onClose} disabled={isSaving}>
                 <ArrowLeftIcon className="mr-2 h-4 w-4" />
                 Close
               </Button>
-              <Button onClick={handleSave} disabled={isSaving} className="min-w-[140px]">
+              <Button
+                onClick={handleSave}
+                disabled={isSaving}
+                className="min-w-[140px]"
+              >
                 <SaveIcon className="mr-2 h-4 w-4" />
                 {isSaving ? "Saving..." : "Save Metadata"}
               </Button>
@@ -426,193 +457,235 @@ export function GameDetailSheet({
         </SheetHeader>
 
         {/* ── Content: Two Columns ──────────────────────────────── */}
-        <div className="flex-grow overflow-hidden bg-muted/5">
+        <div className="bg-muted/5 flex-grow overflow-hidden">
           <div className="mx-auto flex h-full max-w-[1600px] flex-col md:flex-row">
-             
-             {/* Left Column: Media Management */}
-             <div className="flex-1 overflow-y-auto border-r border-border/40 bg-background/50 p-6 md:p-8">
-                <div className="mx-auto max-w-3xl space-y-6">
-                   <div>
-                      <h3 className="text-lg font-semibold tracking-tight mb-1">Media Management</h3>
-                      <p className="text-sm text-muted-foreground">
-                         Upload covers, screenshots, and videos. Changes here are saved to disk immediately.
-                      </p>
-                   </div>
-                   <Separator />
-                   
-                   <GameMediaForm 
-                      game={gameAdapter}
-                      mainDirHandle={rootHandle}
-                      currentMediaUrls={currentMediaUrls}
-                      isLoadingUrls={isLoadingUrls}
-                      onGameUpdate={handleMediaUpdate}
-                      onClearBrokenAsset={(mediaKey) => {
-                        // Clear the broken asset reference from the draft
-                        if (!draft) return;
-                        const newDraft = { ...draft };
-                        switch (mediaKey) {
-                          case "covers":
-                            newDraft.image = undefined;
-                            newDraft.thumbnail = undefined;
-                            break;
-                          case "marquees":
-                            newDraft.marquee = undefined;
-                            break;
-                          case "videos":
-                            newDraft.video = undefined;
-                            break;
-                          case "fanart":
-                            newDraft.fanart = undefined;
-                            break;
-                          case "screenshots":
-                            newDraft.thumbnail = undefined;
-                            break;
-                          default:
-                            break;
-                        }
-                        setDraft(newDraft);
-                        // Auto-save the cleared reference
-                        if (game?.path) {
-                          saveGame(consoleFolderName, newDraft, game.path)
-                            .then(() => toast.success("Cleared broken reference"))
-                            .catch(() => toast.error("Failed to save changes"));
-                        }
-                      }}
-                   />
+            {/* Left Column: Media Management */}
+            <div className="border-border/40 bg-background/50 flex-1 overflow-y-auto border-r p-6 md:p-8">
+              <div className="mx-auto max-w-3xl space-y-6">
+                <div>
+                  <h3 className="mb-1 text-lg font-semibold tracking-tight">
+                    Media Management
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Upload covers, screenshots, and videos. Changes here are
+                    saved to disk immediately.
+                  </p>
                 </div>
-             </div>
+                <Separator />
 
-             {/* Right Column: Metadata Editing */}
-             <div className="w-full md:w-[450px] lg:w-[500px] xl:w-[550px] flex-shrink-0 overflow-y-auto bg-background p-6 md:p-8 shadow-sm">
-                <div className="mx-auto max-w-lg space-y-6">
-                   <div>
-                      <h3 className="text-lg font-semibold tracking-tight mb-1">Metadata</h3>
-                      <p className="text-sm text-muted-foreground">
-                         Edit game information stored in gamelist.xml.
-                      </p>
-                   </div>
-                   <Separator />
+                <GameMediaForm
+                  game={gameAdapter}
+                  mainDirHandle={rootHandle}
+                  currentMediaUrls={currentMediaUrls}
+                  isLoadingUrls={isLoadingUrls}
+                  onGameUpdate={handleMediaUpdate}
+                  onClearBrokenAsset={(mediaKey) => {
+                    // Clear the broken asset reference from the draft
+                    if (!draft) return;
+                    const newDraft = { ...draft };
+                    switch (mediaKey) {
+                      case "covers":
+                        newDraft.image = undefined;
+                        newDraft.thumbnail = undefined;
+                        break;
+                      case "marquees":
+                        newDraft.marquee = undefined;
+                        break;
+                      case "videos":
+                        newDraft.video = undefined;
+                        break;
+                      case "fanart":
+                        newDraft.fanart = undefined;
+                        break;
+                      case "screenshots":
+                        newDraft.thumbnail = undefined;
+                        break;
+                      default:
+                        break;
+                    }
+                    setDraft(newDraft);
+                    // Auto-save the cleared reference
+                    if (game?.path) {
+                      saveGame(consoleFolderName, newDraft, game.path)
+                        .then(() => toast.success("Cleared broken reference"))
+                        .catch(() => toast.error("Failed to save changes"));
+                    }
+                  }}
+                />
+              </div>
+            </div>
 
-                   <div className="space-y-4">
-                      <FieldRow label="Game Name" present={Boolean(draft.name?.trim())}>
-                        <Input value={draft.name} onChange={(e) => set("name", e.target.value)} />
-                      </FieldRow>
-
-                      <FieldRow label="Description" present={Boolean(draft.desc?.trim())}>
-                        <Textarea
-                          value={draft.desc ?? ""}
-                          onChange={(e) => set("desc", e.target.value)}
-                          placeholder="No description scraped…"
-                          rows={6}
-                          className="resize-y text-sm leading-relaxed"
-                        />
-                      </FieldRow>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FieldRow label="Developer" present={Boolean(draft.developer?.trim())}>
-                          <Input
-                            value={draft.developer ?? ""}
-                            onChange={(e) => set("developer", e.target.value)}
-                            placeholder="—"
-                          />
-                        </FieldRow>
-                        <FieldRow label="Publisher" present={Boolean(draft.publisher?.trim())}>
-                          <Input
-                            value={draft.publisher ?? ""}
-                            onChange={(e) => set("publisher", e.target.value)}
-                            placeholder="—"
-                          />
-                        </FieldRow>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FieldRow label="Genre" present={Boolean(draft.genre?.trim())}>
-                          <Input
-                            value={draft.genre ?? ""}
-                            onChange={(e) => set("genre", e.target.value)}
-                            placeholder="—"
-                          />
-                        </FieldRow>
-                        <FieldRow label="Players" present={Boolean(draft.players?.trim())}>
-                          <Input
-                            value={draft.players ?? ""}
-                            onChange={(e) => set("players", e.target.value)}
-                            placeholder="1"
-                          />
-                        </FieldRow>
-                      </div>
-
-                      <div className="grid grid-cols-2 gap-4">
-                        <FieldRow label="Release Date" present={Boolean(draft.releasedate?.trim())}>
-                          <Input
-                            type="date"
-                            value={esDateToInput(draft.releasedate)}
-                            onChange={(e) => set("releasedate", inputToEsDate(e.target.value))}
-                          />
-                        </FieldRow>
-                        <FieldRow label="Rating (0–10)" present={Boolean(draft.rating?.trim())}>
-                          <Input
-                            type="number"
-                            min={0} max={10} step={0.1}
-                            value={esRatingDisplay(draft.rating)}
-                            onChange={(e) => set("rating", ratingToEs(e.target.value))}
-                            placeholder="—"
-                          />
-                        </FieldRow>
-                      </div>
-
-                      <FieldRow label="Region" present={Boolean(draft.region?.trim())}>
-                        <Input
-                          value={draft.region ?? ""}
-                          onChange={(e) => set("region", e.target.value)}
-                          placeholder="usa / eu / japan / world"
-                        />
-                      </FieldRow>
-
-                      <Separator className="my-2" />
-                      <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">File Paths (Advanced)</p>
-
-                      <FieldRow label="Image Path" present={hasImg}>
-                        <Input
-                          value={draft.image ?? ""}
-                          onChange={(e) => set("image", e.target.value)}
-                          placeholder="./images/game.png"
-                          className="font-mono text-xs"
-                        />
-                      </FieldRow>
-
-                      <FieldRow label="Video Path" present={hasVideo}>
-                        <Input
-                          value={draft.video ?? ""}
-                          onChange={(e) => set("video", e.target.value)}
-                          placeholder="./videos/game.mp4"
-                          className="font-mono text-xs"
-                        />
-                      </FieldRow>
-
-                      <FieldRow label="Marquee Path" present={hasMarquee}>
-                        <Input
-                          value={draft.marquee ?? ""}
-                          onChange={(e) => set("marquee", e.target.value)}
-                          placeholder="./marquees/game.png"
-                          className="font-mono text-xs"
-                        />
-                      </FieldRow>
-                   </div>
-                   
-                   <div className="pt-4 pb-2">
-                     <Button 
-                       onClick={handleSave} 
-                       disabled={isSaving} 
-                       className="w-full"
-                       size="lg"
-                     >
-                       <SaveIcon className="mr-2 h-4 w-4" />
-                       {isSaving ? "Saving Metadata..." : "Save Metadata Changes"}
-                     </Button>
-                   </div>
+            {/* Right Column: Metadata Editing */}
+            <div className="bg-background w-full flex-shrink-0 overflow-y-auto p-6 shadow-sm md:w-[450px] md:p-8 lg:w-[500px] xl:w-[550px]">
+              <div className="mx-auto max-w-lg space-y-6">
+                <div>
+                  <h3 className="mb-1 text-lg font-semibold tracking-tight">
+                    Metadata
+                  </h3>
+                  <p className="text-muted-foreground text-sm">
+                    Edit game information stored in gamelist.xml.
+                  </p>
                 </div>
-             </div>
+                <Separator />
+
+                <div className="space-y-4">
+                  <FieldRow
+                    label="Game Name"
+                    present={Boolean(draft.name?.trim())}
+                  >
+                    <Input
+                      value={draft.name}
+                      onChange={(e) => set("name", e.target.value)}
+                    />
+                  </FieldRow>
+
+                  <FieldRow
+                    label="Description"
+                    present={Boolean(draft.desc?.trim())}
+                  >
+                    <Textarea
+                      value={draft.desc ?? ""}
+                      onChange={(e) => set("desc", e.target.value)}
+                      placeholder="No description scraped…"
+                      rows={6}
+                      className="resize-y text-sm leading-relaxed"
+                    />
+                  </FieldRow>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FieldRow
+                      label="Developer"
+                      present={Boolean(draft.developer?.trim())}
+                    >
+                      <Input
+                        value={draft.developer ?? ""}
+                        onChange={(e) => set("developer", e.target.value)}
+                        placeholder="—"
+                      />
+                    </FieldRow>
+                    <FieldRow
+                      label="Publisher"
+                      present={Boolean(draft.publisher?.trim())}
+                    >
+                      <Input
+                        value={draft.publisher ?? ""}
+                        onChange={(e) => set("publisher", e.target.value)}
+                        placeholder="—"
+                      />
+                    </FieldRow>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FieldRow
+                      label="Genre"
+                      present={Boolean(draft.genre?.trim())}
+                    >
+                      <Input
+                        value={draft.genre ?? ""}
+                        onChange={(e) => set("genre", e.target.value)}
+                        placeholder="—"
+                      />
+                    </FieldRow>
+                    <FieldRow
+                      label="Players"
+                      present={Boolean(draft.players?.trim())}
+                    >
+                      <Input
+                        value={draft.players ?? ""}
+                        onChange={(e) => set("players", e.target.value)}
+                        placeholder="1"
+                      />
+                    </FieldRow>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <FieldRow
+                      label="Release Date"
+                      present={Boolean(draft.releasedate?.trim())}
+                    >
+                      <Input
+                        type="date"
+                        value={esDateToInput(draft.releasedate)}
+                        onChange={(e) =>
+                          set("releasedate", inputToEsDate(e.target.value))
+                        }
+                      />
+                    </FieldRow>
+                    <FieldRow
+                      label="Rating (0–10)"
+                      present={Boolean(draft.rating?.trim())}
+                    >
+                      <Input
+                        type="number"
+                        min={0}
+                        max={10}
+                        step={0.1}
+                        value={esRatingDisplay(draft.rating)}
+                        onChange={(e) =>
+                          set("rating", ratingToEs(e.target.value))
+                        }
+                        placeholder="—"
+                      />
+                    </FieldRow>
+                  </div>
+
+                  <FieldRow
+                    label="Region"
+                    present={Boolean(draft.region?.trim())}
+                  >
+                    <Input
+                      value={draft.region ?? ""}
+                      onChange={(e) => set("region", e.target.value)}
+                      placeholder="usa / eu / japan / world"
+                    />
+                  </FieldRow>
+
+                  <Separator className="my-2" />
+                  <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
+                    File Paths (Advanced)
+                  </p>
+
+                  <FieldRow label="Image Path" present={hasImg}>
+                    <Input
+                      value={draft.image ?? ""}
+                      onChange={(e) => set("image", e.target.value)}
+                      placeholder="./images/game.png"
+                      className="font-mono text-xs"
+                    />
+                  </FieldRow>
+
+                  <FieldRow label="Video Path" present={hasVideo}>
+                    <Input
+                      value={draft.video ?? ""}
+                      onChange={(e) => set("video", e.target.value)}
+                      placeholder="./videos/game.mp4"
+                      className="font-mono text-xs"
+                    />
+                  </FieldRow>
+
+                  <FieldRow label="Marquee Path" present={hasMarquee}>
+                    <Input
+                      value={draft.marquee ?? ""}
+                      onChange={(e) => set("marquee", e.target.value)}
+                      placeholder="./marquees/game.png"
+                      className="font-mono text-xs"
+                    />
+                  </FieldRow>
+                </div>
+
+                <div className="pt-4 pb-2">
+                  <Button
+                    onClick={handleSave}
+                    disabled={isSaving}
+                    className="w-full"
+                    size="lg"
+                  >
+                    <SaveIcon className="mr-2 h-4 w-4" />
+                    {isSaving ? "Saving Metadata..." : "Save Metadata Changes"}
+                  </Button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </SheetContent>

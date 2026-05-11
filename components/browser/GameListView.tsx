@@ -65,43 +65,43 @@ export function GameListView({
       <Table>
         <TableHeader>
           <TableRow className="border-border/60 bg-muted/30 border-b">
-            <TableHead className="text-foreground w-auto min-w-[280px] pl-4 font-pixel text-xs tracking-wider">
+            <TableHead className="text-foreground font-pixel w-auto min-w-[280px] pl-4 text-xs tracking-wider">
               GAME
             </TableHead>
-            <TableHead className="text-foreground hidden w-[110px] font-pixel text-xs tracking-wider sm:table-cell">
+            <TableHead className="text-foreground font-pixel hidden w-[110px] text-xs tracking-wider sm:table-cell">
               CONSOLE
             </TableHead>
-            <TableHead className="text-foreground w-[100px] font-pixel text-xs tracking-wider">
+            <TableHead className="text-foreground font-pixel w-[100px] text-xs tracking-wider">
               COMPLETION
             </TableHead>
-            <TableHead className="text-foreground w-[50px] px-1 text-center font-pixel text-xs tracking-wider">
+            <TableHead className="text-foreground font-pixel w-[50px] px-1 text-center text-xs tracking-wider">
               COVER
             </TableHead>
-            <TableHead className="text-foreground hidden w-[50px] px-1 text-center font-pixel text-xs tracking-wider md:table-cell">
+            <TableHead className="text-foreground font-pixel hidden w-[50px] px-1 text-center text-xs tracking-wider md:table-cell">
               LOGO
             </TableHead>
-            <TableHead className="text-foreground hidden w-[50px] px-1 text-center font-pixel text-xs tracking-wider lg:table-cell">
+            <TableHead className="text-foreground font-pixel hidden w-[50px] px-1 text-center text-xs tracking-wider lg:table-cell">
               SCREEN
             </TableHead>
-            <TableHead className="text-foreground hidden w-[50px] px-1 text-center font-pixel text-xs tracking-wider lg:table-cell">
+            <TableHead className="text-foreground font-pixel hidden w-[50px] px-1 text-center text-xs tracking-wider lg:table-cell">
               TITLE
             </TableHead>
-            <TableHead className="text-foreground hidden w-[50px] px-1 text-center font-pixel text-xs tracking-wider xl:table-cell">
+            <TableHead className="text-foreground font-pixel hidden w-[50px] px-1 text-center text-xs tracking-wider xl:table-cell">
               3D BOX
             </TableHead>
-            <TableHead className="text-foreground hidden w-[50px] px-1 text-center font-pixel text-xs tracking-wider xl:table-cell">
+            <TableHead className="text-foreground font-pixel hidden w-[50px] px-1 text-center text-xs tracking-wider xl:table-cell">
               BACK
             </TableHead>
-            <TableHead className="text-foreground hidden w-[50px] px-1 text-center font-pixel text-xs tracking-wider xl:table-cell">
+            <TableHead className="text-foreground font-pixel hidden w-[50px] px-1 text-center text-xs tracking-wider xl:table-cell">
               FAN ART
             </TableHead>
-            <TableHead className="text-foreground hidden w-[50px] px-1 text-center font-pixel text-xs tracking-wider xl:table-cell">
+            <TableHead className="text-foreground font-pixel hidden w-[50px] px-1 text-center text-xs tracking-wider xl:table-cell">
               PHYSICAL
             </TableHead>
-            <TableHead className="text-foreground w-[50px] px-1 text-center font-pixel text-xs tracking-wider">
+            <TableHead className="text-foreground font-pixel w-[50px] px-1 text-center text-xs tracking-wider">
               VIDEO
             </TableHead>
-            <TableHead className="text-foreground w-[60px] pr-4 text-center font-pixel text-xs tracking-wider">
+            <TableHead className="text-foreground font-pixel w-[60px] pr-4 text-center text-xs tracking-wider">
               ACTIONS
             </TableHead>
           </TableRow>

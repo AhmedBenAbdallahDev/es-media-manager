@@ -119,7 +119,7 @@ export function GameThumbnail({
     <div
       ref={ref}
       className={cn(
-        "relative flex items-center justify-center overflow-hidden bg-muted/40",
+        "bg-muted/40 relative flex items-center justify-center overflow-hidden",
         className
       )}
     >
@@ -130,7 +130,12 @@ export function GameThumbnail({
 
       {/* Has path but loading or failed */}
       {hasPath && !blobUrl && !failed && (
-        <div className={cn("animate-pulse rounded bg-muted/60", "absolute inset-0")} />
+        <div
+          className={cn(
+            "bg-muted/60 animate-pulse rounded",
+            "absolute inset-0"
+          )}
+        />
       )}
 
       {hasPath && failed && (

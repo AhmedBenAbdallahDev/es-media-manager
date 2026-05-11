@@ -4,11 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
-import {
-  HomeIcon,
-  LibraryIcon,
-  GamepadIcon,
-} from "lucide-react";
+import { HomeIcon, LibraryIcon, GamepadIcon } from "lucide-react";
 import { useLibrary } from "@/hooks/useLibrary";
 import { Badge } from "@/components/ui/badge";
 
@@ -37,9 +33,11 @@ export function Navigation() {
     <header className="bg-background sticky top-0 z-50 border-b">
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
+        <Link href="/" className="flex shrink-0 items-center gap-2">
           <GamepadIcon className="gradient-icon h-6 w-6" />
-          <span className="font-pixel text-sm tracking-wider hidden sm:inline">RETRO SCRAPER</span>
+          <span className="font-pixel hidden text-sm tracking-wider sm:inline">
+            RETRO SCRAPER
+          </span>
         </Link>
 
         {/* Nav links */}
@@ -54,18 +52,20 @@ export function Navigation() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex items-center gap-1.5 rounded-md px-3 py-2 text-sm font-pixel tracking-wider transition-colors",
+                  "font-pixel flex items-center gap-1.5 rounded-md px-3 py-2 text-sm tracking-wider transition-colors",
                   active
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground hover:text-foreground hover:bg-accent"
                 )}
               >
                 <item.icon className="h-4 w-4" />
-                <span className="hidden md:inline">{item.label.toUpperCase()}</span>
+                <span className="hidden md:inline">
+                  {item.label.toUpperCase()}
+                </span>
                 {item.href === "/library" && isReady && totalConsoles > 0 && (
                   <Badge
                     variant="secondary"
-                    className="ml-0.5 h-4 px-1 text-[10px] hidden md:flex"
+                    className="ml-0.5 hidden h-4 px-1 text-[10px] md:flex"
                   >
                     {totalConsoles}
                   </Badge>

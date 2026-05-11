@@ -36,7 +36,9 @@ export default function ConsoleSelector({
   return (
     <Card className="w-full">
       <CardHeader className="pb-2">
-        <CardTitle className="font-pixel text-sm tracking-wider">CONSOLE/SYSTEM</CardTitle>
+        <CardTitle className="font-pixel text-sm tracking-wider">
+          CONSOLE/SYSTEM
+        </CardTitle>
         <CardDescription>
           Select the console/system for this ROM
         </CardDescription>

@@ -66,8 +66,8 @@ export default function RootLayout({
               <div className="text-muted-foreground mx-auto flex items-center justify-center px-4 text-sm">
                 <GamepadIcon className="gradient-icon mr-2 h-4 w-4" />
                 <p className="font-pixel text-xs tracking-wider">
-                  RETRO SCRAPER © {new Date().getFullYear()} — MADE WITH
-                  ❤️ FOR THE RETRO GAMING COMMUNITY
+                  RETRO SCRAPER © {new Date().getFullYear()} — MADE WITH ❤️ FOR
+                  THE RETRO GAMING COMMUNITY
                 </p>
               </div>
             </footer>

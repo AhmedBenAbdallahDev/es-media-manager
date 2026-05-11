@@ -269,12 +269,12 @@ export default function MediaGenerator() {
   };
 
   return (
-    <Card className="mx-auto max-w-4xl retro-card">
+    <Card className="retro-card mx-auto max-w-4xl">
       {/* Confetti component */}
       <Confetti active={showConfetti} duration={6000} />
 
       <CardHeader className="pt-8 pb-6 text-center">
-        <CardTitle className="font-pixel mb-4 gradient-text text-4xl md:text-6xl tracking-wider">
+        <CardTitle className="font-pixel gradient-text mb-4 text-4xl tracking-wider md:text-6xl">
           ESDE MEDIA GENERATOR
         </CardTitle>
         <CardDescription className="mx-auto max-w-lg text-base md:text-lg">
@@ -454,7 +454,7 @@ export default function MediaGenerator() {
               !consoleName ||
               !hasFolderAccess
             }
-            className="w-full sm:w-auto retro-btn-glow font-pixel text-sm tracking-wider"
+            className="retro-btn-glow font-pixel w-full text-sm tracking-wider sm:w-auto"
           />
         </div>
       </CardFooter>

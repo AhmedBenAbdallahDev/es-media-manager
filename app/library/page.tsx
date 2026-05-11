@@ -32,13 +32,16 @@ export default function LibraryPage() {
         <div className="space-y-2">
           <h1 className="font-pixel text-2xl tracking-wider">YOUR LIBRARY</h1>
           <p className="text-muted-foreground max-w-md text-sm">
-            Select your SD card or ROM folder to scan your game collection.
-            The app will automatically detect all consoles and parse your
-            gamelists.
+            Select your SD card or ROM folder to scan your game collection. The
+            app will automatically detect all consoles and parse your gamelists.
           </p>
         </div>
-        <div className="flex flex-col gap-3 items-center">
-          <Button size="lg" onClick={openAndScan} className="gap-2 retro-btn-glow font-pixel text-sm tracking-wider">
+        <div className="flex flex-col items-center gap-3">
+          <Button
+            size="lg"
+            onClick={openAndScan}
+            className="retro-btn-glow font-pixel gap-2 text-sm tracking-wider"
+          >
             <FolderOpenIcon className="h-5 w-5" />
             OPEN SD CARD
           </Button>
@@ -47,14 +50,28 @@ export default function LibraryPage() {
             changes.
           </p>
         </div>
-        <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-lg text-left">
+        <div className="mt-4 grid max-w-lg grid-cols-1 gap-4 text-left sm:grid-cols-3">
           {[
-            { step: "01", title: "Select Folder", desc: "Click the button above and choose your SD card root or ROM folder." },
-            { step: "02", title: "Auto-Scan", desc: "The app scans every console folder and reads your gamelists." },
-            { step: "03", title: "Manage", desc: "Browse, edit metadata, and manage artwork for all your games." },
+            {
+              step: "01",
+              title: "Select Folder",
+              desc: "Click the button above and choose your SD card root or ROM folder.",
+            },
+            {
+              step: "02",
+              title: "Auto-Scan",
+              desc: "The app scans every console folder and reads your gamelists.",
+            },
+            {
+              step: "03",
+              title: "Manage",
+              desc: "Browse, edit metadata, and manage artwork for all your games.",
+            },
           ].map(({ step, title, desc }) => (
             <div key={step} className="flex flex-col gap-1.5">
-              <div className="font-pixel text-xs tracking-widest gradient-text">STEP {step}</div>
+              <div className="font-pixel gradient-text text-xs tracking-widest">
+                STEP {step}
+              </div>
               <h3 className="font-pixel text-sm tracking-wider">{title}</h3>
               <p className="text-muted-foreground text-xs">{desc}</p>
             </div>
@@ -81,7 +98,7 @@ export default function LibraryPage() {
             {current} / {total} folders scanned
           </p>
           {currentFolder && (
-            <p className="font-mono text-xs text-muted-foreground truncate">
+            <p className="text-muted-foreground truncate font-mono text-xs">
               /{currentFolder}
             </p>
           )}
@@ -94,10 +111,15 @@ export default function LibraryPage() {
   if (state.status === "error") {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-4 text-center">
-        <AlertCircleIcon className="h-12 w-12 text-destructive" />
+        <AlertCircleIcon className="text-destructive h-12 w-12" />
         <h2 className="font-pixel text-lg tracking-wider">SCAN FAILED</h2>
-        <p className="text-muted-foreground max-w-md text-sm">{state.message}</p>
-        <Button onClick={openAndScan} className="gap-2 retro-btn-glow font-pixel text-sm tracking-wider">
+        <p className="text-muted-foreground max-w-md text-sm">
+          {state.message}
+        </p>
+        <Button
+          onClick={openAndScan}
+          className="retro-btn-glow font-pixel gap-2 text-sm tracking-wider"
+        >
           <FolderOpenIcon className="h-4 w-4" />
           TRY AGAIN
         </Button>
@@ -123,17 +145,28 @@ export default function LibraryPage() {
             <span className="font-medium">{totalGames}</span> games
             {totalMissing > 0 && (
               <span className="text-orange-500">
-                {" "}· {totalMissing} missing images
+                {" "}
+                · {totalMissing} missing images
               </span>
             )}
           </p>
         </div>
         <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={rescan} className="gap-1.5 font-pixel text-xs tracking-wider">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={rescan}
+            className="font-pixel gap-1.5 text-xs tracking-wider"
+          >
             <RefreshCwIcon className="h-3.5 w-3.5" />
             RESCAN
           </Button>
-          <Button variant="outline" size="sm" onClick={openAndScan} className="gap-1.5 font-pixel text-xs tracking-wider">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={openAndScan}
+            className="font-pixel gap-1.5 text-xs tracking-wider"
+          >
             <FolderOpenIcon className="h-3.5 w-3.5" />
             CHANGE FOLDER
           </Button>

@@ -175,7 +175,10 @@ export async function resolveMediaFileHandle(
 ): Promise<FileSystemFileHandle | null> {
   if (!pathOrBasename || !pathOrBasename.trim()) return null;
 
-  const clean = pathOrBasename.replace(/^\.\//, "").replace(/^\//, "").replace(/\\/g, "/");
+  const clean = pathOrBasename
+    .replace(/^\.\//, "")
+    .replace(/^\//, "")
+    .replace(/\\/g, "/");
   const parts = clean.split("/").filter(Boolean);
 
   // Try direct path traversal first when a path-like value is provided
@@ -200,13 +203,16 @@ export async function resolveMediaFileHandle(
     "",
   ];
 
-  const targetBase = (parts.length > 0 ? parts[parts.length - 1] : clean).toLowerCase();
+  const targetBase = (
+    parts.length > 0 ? parts[parts.length - 1] : clean
+  ).toLowerCase();
   const targetNoExt = targetBase.replace(/\.[^/.]+$/, "");
 
   for (const folder of searchFolders) {
     try {
       let folderHandle: FileSystemDirectoryHandle = consoleDirHandle;
-      if (folder) folderHandle = await consoleDirHandle.getDirectoryHandle(folder);
+      if (folder)
+        folderHandle = await consoleDirHandle.getDirectoryHandle(folder);
 
       for await (const [name, handle] of (folderHandle as any).entries()) {
         if (handle.kind !== "file") continue;

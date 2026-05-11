@@ -40,7 +40,7 @@ function ConsoleCard({ console: c }: { console: ConsoleLibrary }) {
       <Card className="group retro-card relative h-full cursor-pointer overflow-hidden transition-all duration-200 hover:shadow-md">
         <CardContent className="flex flex-col items-center gap-2 p-3">
           {/* Logo / fallback icon */}
-          <div className="relative flex h-14 w-full items-center justify-center rounded-md bg-muted/40">
+          <div className="bg-muted/40 relative flex h-14 w-full items-center justify-center rounded-md">
             {c.logoSrc ? (
               <Image
                 src={c.logoSrc}
@@ -59,7 +59,7 @@ function ConsoleCard({ console: c }: { console: ConsoleLibrary }) {
           </div>
 
           {/* Console name */}
-          <p className="w-full text-center font-pixel text-xs tracking-wider leading-tight line-clamp-2">
+          <p className="font-pixel line-clamp-2 w-full text-center text-xs leading-tight tracking-wider">
             {c.label.toUpperCase()}
           </p>
 
@@ -69,17 +69,14 @@ function ConsoleCard({ console: c }: { console: ConsoleLibrary }) {
           {/* Stats */}
           {c.hasGamelist && total > 0 ? (
             <div className="w-full space-y-1">
-              <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+              <div className="text-muted-foreground flex items-center justify-between text-[10px]">
                 <span className="flex items-center gap-0.5">
                   <ImageIcon className="h-2.5 w-2.5" />
                   {pct}%
                 </span>
                 <span>{total} games</span>
               </div>
-              <Progress
-                value={pct}
-                className="h-1"
-              />
+              <Progress value={pct} className="h-1" />
               {missing > 0 && (
                 <p className="flex items-center gap-0.5 text-[10px] text-orange-500">
                   <AlertCircleIcon className="h-2.5 w-2.5 shrink-0" />
@@ -91,7 +88,7 @@ function ConsoleCard({ console: c }: { console: ConsoleLibrary }) {
               )}
             </div>
           ) : (
-            <p className="text-[10px] text-muted-foreground">
+            <p className="text-muted-foreground text-[10px]">
               {c.totalRoms} ROM{c.totalRoms !== 1 ? "s" : ""}
               {!c.hasGamelist && " · no gamelist"}
             </p>

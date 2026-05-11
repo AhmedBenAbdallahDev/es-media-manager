@@ -71,7 +71,7 @@ export function GameCompactView({
 
               {/* Game title */}
               <h3
-                className="font-pixel line-clamp-2 min-h-[2.5rem] text-xs tracking-wider leading-tight"
+                className="font-pixel line-clamp-2 min-h-[2.5rem] text-xs leading-tight tracking-wider"
                 title={game.name}
               >
                 {game.name.toUpperCase()}

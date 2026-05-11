@@ -52,7 +52,7 @@ const STEPS = [
   {
     step: "01",
     title: "Connect",
-    desc: "Plug your SD card into your PC and click \"Open SD Card\". Select the root folder of your card.",
+    desc: 'Plug your SD card into your PC and click "Open SD Card". Select the root folder of your card.',
     icon: FolderOpenIcon,
   },
   {
@@ -70,8 +70,18 @@ const STEPS = [
 ];
 
 const CONSOIDES = [
-  "NES", "SNES", "N64", "GBA", "PS1", "PS2", "PSP",
-  "Genesis", "Dreamcast", "Switch", "Wii", "Arcade",
+  "NES",
+  "SNES",
+  "N64",
+  "GBA",
+  "PS1",
+  "PS2",
+  "PSP",
+  "Genesis",
+  "Dreamcast",
+  "Switch",
+  "Wii",
+  "Arcade",
 ];
 
 export default function HomePage() {
@@ -81,25 +91,27 @@ export default function HomePage() {
   return (
     <div className="flex flex-col gap-0 py-0">
       {/* ── Hero ───────────────────────────────────────────────────── */}
-      <section className="relative flex flex-col items-center gap-8 py-20 text-center scanlines overflow-hidden">
+      <section className="scanlines relative flex flex-col items-center gap-8 overflow-hidden py-20 text-center">
         {/* Decorative console tags */}
-        <div className="flex flex-wrap justify-center gap-2 max-w-xl">
+        <div className="flex max-w-xl flex-wrap justify-center gap-2">
           {CONSOIDES.map((c) => (
-            <span key={c} className="retro-tag">{c}</span>
+            <span key={c} className="retro-tag">
+              {c}
+            </span>
           ))}
         </div>
 
         {/* Main title */}
-        <div className="space-y-4 max-w-2xl">
+        <div className="max-w-2xl space-y-4">
           <div className="flex items-center justify-center gap-3">
             <div className="retro-step">
               <GamepadIcon className="h-6 w-6" />
             </div>
           </div>
-          <h1 className="font-pixel text-5xl sm:text-6xl md:text-7xl tracking-wider neon-glow">
+          <h1 className="font-pixel neon-glow text-5xl tracking-wider sm:text-6xl md:text-7xl">
             RETRO SCRAPER
           </h1>
-          <p className="text-muted-foreground text-lg leading-relaxed max-w-lg mx-auto">
+          <p className="text-muted-foreground mx-auto max-w-lg text-lg leading-relaxed">
             Manage your retro handheld game library. Scan your SD card, see
             which games have artwork, and edit metadata — all offline.
           </p>
@@ -109,19 +121,30 @@ export default function HomePage() {
         <div className="flex flex-col gap-3 sm:flex-row">
           {isReady ? (
             <Link href="/library">
-              <Button size="lg" className="gap-2 px-8 retro-btn-glow font-pixel text-sm tracking-wider">
+              <Button
+                size="lg"
+                className="retro-btn-glow font-pixel gap-2 px-8 text-sm tracking-wider"
+              >
                 <LibraryIcon className="h-5 w-5" />
                 VIEW LIBRARY
               </Button>
             </Link>
           ) : (
-            <Button size="lg" className="gap-2 px-8 retro-btn-glow font-pixel text-sm tracking-wider" onClick={openAndScan}>
+            <Button
+              size="lg"
+              className="retro-btn-glow font-pixel gap-2 px-8 text-sm tracking-wider"
+              onClick={openAndScan}
+            >
               <FolderOpenIcon className="h-5 w-5" />
               OPEN SD CARD
             </Button>
           )}
           <Link href="/generator">
-            <Button size="lg" variant="outline" className="gap-2 px-8 font-pixel text-sm tracking-wider">
+            <Button
+              size="lg"
+              variant="outline"
+              className="font-pixel gap-2 px-8 text-sm tracking-wider"
+            >
               <PencilIcon className="h-5 w-5" />
               GENERATE MEDIA
             </Button>
@@ -138,8 +161,8 @@ export default function HomePage() {
 
       {/* ── Features ───────────────────────────────────────────────── */}
       <section className="space-y-10 py-16">
-        <div className="text-center space-y-2">
-          <h2 className="font-pixel text-2xl sm:text-3xl tracking-wider gradient-text">
+        <div className="space-y-2 text-center">
+          <h2 className="font-pixel gradient-text text-2xl tracking-wider sm:text-3xl">
             FEATURES
           </h2>
           <p className="text-muted-foreground text-sm">
@@ -149,15 +172,17 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {FEATURES.map(({ icon: Icon, title, desc, tag }) => (
-            <div key={title} className="retro-card p-5 flex flex-col gap-3">
+            <div key={title} className="retro-card flex flex-col gap-3 p-5">
               <div className="flex items-center justify-between">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
+                <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-lg">
                   <Icon className="gradient-icon h-5 w-5" />
                 </div>
                 <span className="retro-tag">{tag}</span>
               </div>
               <h3 className="font-pixel text-sm tracking-wider">{title}</h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">{desc}</p>
+              <p className="text-muted-foreground text-sm leading-relaxed">
+                {desc}
+              </p>
             </div>
           ))}
         </div>
@@ -168,8 +193,8 @@ export default function HomePage() {
 
       {/* ── How it works ───────────────────────────────────────────── */}
       <section className="space-y-10 py-16">
-        <div className="text-center space-y-2">
-          <h2 className="font-pixel text-2xl sm:text-3xl tracking-wider gradient-text">
+        <div className="space-y-2 text-center">
+          <h2 className="font-pixel gradient-text text-2xl tracking-wider sm:text-3xl">
             HOW IT WORKS
           </h2>
           <p className="text-muted-foreground text-sm">
@@ -179,17 +204,20 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
           {STEPS.map(({ step, title, desc, icon: Icon }) => (
-            <div key={step} className="flex flex-col items-center gap-4 text-center">
+            <div
+              key={step}
+              className="flex flex-col items-center gap-4 text-center"
+            >
               <div className="retro-step">
                 <Icon className="h-5 w-5" />
               </div>
               <div className="space-y-1">
-                <div className="font-pixel text-xs tracking-widest text-muted-foreground">
+                <div className="font-pixel text-muted-foreground text-xs tracking-widest">
                   STEP {step}
                 </div>
                 <h3 className="font-pixel text-base tracking-wider">{title}</h3>
               </div>
-              <p className="text-muted-foreground text-sm leading-relaxed max-w-xs">
+              <p className="text-muted-foreground max-w-xs text-sm leading-relaxed">
                 {desc}
               </p>
             </div>
@@ -198,7 +226,10 @@ export default function HomePage() {
 
         <div className="flex justify-center">
           <Link href="/library">
-            <Button size="lg" className="gap-2 px-10 retro-btn-glow font-pixel text-sm tracking-wider">
+            <Button
+              size="lg"
+              className="retro-btn-glow font-pixel gap-2 px-10 text-sm tracking-wider"
+            >
               {isReady ? "GO TO LIBRARY" : "GET STARTED"}
               <ArrowRightIcon className="h-4 w-4" />
             </Button>
@@ -209,7 +240,7 @@ export default function HomePage() {
       {/* ── Footer tagline ─────────────────────────────────────────── */}
       <div className="retro-divider" />
       <section className="py-12 text-center">
-        <p className="font-pixel text-xs tracking-widest text-muted-foreground">
+        <p className="font-pixel text-muted-foreground text-xs tracking-widest">
           100% CLIENT-SIDE · NO UPLOADS · NO ACCOUNTS · OPEN SOURCE
         </p>
       </section>

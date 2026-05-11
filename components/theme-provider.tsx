@@ -17,7 +17,9 @@ type ThemeContextValue = {
   setTheme: (t: Theme) => void;
 };
 
-const ThemeContext = React.createContext<ThemeContextValue | undefined>(undefined);
+const ThemeContext = React.createContext<ThemeContextValue | undefined>(
+  undefined
+);
 
 function applyThemeToDocument(theme: Theme, attribute = "class") {
   const root = document.documentElement;
@@ -55,8 +57,13 @@ export default function ThemeProvider({
     if (enableSystem) {
       const media = window.matchMedia("(prefers-color-scheme: dark)");
       const handler = () => applyThemeToDocument(theme, attribute);
-      media.addEventListener ? media.addEventListener("change", handler) : media.addListener(handler);
-      return () => media.removeEventListener ? media.removeEventListener("change", handler) : media.removeListener(handler);
+      media.addEventListener
+        ? media.addEventListener("change", handler)
+        : media.addListener(handler);
+      return () =>
+        media.removeEventListener
+          ? media.removeEventListener("change", handler)
+          : media.removeListener(handler);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [theme, attribute, enableSystem]);
@@ -72,7 +79,10 @@ export default function ThemeProvider({
       if (disableTransitionOnChange) {
         const root = document.documentElement;
         root.classList.add("disable-theme-transitions");
-        window.setTimeout(() => root.classList.remove("disable-theme-transitions"), 0);
+        window.setTimeout(
+          () => root.classList.remove("disable-theme-transitions"),
+          0
+        );
       }
     },
     [attribute, disableTransitionOnChange]

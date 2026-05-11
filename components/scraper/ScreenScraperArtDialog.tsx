@@ -79,7 +79,9 @@ export function ScreenScraperArtDialog({
   // State
   const [isSearching, setIsSearching] = useState(false);
   const [artworks, setArtworks] = useState<ScrapedArtwork[]>([]);
-  const [selectedArtwork, setSelectedArtwork] = useState<ScrapedArtwork | null>(null);
+  const [selectedArtwork, setSelectedArtwork] = useState<ScrapedArtwork | null>(
+    null
+  );
   const [matchedGameName, setMatchedGameName] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -173,7 +175,10 @@ export function ScreenScraperArtDialog({
         { type: mediaTypeConfig.accept }
       );
 
-      if (blob.type === "image/webp" && mediaTypeConfig.accept === "image/jpeg") {
+      if (
+        blob.type === "image/webp" &&
+        mediaTypeConfig.accept === "image/jpeg"
+      ) {
         const converted = await fromBlob(file, 100, "auto", "auto", "jpeg");
         file = new File([converted], `image.jpg`, { type: "image/jpeg" });
       }
@@ -223,33 +228,48 @@ export function ScreenScraperArtDialog({
       onOpenChange(false);
     } catch (err) {
       console.error("[ScreenScraperArtDialog] Save error:", err);
-      toast.error(err instanceof Error ? err.message : "Failed to save artwork");
+      toast.error(
+        err instanceof Error ? err.message : "Failed to save artwork"
+      );
     } finally {
       setIsSaving(false);
     }
-  }, [selectedArtwork, mainDirHandle, mediaType, gameName, consoleFolder, onArtworkSaved, onOpenChange]);
+  }, [
+    selectedArtwork,
+    mainDirHandle,
+    mediaType,
+    gameName,
+    consoleFolder,
+    onArtworkSaved,
+    onOpenChange,
+  ]);
 
   // Media type display label
-  const mediaTypeLabel = MEDIA_TYPES.find((m) => m.key === mediaType)?.label || mediaType;
+  const mediaTypeLabel =
+    MEDIA_TYPES.find((m) => m.key === mediaType)?.label || mediaType;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-h-[90dvh] max-w-4xl p-0 gap-0 overflow-hidden">
+      <DialogContent className="max-h-[90dvh] max-w-4xl gap-0 overflow-hidden p-0">
         {/* Header */}
         <DialogHeader className="px-6 pt-6 pb-4">
           <div className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5 text-primary" />
+            <Sparkles className="text-primary h-5 w-5" />
             <DialogTitle className="font-pixel text-lg tracking-wider">
               FETCH COVER ART — {mediaTypeLabel.toUpperCase()}
             </DialogTitle>
           </div>
           <DialogDescription className="text-sm">
-            Searching ScreenScraper for <span className="font-semibold text-foreground">{gameName}</span> on{" "}
+            Searching ScreenScraper for{" "}
+            <span className="text-foreground font-semibold">{gameName}</span> on{" "}
             <span className="retro-tag">{consoleFolder}</span>
           </DialogDescription>
           {matchedGameName && matchedGameName !== gameName && (
-            <p className="text-xs text-muted-foreground mt-1">
-              Matched as: <span className="font-semibold text-foreground">{matchedGameName}</span>
+            <p className="text-muted-foreground mt-1 text-xs">
+              Matched as:{" "}
+              <span className="text-foreground font-semibold">
+                {matchedGameName}
+              </span>
             </p>
           )}
         </DialogHeader>
@@ -257,16 +277,19 @@ export function ScreenScraperArtDialog({
         <Separator />
 
         {/* Content */}
-        <div className="flex flex-col md:flex-row overflow-hidden" style={{ maxHeight: "calc(90dvh - 200px)" }}>
+        <div
+          className="flex flex-col overflow-hidden md:flex-row"
+          style={{ maxHeight: "calc(90dvh - 200px)" }}
+        >
           {/* Left: Results Grid */}
           <div className="flex-1 overflow-hidden">
             <ScrollArea className="h-full max-h-[500px]">
               <div className="p-4">
                 {/* Loading state */}
                 {isSearching && (
-                  <div className="flex flex-col items-center justify-center py-16 gap-3">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
-                    <p className="text-sm text-muted-foreground">
+                  <div className="flex flex-col items-center justify-center gap-3 py-16">
+                    <Loader2 className="text-primary h-8 w-8 animate-spin" />
+                    <p className="text-muted-foreground text-sm">
                       Searching ScreenScraper…
                     </p>
                   </div>
@@ -274,12 +297,17 @@ export function ScreenScraperArtDialog({
 
                 {/* Error state */}
                 {error && !isSearching && (
-                  <div className="flex flex-col items-center justify-center py-16 gap-3">
-                    <AlertTriangle className="h-8 w-8 text-destructive" />
-                    <p className="text-sm text-destructive text-center max-w-sm">
+                  <div className="flex flex-col items-center justify-center gap-3 py-16">
+                    <AlertTriangle className="text-destructive h-8 w-8" />
+                    <p className="text-destructive max-w-sm text-center text-sm">
                       {error}
                     </p>
-                    <Button variant="outline" size="sm" onClick={fetchArtwork} className="gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={fetchArtwork}
+                      className="gap-2"
+                    >
                       <SearchIcon className="h-4 w-4" />
                       Try Again
                     </Button>
@@ -288,12 +316,12 @@ export function ScreenScraperArtDialog({
 
                 {/* Empty state */}
                 {!isSearching && !error && artworks.length === 0 && (
-                  <div className="flex flex-col items-center justify-center py-16 gap-3">
-                    <ImageOff className="h-10 w-10 text-muted-foreground/40" />
-                    <p className="text-sm text-muted-foreground text-center">
+                  <div className="flex flex-col items-center justify-center gap-3 py-16">
+                    <ImageOff className="text-muted-foreground/40 h-10 w-10" />
+                    <p className="text-muted-foreground text-center text-sm">
                       No artwork found on ScreenScraper.
                     </p>
-                    <p className="text-xs text-muted-foreground text-center">
+                    <p className="text-muted-foreground text-center text-xs">
                       Try a different game name or console.
                     </p>
                   </div>
@@ -301,7 +329,7 @@ export function ScreenScraperArtDialog({
 
                 {/* Results grid */}
                 {artworks.length > 0 && (
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-3 gap-3 sm:grid-cols-4">
                     {artworks.map((artwork) => (
                       <ArtworkThumbnail
                         key={artwork.id}
@@ -317,13 +345,13 @@ export function ScreenScraperArtDialog({
           </div>
 
           {/* Right: Preview Panel */}
-          <div className="w-full md:w-80 border-t md:border-t-0 md:border-l border-border bg-muted/20 flex flex-col">
-            <div className="p-4 flex-1 flex flex-col">
-              <h3 className="text-sm font-semibold mb-3">Preview</h3>
+          <div className="border-border bg-muted/20 flex w-full flex-col border-t md:w-80 md:border-t-0 md:border-l">
+            <div className="flex flex-1 flex-col p-4">
+              <h3 className="mb-3 text-sm font-semibold">Preview</h3>
 
               {selectedArtwork ? (
                 <>
-                  <div className="relative aspect-[3/4] w-full overflow-hidden rounded-lg border bg-muted mb-4">
+                  <div className="bg-muted relative mb-4 aspect-[3/4] w-full overflow-hidden rounded-lg border">
                     <Image
                       src={`/api/fetch-image-proxy?url=${encodeURIComponent(selectedArtwork.imageUrl)}`}
                       // Fallback: use the direct URL but it might have CORS issues
@@ -336,7 +364,8 @@ export function ScreenScraperArtDialog({
                       // The proxy is only needed for downloading (server-side)
                       onError={(e) => {
                         // If proxy fails, try direct URL
-                        (e.currentTarget as HTMLImageElement).src = selectedArtwork.imageUrl;
+                        (e.currentTarget as HTMLImageElement).src =
+                          selectedArtwork.imageUrl;
                       }}
                     />
                   </div>
@@ -355,7 +384,9 @@ export function ScreenScraperArtDialog({
                           <Monitor className="h-3 w-3" />
                           Resolution
                         </span>
-                        <span className="font-mono">{selectedArtwork.resolution}</span>
+                        <span className="font-mono">
+                          {selectedArtwork.resolution}
+                        </span>
                       </div>
                     )}
 
@@ -365,7 +396,9 @@ export function ScreenScraperArtDialog({
                           <Star className="h-3 w-3" />
                           Vote
                         </span>
-                        <span className="font-semibold">{selectedArtwork.vote}</span>
+                        <span className="font-semibold">
+                          {selectedArtwork.vote}
+                        </span>
                       </div>
                     )}
 
@@ -381,8 +414,8 @@ export function ScreenScraperArtDialog({
                   </div>
                 </>
               ) : (
-                <div className="flex-1 flex items-center justify-center">
-                  <p className="text-sm text-muted-foreground text-center">
+                <div className="flex flex-1 items-center justify-center">
+                  <p className="text-muted-foreground text-center text-sm">
                     Select an artwork to preview
                   </p>
                 </div>
@@ -395,17 +428,21 @@ export function ScreenScraperArtDialog({
         <Separator />
         <DialogFooter className="px-6 py-4">
           <div className="flex w-full items-center justify-between">
-            <p className="text-xs text-muted-foreground">
+            <p className="text-muted-foreground text-xs">
               {artworks.length} result{artworks.length !== 1 ? "s" : ""} found
             </p>
             <div className="flex gap-2">
-              <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
+              <Button
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+                disabled={isSaving}
+              >
                 Cancel
               </Button>
               <Button
                 onClick={handleSaveArtwork}
                 disabled={!selectedArtwork || isSaving || !mainDirHandle}
-                className="gap-2 min-w-[140px]"
+                className="min-w-[140px] gap-2"
               >
                 {isSaving ? (
                   <>
@@ -445,19 +482,17 @@ function ArtworkThumbnail({
   return (
     <button
       onClick={onSelect}
-      className={`
-        relative group aspect-[3/4] w-full overflow-hidden rounded-lg border-2 transition-all duration-200 cursor-pointer
-        ${isSelected
-          ? "border-primary ring-2 ring-primary/20 shadow-md"
+      className={`group relative aspect-[3/4] w-full cursor-pointer overflow-hidden rounded-lg border-2 transition-all duration-200 ${
+        isSelected
+          ? "border-primary ring-primary/20 shadow-md ring-2"
           : "border-border hover:border-primary/40"
-        }
-      `}
+      } `}
     >
       {/* Selected checkmark */}
       {isSelected && (
         <div className="absolute top-1.5 right-1.5 z-10">
           <div className="bg-primary rounded-full p-1">
-            <Check className="h-3 w-3 text-primary-foreground" />
+            <Check className="text-primary-foreground h-3 w-3" />
           </div>
         </div>
       )}
@@ -465,7 +500,7 @@ function ArtworkThumbnail({
       {/* Vote badge */}
       {artwork.vote !== undefined && artwork.vote > 0 && (
         <div className="absolute top-1.5 left-1.5 z-10">
-          <Badge className="bg-black/60 text-white text-[9px] px-1 py-0 gap-0.5 backdrop-blur-sm">
+          <Badge className="gap-0.5 bg-black/60 px-1 py-0 text-[9px] text-white backdrop-blur-sm">
             <Star className="h-2.5 w-2.5 text-yellow-400" />
             {artwork.vote}
           </Badge>
@@ -476,24 +511,21 @@ function ArtworkThumbnail({
       {!failed ? (
         <>
           {!loaded && (
-            <div className="absolute inset-0 bg-muted animate-pulse" />
+            <div className="bg-muted absolute inset-0 animate-pulse" />
           )}
           <img
             src={artwork.imageUrl}
             alt={`${artwork.mediaType} artwork`}
-            className={`
-              absolute inset-0 w-full h-full object-contain transition-opacity duration-300
-              ${loaded ? "opacity-100" : "opacity-0"}
-            `}
+            className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"} `}
             onLoad={() => setLoaded(true)}
             onError={() => setFailed(true)}
             loading="lazy"
           />
         </>
       ) : (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-muted/50 gap-1">
-          <ImageOff className="h-6 w-6 text-muted-foreground/40" />
-          <span className="text-[9px] text-muted-foreground">Failed</span>
+        <div className="bg-muted/50 absolute inset-0 flex flex-col items-center justify-center gap-1">
+          <ImageOff className="text-muted-foreground/40 h-6 w-6" />
+          <span className="text-muted-foreground text-[9px]">Failed</span>
         </div>
       )}
     </button>

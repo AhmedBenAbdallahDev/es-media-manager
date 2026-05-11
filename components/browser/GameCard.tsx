@@ -235,7 +235,7 @@ export default function GameCard({ game, onView }: GameCardProps) {
           variant="secondary"
           size="sm"
           onClick={() => onView(game)}
-          className="hover:bg-primary hover:text-primary-foreground w-full font-pixel text-xs tracking-wider transition-colors duration-200"
+          className="hover:bg-primary hover:text-primary-foreground font-pixel w-full text-xs tracking-wider transition-colors duration-200"
         >
           <Eye className="mr-1.5 h-4 w-4" />
           VIEW DETAILS

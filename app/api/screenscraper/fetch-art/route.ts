@@ -31,7 +31,11 @@ import type { ScrapedArtwork } from "@/types/screenscraper";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { gameName, console: consoleFolder, mediaType } = body as {
+    const {
+      gameName,
+      console: consoleFolder,
+      mediaType,
+    } = body as {
       gameName?: string;
       console?: string;
       mediaType?: string;
@@ -82,7 +86,10 @@ export async function POST(request: NextRequest) {
 
     if (error instanceof Error && error.name === "AbortError") {
       return NextResponse.json(
-        { success: false, error: "Request timed out. ScreenScraper may be slow." },
+        {
+          success: false,
+          error: "Request timed out. ScreenScraper may be slow.",
+        },
         { status: 504 }
       );
     }

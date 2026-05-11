@@ -18,7 +18,7 @@ Managing media files for **Emulation Station Desktop Edition (ES-DE)** can be fr
 
 - 🔍 **Poor Scraping Results**: Screen scrapers often return low-quality or incorrect images
 - 📁 **Complex File Management**: Manually organizing files into correct folder structures
-- 🖼️ **No Visual Management**: Difficult to preview and manage your game media collection  
+- 🖼️ **No Visual Management**: Difficult to preview and manage your game media collection
 - 💾 **File System Complexity**: Copying/pasting files manually into nested directories
 - 🎨 **Limited Customization**: Hard to replace or update game covers, logos, and videos
 - 📱 **No User-Friendly Interface**: Existing tools require technical knowledge
@@ -30,20 +30,23 @@ Managing media files for **Emulation Station Desktop Edition (ES-DE)** can be fr
 ## 🚀 Key Features
 
 ### 🎯 Core Features
+
 - **�️ Drag & Drop Interface**: Simply drag images/videos or paste URLs
-- **🎨 Visual Media Management**: Preview all media types in an intuitive interface  
+- **🎨 Visual Media Management**: Preview all media types in an intuitive interface
 - **🔧 Built-in Optimization**: Optional image compression to save storage space
 - **🔒 100% Private**: All processing happens locally - your files never leave your device
 - **🆓 Completely Free**: Open source and free to use forever
 - **🌐 No Installation Required**: Works directly in your web browser
 
 ### 🔍 Direct File System Integration
+
 - **Browser Folder Access**: Grant permission to your ES-DE media folder directly in the browser
 - **Automatic Updates**: Changes are applied instantly to your existing media library
 - **Real-time Sync**: No file copying or manual organization required
 - **Smart Detection**: Automatically detects existing games and media structure
 
 ### � **Direct File System Integration**
+
 - **Browser Folder Access**: Grant permission to your ES-DE media folder directly in the browser
 - **Automatic Updates**: Changes are applied instantly to your existing media library
 - **Real-time Sync**: No file copying or manual organization required
@@ -52,7 +55,7 @@ Managing media files for **Emulation Station Desktop Edition (ES-DE)** can be fr
 ### 🎮 **Supported Media Types**
 
 - **Box Art / Covers**: Game box art and cover images
-- **Logos / Marquees**: Game logos and title graphics  
+- **Logos / Marquees**: Game logos and title graphics
 - **Screenshots**: In-game screenshots
 - **3D Boxes**: 3D rendered box art
 - **Title Screens**: Game title screens
@@ -63,6 +66,7 @@ Managing media files for **Emulation Station Desktop Edition (ES-DE)** can be fr
 ### 🏆 **Supported Platforms**
 
 Supports **50+ gaming platforms** including:
+
 - Nintendo (NES, SNES, N64, GameCube, Wii, Switch)
 - PlayStation (PS1, PS2, PS3, PS4, PS5, PSP, Vita)
 - Xbox (Original, 360, One, Series X/S)
@@ -74,20 +78,24 @@ Supports **50+ gaming platforms** including:
 
 ## 🌟 How It Works
 
-### 1. **Generator Mode** 
+### 1. **Generator Mode**
+
 Create new media collections from scratch:
+
 - Upload your media files (drag & drop or paste URLs)
-- Select your gaming platform and organize files  
+- Select your gaming platform and organize files
 - Generate perfectly structured ES-DE media folders
 - Grant browser access to your ES-DE `downloaded_media` folder
 - Files are automatically placed in the correct locations
 
 ### 2. **Browse Mode**
+
 Manage your existing ES-DE media collection with direct file system integration:
 
 #### 📂 **Getting Started with Browse Mode**
+
 1. **Navigate to your ES-DE media folder**:
-   - On macOS: `~/ES-DE/downloaded_media`  
+   - On macOS: `~/ES-DE/downloaded_media`
    - On Windows: `%USERPROFILE%\ES-DE\downloaded_media`
    - On Linux: `~/.emulationstation/downloaded_media`
 
@@ -109,15 +117,17 @@ Manage your existing ES-DE media collection with direct file system integration:
 ## 🚀 Quick Start
 
 ### Option 1: Use the Web App (Recommended)
+
 **👉 [Open ES-DE Media Manager](https://esde-manager.ashref.tn/)**
 
 No installation required! Works in any modern web browser.
 
 #### For Browse Mode:
+
 ```
 1. Navigate to your ES-DE media folder:
    • macOS: ~/ES-DE/downloaded_media
-   • Windows: %USERPROFILE%\ES-DE\downloaded_media  
+   • Windows: %USERPROFILE%\ES-DE\downloaded_media
    • Linux: ~/.emulationstation/downloaded_media
 
 2. Click "Browse Collection" and select the downloaded_media folder
@@ -158,6 +168,7 @@ Your privacy is our priority:
 ## 🛠️ Development
 
 ### Tech Stack
+
 - **Framework**: Next.js 15 with App Router
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
@@ -167,17 +178,19 @@ Your privacy is our priority:
 - **Build Tool**: Turbopack
 
 ### Project Structure
+
 ```
 ├── app/                 # Next.js app router pages
 ├── components/          # React components
 │   ├── browser/        # Browse mode components
 │   └── ui/             # UI component library
-├── lib/                # Utilities and constants  
+├── lib/                # Utilities and constants
 ├── public/logos/       # Platform logos
 └── types/              # TypeScript definitions
 ```
 
 ### Development Commands
+
 ```bash
 bun run dev             # Start development server
 bun run build           # Build for production
@@ -194,13 +207,14 @@ We welcome contributions! Here's how you can help:
 
 1. **🐛 Report Issues**: Found a bug? [Open an issue](https://github.com/Ashref-dev/es-de-custom-cover-generator/issues)
 2. **💡 Suggest Features**: Have an idea? [Start a discussion](https://github.com/Ashref-dev/es-de-custom-cover-generator/discussions)
-3. **🔧 Submit Pull Requests**: 
+3. **🔧 Submit Pull Requests**:
    - Fork the repository
    - Create a feature branch
    - Make your changes
    - Submit a pull request
 
 ### Development Setup
+
 1. Fork and clone the repository
 2. Install dependencies: `bun install`
 3. Start development server: `bun run dev`
@@ -215,15 +229,19 @@ We welcome contributions! Here's how you can help:
 <summary>🖼️ Click to view screenshots</summary>
 
 ### Home Page
+
 ![Home Page](docs/screenshots/home.png)
 
 ### Generator Mode
+
 ![Generator](docs/screenshots/generator.png)
 
-### Browse Mode  
+### Browse Mode
+
 ![Browse](docs/screenshots/browse.png)
 
 ### Media Management
+
 ![Media Management](docs/screenshots/media-management.png)
 
 </details>
@@ -251,6 +269,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 ## 👨‍💻 About the Author
 
 **Ashref Ben Abdallah**
+
 - 🌐 Website: [ashref.tn](https://ashref.tn)
 - 🐙 GitHub: [@Ashref-dev](https://github.com/Ashref-dev)
 - 🎮 Passionate retro gaming enthusiast and developer
@@ -270,7 +289,7 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **🎮 Happy Gaming! 🎮**
 
-*Made with ❤️ for the retro gaming community*
+_Made with ❤️ for the retro gaming community_
 
 [![Website](https://img.shields.io/badge/Try%20it%20now-esde--manager.ashref.tn-blue?style=for-the-badge&logo=web)](https://esde-manager.ashref.tn/)
 

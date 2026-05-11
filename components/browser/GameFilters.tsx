@@ -81,7 +81,7 @@ export function GameFilters({
             variant="outline"
             size="sm"
             className={cn(
-              "h-11 gap-2 border-red-500/60 px-4 text-red-600 transition-colors hover:border-red-500 hover:bg-red-50 hover:text-red-700 font-pixel text-xs tracking-wider",
+              "font-pixel h-11 gap-2 border-red-500/60 px-4 text-xs tracking-wider text-red-600 transition-colors hover:border-red-500 hover:bg-red-50 hover:text-red-700",
               !filtersActive ? "cursor-not-allowed opacity-50" : ""
             )}
             onClick={onResetFilters}

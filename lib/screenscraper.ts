@@ -24,9 +24,7 @@ const BASE_URL = "https://www.screenscraper.fr/api";
 function getDevId(): string {
   const id = process.env.SCREENSCRAPER_DEVID;
   if (!id) {
-    throw new Error(
-      "SCREENSCRAPER_DEVID is not set in environment variables."
-    );
+    throw new Error("SCREENSCRAPER_DEVID is not set in environment variables.");
   }
   return id;
 }

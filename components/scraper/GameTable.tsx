@@ -42,7 +42,12 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import type { GamelistGame, GameFilter } from "@/types/scraper";
 import { GameDetailSheet } from "@/components/scraper/GameDetailSheet";
 import { GameThumbnail } from "@/components/scraper/GameThumbnail";
@@ -80,7 +85,12 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return games.filter((g) => {
-      if (q && !g.name.toLowerCase().includes(q) && !g.path.toLowerCase().includes(q)) return false;
+      if (
+        q &&
+        !g.name.toLowerCase().includes(q) &&
+        !g.path.toLowerCase().includes(q)
+      )
+        return false;
       const hasAnyImage = Boolean(g.image?.trim() || g.thumbnail?.trim());
       if (filter === "has-image") return hasAnyImage;
       if (filter === "missing-image") return !hasAnyImage;
@@ -90,11 +100,23 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const safePage = Math.min(page, totalPages);
-  const pageItems = filtered.slice((safePage - 1) * pageSize, safePage * pageSize);
+  const pageItems = filtered.slice(
+    (safePage - 1) * pageSize,
+    safePage * pageSize
+  );
 
-  const handleSearch = useCallback((val: string) => { setSearch(val); setPage(1); }, []);
-  const handleFilter = useCallback((val: GameFilter) => { setFilter(val); setPage(1); }, []);
-  const handleView = useCallback((v: ViewMode) => { setView(v); setPage(1); }, []);
+  const handleSearch = useCallback((val: string) => {
+    setSearch(val);
+    setPage(1);
+  }, []);
+  const handleFilter = useCallback((val: GameFilter) => {
+    setFilter(val);
+    setPage(1);
+  }, []);
+  const handleView = useCallback((v: ViewMode) => {
+    setView(v);
+    setPage(1);
+  }, []);
 
   // ── Fetch Art handlers ───────────────────────────────────────────
   const handleFetchArt = useCallback((game: GamelistGame) => {
@@ -108,27 +130,40 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
   }, []);
 
   // ── Stats ────────────────────────────────────────────────────────
-  const withImage = useMemo(() => games.filter((g) => g.image?.trim() || g.thumbnail?.trim()).length, [games]);
-  const withVideo = useMemo(() => games.filter((g) => g.video?.trim()).length, [games]);
+  const withImage = useMemo(
+    () => games.filter((g) => g.image?.trim() || g.thumbnail?.trim()).length,
+    [games]
+  );
+  const withVideo = useMemo(
+    () => games.filter((g) => g.video?.trim()).length,
+    [games]
+  );
   const missingImage = games.length - withImage;
 
   return (
     <div className="flex flex-col gap-4">
       {/* ── Stats bar ─────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center gap-2">
-        <span className="retro-tag">
-          TOTAL: {games.length}
-        </span>
-        <span className="retro-tag" style={{ borderColor: "green", color: "green" }}>
+        <span className="retro-tag">TOTAL: {games.length}</span>
+        <span
+          className="retro-tag"
+          style={{ borderColor: "green", color: "green" }}
+        >
           ✓ {withImage} WITH IMAGE
         </span>
         {missingImage > 0 && (
-          <span className="retro-tag" style={{ borderColor: "orange", color: "orange" }}>
+          <span
+            className="retro-tag"
+            style={{ borderColor: "orange", color: "orange" }}
+          >
             ✗ {missingImage} MISSING
           </span>
         )}
         {withVideo > 0 && (
-          <span className="retro-tag" style={{ borderColor: "blue", color: "blue" }}>
+          <span
+            className="retro-tag"
+            style={{ borderColor: "blue", color: "blue" }}
+          >
             ▶ {withVideo} VIDEO
           </span>
         )}
@@ -145,7 +180,10 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
             className="pl-9"
           />
         </div>
-        <Select value={filter} onValueChange={(v) => handleFilter(v as GameFilter)}>
+        <Select
+          value={filter}
+          onValueChange={(v) => handleFilter(v as GameFilter)}
+        >
           <SelectTrigger className="w-full sm:w-44">
             <SelectValue placeholder="Filter" />
           </SelectTrigger>
@@ -180,16 +218,21 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
 
       {/* ── Results count ─────────────────────────────────────────── */}
       <p className="text-muted-foreground text-sm">
-        Showing <span className="font-medium text-foreground">{filtered.length}</span>{" "}
+        Showing{" "}
+        <span className="text-foreground font-medium">{filtered.length}</span>{" "}
         result{filtered.length !== 1 ? "s" : ""}
-        {filtered.length !== games.length && <> (filtered from {games.length})</>}
+        {filtered.length !== games.length && (
+          <> (filtered from {games.length})</>
+        )}
       </p>
 
       {/* ── Empty state ───────────────────────────────────────────── */}
       {filtered.length === 0 && (
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-16 text-center">
           <SearchIcon className="text-muted-foreground mb-3 h-8 w-8" />
-          <p className="text-muted-foreground text-sm">No games match your search.</p>
+          <p className="text-muted-foreground text-sm">
+            No games match your search.
+          </p>
         </div>
       )}
 
@@ -199,16 +242,28 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
           <Table>
             <TableHeader>
               <TableRow className="bg-muted/30">
-                <TableHead className="w-14 font-pixel text-xs tracking-wider">ART</TableHead>
-                <TableHead className="font-pixel text-xs tracking-wider">NAME</TableHead>
-                <TableHead className="hidden sm:table-cell w-36 text-center font-pixel text-xs tracking-wider">MEDIA</TableHead>
-                <TableHead className="hidden md:table-cell w-20 font-pixel text-xs tracking-wider">YEAR</TableHead>
-                <TableHead className="hidden lg:table-cell w-24 font-pixel text-xs tracking-wider">RATING</TableHead>
+                <TableHead className="font-pixel w-14 text-xs tracking-wider">
+                  ART
+                </TableHead>
+                <TableHead className="font-pixel text-xs tracking-wider">
+                  NAME
+                </TableHead>
+                <TableHead className="font-pixel hidden w-36 text-center text-xs tracking-wider sm:table-cell">
+                  MEDIA
+                </TableHead>
+                <TableHead className="font-pixel hidden w-20 text-xs tracking-wider md:table-cell">
+                  YEAR
+                </TableHead>
+                <TableHead className="font-pixel hidden w-24 text-xs tracking-wider lg:table-cell">
+                  RATING
+                </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {pageItems.map((game) => {
-                const hasImg = Boolean(game.image?.trim() || game.thumbnail?.trim());
+                const hasImg = Boolean(
+                  game.image?.trim() || game.thumbnail?.trim()
+                );
                 const hasVideo = Boolean(game.video?.trim());
                 const hasMarquee = Boolean(game.marquee?.trim());
                 const hasFanart = Boolean(game.fanart?.trim());
@@ -218,7 +273,7 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                 return (
                   <TableRow
                     key={game.path}
-                    className="cursor-pointer hover:bg-muted/40 transition-colors"
+                    className="hover:bg-muted/40 cursor-pointer transition-colors"
                     onClick={() => setSelectedGame(game)}
                   >
                     {/* Thumbnail */}
@@ -236,9 +291,13 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="min-w-0 flex-1">
-                          <p className="line-clamp-1 text-sm font-medium">{game.name}</p>
+                          <p className="line-clamp-1 text-sm font-medium">
+                            {game.name}
+                          </p>
                           {game.genre && (
-                            <p className="text-muted-foreground text-[11px]">{game.genre}</p>
+                            <p className="text-muted-foreground text-[11px]">
+                              {game.genre}
+                            </p>
                           )}
                         </div>
                         {!hasImg && (
@@ -248,7 +307,7 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-7 w-7 shrink-0 text-primary hover:text-primary hover:bg-primary/10"
+                                  className="text-primary hover:text-primary hover:bg-primary/10 h-7 w-7 shrink-0"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleFetchArt(game);
@@ -270,21 +329,37 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                       <TooltipProvider delayDuration={300}>
                         <div className="flex items-center justify-center gap-1.5">
                           <MediaDot label="Image" present={hasImg} />
-                          <MediaDot label="Video" present={hasVideo} icon="video" />
-                          <MediaDot label="Marquee" present={hasMarquee} icon="marquee" />
-                          <MediaDot label="Description" present={hasDesc} icon="text" />
-                          <MediaDot label="Rating" present={hasRating} icon="star" />
+                          <MediaDot
+                            label="Video"
+                            present={hasVideo}
+                            icon="video"
+                          />
+                          <MediaDot
+                            label="Marquee"
+                            present={hasMarquee}
+                            icon="marquee"
+                          />
+                          <MediaDot
+                            label="Description"
+                            present={hasDesc}
+                            icon="text"
+                          />
+                          <MediaDot
+                            label="Rating"
+                            present={hasRating}
+                            icon="star"
+                          />
                         </div>
                       </TooltipProvider>
                     </TableCell>
 
                     {/* Year */}
-                    <TableCell className="hidden md:table-cell text-muted-foreground text-xs">
+                    <TableCell className="text-muted-foreground hidden text-xs md:table-cell">
                       {game.releasedate?.slice(0, 4) ?? "—"}
                     </TableCell>
 
                     {/* Rating */}
-                    <TableCell className="hidden lg:table-cell text-muted-foreground text-xs">
+                    <TableCell className="text-muted-foreground hidden text-xs lg:table-cell">
                       {game.rating
                         ? `★ ${(parseFloat(game.rating) * 10).toFixed(1)}`
                         : "—"}
@@ -301,7 +376,9 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
       {view === "cards" && filtered.length > 0 && (
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
           {pageItems.map((game) => {
-            const hasImg = Boolean(game.image?.trim() || game.thumbnail?.trim());
+            const hasImg = Boolean(
+              game.image?.trim() || game.thumbnail?.trim()
+            );
             const hasVideo = Boolean(game.video?.trim());
             const hasMarquee = Boolean(game.marquee?.trim());
 
@@ -309,7 +386,7 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
               <div
                 key={game.path}
                 className={cn(
-                  "group relative cursor-pointer overflow-hidden rounded-lg border transition-all duration-200 hover:shadow-md hover:border-primary/40",
+                  "group hover:border-primary/40 relative cursor-pointer overflow-hidden rounded-lg border transition-all duration-200 hover:shadow-md",
                   !hasImg && "border-orange-500/30 bg-orange-500/5"
                 )}
                 onClick={() => setSelectedGame(game)}
@@ -327,17 +404,23 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/0 to-transparent opacity-0 transition-opacity group-hover:opacity-100" />
 
                 {/* Bottom info */}
-                <div className="absolute bottom-0 left-0 right-0 translate-y-full bg-gradient-to-t from-black/90 to-transparent p-2 transition-transform group-hover:translate-y-0">
-                  <p className="line-clamp-2 text-[11px] font-medium text-white">{game.name}</p>
+                <div className="absolute right-0 bottom-0 left-0 translate-y-full bg-gradient-to-t from-black/90 to-transparent p-2 transition-transform group-hover:translate-y-0">
+                  <p className="line-clamp-2 text-[11px] font-medium text-white">
+                    {game.name}
+                  </p>
                 </div>
 
                 {/* Media badges (top-right) */}
                 <div className="absolute top-1.5 right-1.5 flex flex-col gap-0.5 opacity-0 transition-opacity group-hover:opacity-100">
                   {hasVideo && (
-                    <span className="rounded bg-blue-500/80 px-1 py-0.5 text-[9px] font-bold text-white">VID</span>
+                    <span className="rounded bg-blue-500/80 px-1 py-0.5 text-[9px] font-bold text-white">
+                      VID
+                    </span>
                   )}
                   {hasMarquee && (
-                    <span className="rounded bg-purple-500/80 px-1 py-0.5 text-[9px] font-bold text-white">MRQ</span>
+                    <span className="rounded bg-purple-500/80 px-1 py-0.5 text-[9px] font-bold text-white">
+                      MRQ
+                    </span>
                   )}
                 </div>
 
@@ -347,7 +430,7 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <button
-                          className="absolute top-1.5 left-1.5 z-20 rounded-full bg-black/60 p-1.5 backdrop-blur-sm hover:bg-primary/80 transition-colors"
+                          className="hover:bg-primary/80 absolute top-1.5 left-1.5 z-20 rounded-full bg-black/60 p-1.5 backdrop-blur-sm transition-colors"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleFetchArt(game);
@@ -374,14 +457,19 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
           </p>
           <div className="flex items-center gap-1">
             <Button
-              variant="outline" size="icon" className="h-8 w-8"
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={safePage === 1}
             >
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
             {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter((p) => p === 1 || p === totalPages || Math.abs(p - safePage) <= 2)
+              .filter(
+                (p) =>
+                  p === 1 || p === totalPages || Math.abs(p - safePage) <= 2
+              )
               .reduce<(number | "…")[]>((acc, p, i, arr) => {
                 if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push("…");
                 acc.push(p);
@@ -389,12 +477,18 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
               }, [])
               .map((item, i) =>
                 item === "…" ? (
-                  <span key={`e-${i}`} className="text-muted-foreground px-1 text-sm">…</span>
+                  <span
+                    key={`e-${i}`}
+                    className="text-muted-foreground px-1 text-sm"
+                  >
+                    …
+                  </span>
                 ) : (
                   <Button
                     key={item}
                     variant={item === safePage ? "default" : "outline"}
-                    size="icon" className="h-8 w-8 text-xs"
+                    size="icon"
+                    className="h-8 w-8 text-xs"
                     onClick={() => setPage(item as number)}
                   >
                     {item}
@@ -402,7 +496,9 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                 )
               )}
             <Button
-              variant="outline" size="icon" className="h-8 w-8"
+              variant="outline"
+              size="icon"
+              className="h-8 w-8"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={safePage === totalPages}
             >
