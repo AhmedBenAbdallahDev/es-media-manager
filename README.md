@@ -108,7 +108,7 @@ bun run dev
 
 ### Option 2: Use the Web App
 
-**👉 [Open ES Cover Manager](https://esde-manager.ashref.tn/)**
+**👉 [Open ES Cover Manager](https://es-cover-manager.vercel.app/)**
 
 No installation required! Works in any modern web browser.
 
@@ -223,8 +223,8 @@ Open source — use it however you like. Contributions welcome!
 
 We welcome contributions! Here's how you can help:
 
-1. **🐛 Report Issues**: Found a bug? [Open an issue](https://github.com/Ashref-dev/es-de-custom-cover-generator/issues)
-2. **💡 Suggest Features**: Have an idea? [Start a discussion](https://github.com/Ashref-dev/es-de-custom-cover-generator/discussions)
+1. **🐛 Report Issues**: Found a bug? [Open an issue](https://github.com/AhmedBenAbdallahDev/es-cover-manager/issues)
+2. **💡 Suggest Features**: Have an idea? [Start a discussion](https://github.com/AhmedBenAbdallahDev/es-cover-manager/discussions)
 3. **🔧 Submit Pull Requests**:
    - Fork the repository
    - Create a feature branch
@@ -274,7 +274,6 @@ If you find this project helpful:
 - 🐛 **Report issues** to help improve the tool
 - 🔄 **Share with others** in the retro gaming community
 - 💡 **Contribute features** or improvements
-- ☕ **[Buy me a coffee](https://ashref.tn)** to fuel more development
 
 ---
 
@@ -284,17 +283,11 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ---
 
-## 👨‍💻 About the Author
+## 🙏 Credits & Acknowledgments
 
-**Ashref Ben Abdallah**
+This project is **inspired by and built upon** the work of **[Ashref-dev](https://github.com/Ashref-dev)** on the [ES-DE Custom Cover Generator](https://github.com/Ashref-dev/es-de-custom-cover-generator). The original project was designed for **ES-DE (EmulationStation Desktop Edition)** — a desktop frontend. This fork/adaptation repurposes and extends that work for **retro handheld SD cards** (R36S, RG35XX, ArkOS, ROCKNIX, etc.), which use a different folder structure and media conventions.
 
-- 🌐 Website: [ashref.tn](https://ashref.tn)
-- 🐙 GitHub: [@Ashref-dev](https://github.com/Ashref-dev)
-- 🎮 Passionate retro gaming enthusiast and developer
-
----
-
-## 🙏 Acknowledgments
+> **Note:** This is a separate project and is **not affiliated with or endorsed by** Ashref-dev or the original ES-DE Custom Cover Generator.
 
 - **EmulationStation Desktop Edition** team for creating an amazing frontend
 - The **retro gaming community** for inspiration and feedback
@@ -309,6 +302,6 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 _Made with ❤️ for the retro gaming community_
 
-[![Website](https://img.shields.io/badge/Try%20it%20now-esde--manager.ashref.tn-blue?style=for-the-badge&logo=web)](https://esde-manager.ashref.tn/)
+[![GitHub](https://img.shields.io/badge/View%20on%20GitHub-100%25-green?style=for-the-badge&logo=github)](https://github.com/AhmedBenAbdallahDev/es-cover-manager)
 
 </div>
