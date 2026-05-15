@@ -1,14 +1,20 @@
 /**
  * ScreenScraper.fr API Client
  *
- * Server-side client for the ScreenScraper REST API v1.
+ * Server-side client for the ScreenScraper REST API v2 (beta).
  * Handles authentication, game searching, and media fetching.
  *
  * IMPORTANT: This module must ONLY be imported from server-side code
  * (API routes, server components). Never import this in client components
  * as it contains API credentials.
  *
- * API docs: https://www.screenscraper.fr/api/documentation
+ * API docs: https://www.screenscraper.fr/ (WebAPI section)
+ *
+ * Key endpoints:
+ *   - jeuRecherche.php: Search games by name (returns up to 30 results)
+ *   - jeuInfos.php: Get detailed game info + media URLs
+ *   - mediaJeu.php: Download game media images
+ *   - mediaVideoJeu.php: Download game media videos
  */
 
 import type {
@@ -19,7 +25,11 @@ import type {
 
 // ─── Configuration ──────────────────────────────────────────────────────────
 
-const BASE_URL = "https://www.screenscraper.fr/api";
+/** API v2 base URL — NOT www.screenscraper.fr/api */
+const BASE_URL = "https://api.screenscraper.fr/api2";
+
+/** Software name sent with every request (required by API) */
+const SOFT_NAME = "ES-Cover-Manager";
 
 function getDevId(): string {
   const id = process.env.SCREENSCRAPER_DEVID;
@@ -45,7 +55,7 @@ function getDevPassword(): string {
  * Maps ES-DE console folder names to ScreenScraper system database IDs.
  * This is critical — ScreenScraper uses numeric system IDs, not folder names.
  *
- * Reference: https://www.screenscraper.fr/api/systemes_liste.php
+ * Reference: https://api.screenscraper.fr/api2/systemesListe.php
  */
 export const CONSOLE_TO_SS_SYSTEM_ID: Record<string, number> = {
   // Nintendo
@@ -158,18 +168,22 @@ const FALLBACK_SYSTEM_ID = 0;
 
 /**
  * Builds the common query parameters for every ScreenScraper API request.
+ * All requests require: devid, devpassword, softname
  */
 function buildAuthParams(): URLSearchParams {
   const params = new URLSearchParams();
   params.set("devid", getDevId());
   params.set("devpassword", getDevPassword());
+  params.set("softname", SOFT_NAME);
   params.set("output", "json");
-  // No user auth needed for search (dev credentials suffice)
   return params;
 }
 
 /**
  * Searches for a game on ScreenScraper by name and system ID.
+ *
+ * Uses jeuRecherche.php endpoint which returns up to 30 results
+ * sorted by probability.
  *
  * @param gameName The display name of the game to search for
  * @param consoleFolderName The ES-DE console folder name (e.g., "gba", "psx")
@@ -185,18 +199,16 @@ export async function searchGame(
 
   const params = buildAuthParams();
   params.set("systemeid", String(systemId));
-  params.set("romname", gameName);
+  params.set("recherche", gameName); // "recherche" not "romname"
 
-  const url = `${BASE_URL}/ssInfos.php?${params.toString()}`;
+  const url = `${BASE_URL}/jeuRecherche.php?${params.toString()}`;
 
   console.log(`[ScreenScraper] Searching: "${gameName}" (system ${systemId})`);
 
   const response = await fetch(url, {
     headers: {
-      "User-Agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ES-DE Media Manager",
+      "User-Agent": `${SOFT_NAME}/1.0`,
     },
-    // ScreenScraper API has rate limits — default timeout
     signal: AbortSignal.timeout(15000),
   });
 
@@ -216,42 +228,46 @@ export async function searchGame(
     );
   }
 
-  const data: ScreenScraperResponse = await response.json();
+  const data = await response.json();
 
-  if (data.status !== 0) {
-    console.error(
-      `[ScreenScraper] API returned error status ${data.status}: ${data.message}`
-    );
-    throw new Error(
-      `ScreenScraper error (${data.status}): ${data.message || "Unknown error"}`
-    );
-  }
-
-  if (!data.data?.game) {
+  // API v2 returns { header: {...}, response: { serveurs: {...}, jeux: [...] } }
+  const games = data?.response?.jeux;
+  if (!games || !Array.isArray(games) || games.length === 0) {
     console.log(`[ScreenScraper] No results found for "${gameName}"`);
     return null;
   }
 
+  // Take the first (best match) game
+  const bestMatch = games[0];
+
+  // Extract game name from noms array
+  const gameName =
+    bestMatch.noms?.find((n: { region: string }) => n.region === "ss")?.text ||
+    bestMatch.noms?.[0]?.text ||
+    "Unknown";
+
   console.log(
-    `[ScreenScraper] Found: ${data.data.game.name} (${data.data.game.medias?.length || 0} media items)`
+    `[ScreenScraper] Found: ${gameName} (${bestMatch.medias?.length || 0} media items)`
   );
 
-  return data.data.game;
+  return bestMatch as ScreenScraperGameInfo;
 }
 
 /**
  * Extracts artwork options from a ScreenScraper game info response.
  * Filters and sorts by vote score, returning the best options for cover art.
  *
+ * The API returns media as an array of objects with type, url, region, etc.
+ *
  * @param gameInfo The game info from ScreenScraper
- * @param preferredMediaType The type of media to extract (default: "box-2D" for covers)
+ * @param preferredMediaType The type of media to extract (default: "covers")
  * @returns Array of scraped artwork options sorted by vote score
  */
 export function extractArtwork(
   gameInfo: ScreenScraperGameInfo,
-  preferredMediaType: string = "box-2D"
+  preferredMediaType: string = "covers"
 ): ScrapedArtwork[] {
-  if (!gameInfo.medias || gameInfo.medias.length === 0) {
+  if (!gameInfo.medias || !Array.isArray(gameInfo.medias)) {
     return [];
   }
 
@@ -260,7 +276,7 @@ export function extractArtwork(
     preferredMediaType === "covers"
       ? ["box-2D", "box-2D-alt", "mixrbv1", "mixrbv2"]
       : preferredMediaType === "marquees"
-        ? ["wheel", "wheel-hd", "wheel-st"]
+        ? ["wheel", "wheel-hd", "wheel-st", "wheel-carbon", "wheel-steel"]
         : preferredMediaType === "screenshots"
           ? ["ss"]
           : preferredMediaType === "3dboxes"
@@ -270,14 +286,16 @@ export function extractArtwork(
               : preferredMediaType === "videos"
                 ? ["video"]
                 : preferredMediaType === "titlescreens"
-                  ? ["ss-title"]
+                  ? ["sstitle"]
                   : preferredMediaType === "backcovers"
                     ? ["box-2D-back"]
                     : preferredMediaType === "physicalmedia"
                       ? ["support-2D", "support-3D"]
                       : [preferredMediaType];
 
-  const filtered = gameInfo.medias.filter((m) => typeKeys.includes(m.type));
+  const filtered = (gameInfo.medias as ScreenScraperMedia[]).filter(
+    (m) => typeKeys.includes(m.type) && m.parent === "jeu"
+  );
 
   // Sort by vote score (highest first), then by resolution
   const sorted = filtered.sort((a, b) => {
@@ -292,7 +310,7 @@ export function extractArtwork(
   });
 
   return sorted.map((m) => ({
-    id: m.id,
+    id: m.id || `${m.type}-${m.region || "unknown"}`,
     imageUrl: m.url,
     mediaType: m.type,
     resolution: m.resolution,

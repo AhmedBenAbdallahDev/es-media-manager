@@ -76,9 +76,17 @@ export async function POST(request: NextRequest) {
     // Extract and sort artwork options
     const artworks: ScrapedArtwork[] = extractArtwork(gameInfo, targetType);
 
+    // Extract game name from noms array
+    const matchedName =
+      gameInfo.noms?.find((n) => n.region === "ss")?.text ||
+      gameInfo.noms?.[0]?.text ||
+      gameInfo.nom ||
+      gameInfo.name ||
+      gameName;
+
     return NextResponse.json({
       success: true,
-      gameName: gameInfo.name,
+      gameName: matchedName,
       artworks,
     });
   } catch (error) {
