@@ -20,6 +20,7 @@
 import type {
   ScreenScraperResponse,
   ScreenScraperGameInfo,
+  ScreenScraperMedia,
   ScrapedArtwork,
 } from "@/types/screenscraper";
 

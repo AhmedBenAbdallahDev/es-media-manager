@@ -21,7 +21,6 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
   VideoIcon,
-  Sparkles,
   Loader2,
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
@@ -307,15 +306,15 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="border-primary/40 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/60 h-7 shrink-0 gap-1.5 px-2 text-xs font-semibold tracking-wide"
+                                  className="border-primary/40 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/60 h-7 shrink-0 gap-1 px-2 text-[11px] font-medium"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleFetchArt(game);
                                   }}
                                   title="Fetch cover art from ScreenScraper"
                                 >
-                                  <Sparkles className="h-3.5 w-3.5" />
-                                  FETCH
+                                  <SearchIcon className="h-3.5 w-3.5" />
+                                  Fetch
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent>Fetch cover art from ScreenScraper</TooltipContent>
@@ -437,7 +436,7 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                             handleFetchArt(game);
                           }}
                         >
-                          <Sparkles className="h-3.5 w-3.5 text-white" />
+                          <SearchIcon className="h-3.5 w-3.5 text-white" />
                         </button>
                       </TooltipTrigger>
                       <TooltipContent>Fetch cover art</TooltipContent>

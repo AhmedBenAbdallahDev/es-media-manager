@@ -21,7 +21,6 @@ import {
   Search,
   Trash2,
   Eye,
-  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -261,7 +260,7 @@ export function GameMediaForm({
         <input {...getInputProps()} />
 
         {/* Header */}
-        <div className="border-border/50 bg-muted/30 flex items-center justify-between border-b px-5 py-3">
+        <div className="border-border/50 bg-muted/30 flex items-center justify-between border-b px-4 py-3 sm:px-5">
           <div className="flex items-center gap-2">
             <h3 className="font-pixel text-xs tracking-wider">
               {mediaType.label.toUpperCase()}
@@ -342,7 +341,7 @@ export function GameMediaForm({
 
         {/* Preview Area - Larger */}
         <div
-          className={`relative overflow-hidden transition-all duration-300 ${isExpanded ? "h-64" : "h-52"} `}
+          className={`relative overflow-hidden transition-all duration-300 ${isExpanded ? "h-56 sm:h-64" : "h-44 sm:h-52"} `}
         >
           {isLoadingUrls && !newFile ? (
             <div className="bg-muted flex h-full w-full animate-pulse items-center justify-center">
@@ -462,8 +461,8 @@ export function GameMediaForm({
         </div>
 
         {/* Upload Actions - Always visible with proper spacing */}
-        <div className="border-border/50 bg-muted/20 border-t px-5 py-4">
-          <div className="flex flex-wrap gap-3">
+        <div className="border-border/50 bg-muted/20 border-t px-4 py-3 sm:px-5 sm:py-4">
+          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             <input
               ref={(el) => {
                 fileInputRefs.current[mediaType.key] = el;
@@ -479,7 +478,7 @@ export function GameMediaForm({
             <Button
               variant={hasContent ? "outline" : "default"}
               size="default"
-              className="h-10 min-w-[90px] flex-1 gap-2"
+              className="h-9 w-full gap-2 px-3 text-xs sm:h-10 sm:text-sm"
               onClick={(e) => {
                 e.stopPropagation();
                 fileInputRefs.current[mediaType.key]?.click();
@@ -487,14 +486,14 @@ export function GameMediaForm({
               disabled={isUploading}
             >
               <Upload className="h-4 w-4" />
-              {hasContent ? "Replace" : "Upload"}
+              <span>{hasContent ? "Replace" : "Upload"}</span>
             </Button>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
                   size="default"
-                  className="h-10 min-w-[90px] gap-2"
+                  className="h-9 w-full gap-2 px-3 text-xs sm:h-10 sm:text-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     toggleCard(mediaType.key);
@@ -502,7 +501,7 @@ export function GameMediaForm({
                   disabled={isUploading}
                 >
                   <ExternalLink className="h-4 w-4" />
-                  URL
+                  <span>URL</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>Paste image URL</TooltipContent>
@@ -512,7 +511,7 @@ export function GameMediaForm({
                 <Button
                   variant="outline"
                   size="default"
-                  className="border-primary/50 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/70 h-10 min-w-[110px] gap-2 font-semibold tracking-wide"
+                  className="border-primary/50 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/70 h-9 w-full gap-2 px-3 text-xs font-medium sm:h-10 sm:text-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     setScraperDialog({
@@ -523,8 +522,8 @@ export function GameMediaForm({
                   }}
                   disabled={isUploading}
                 >
-                  <Sparkles className="h-4 w-4" />
-                  Fetch Art
+                  <Search className="h-4 w-4" />
+                  <span>Fetch</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -553,12 +552,12 @@ export function GameMediaForm({
                     }
                   }}
                   disabled={isUploading}
-                  className="h-10 pr-24"
+                  className="h-9 pr-20 sm:h-10 sm:pr-24"
                 />
                 <Button
                   size="sm"
                   variant="default"
-                  className="absolute top-1.5 right-1.5 h-7 px-3"
+                  className="absolute top-1.5 right-1.5 h-7 px-2 text-xs sm:px-3"
                   onClick={() =>
                     urlInput.trim() && handleUrlUpload(mediaType.key, urlInput)
                   }
@@ -596,7 +595,7 @@ export function GameMediaForm({
         )}
 
         <div>
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex items-center justify-between gap-2">
             <h2 className="text-lg font-semibold">Important Media</h2>
             <Badge variant="secondary" className="text-xs">
               {coreMedia.length} types
@@ -608,7 +607,7 @@ export function GameMediaForm({
         </div>
 
         <div className="border-border/40 border-t pt-8">
-          <div className="mb-4 flex items-center justify-between">
+          <div className="mb-4 flex items-center justify-between gap-2">
             <h2 className="text-lg font-semibold">Optional Extras</h2>
             <Badge variant="secondary" className="text-xs">
               {optionalMedia.length} types

@@ -411,20 +411,20 @@ export function GameDetailSheet({
     <Sheet open={Boolean(game)} onOpenChange={(open) => !open && onClose()}>
       <SheetContent
         side="bottom"
-        className="flex h-[100dvh] w-screen flex-col !gap-0 border-none p-0 sm:max-w-none"
+        className="flex h-[100dvh] w-screen flex-col !gap-0 overflow-hidden border-none p-0 sm:max-w-none"
       >
         {/* ── Header ────────────────────────────────────────────── */}
-        <SheetHeader className="bg-background border-border/40 z-10 flex-shrink-0 border-b px-6 py-4 shadow-sm">
-          <div className="mx-auto flex w-full max-w-[1600px] items-start justify-between">
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-3">
-                <SheetTitle className="font-pixel truncate text-xl tracking-wider">
+        <SheetHeader className="bg-background border-border/40 z-10 flex-shrink-0 border-b px-4 py-4 shadow-sm sm:px-6">
+          <div className="mx-auto flex w-full max-w-[1600px] flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
+            <div className="min-w-0 flex-1 space-y-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <SheetTitle className="font-pixel truncate text-lg tracking-wider sm:text-xl">
                   {draft.name.toUpperCase()}
                 </SheetTitle>
                 <span className="retro-tag">{consoleFolderName}</span>
               </div>
-              <SheetDescription className="text-muted-foreground mt-1 flex items-center gap-4 text-sm">
-                <span className="font-mono">{draft.path}</span>
+              <SheetDescription className="text-muted-foreground flex flex-col gap-1 text-xs sm:flex-row sm:flex-wrap sm:items-center sm:gap-4 sm:text-sm">
+                <span className="max-w-full truncate font-mono">{draft.path}</span>
                 {missingCount === 0 ? (
                   <span className="flex items-center gap-1.5 text-green-600 dark:text-green-400">
                     <CheckCircle2Icon className="h-3.5 w-3.5" />
@@ -439,34 +439,39 @@ export function GameDetailSheet({
               </SheetDescription>
             </div>
 
-            <div className="ml-4 flex flex-shrink-0 gap-2">
-              <Button variant="outline" onClick={onClose} disabled={isSaving}>
-                <ArrowLeftIcon className="mr-2 h-4 w-4" />
+            <div className="flex flex-shrink-0 flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+              <Button
+                variant="outline"
+                onClick={onClose}
+                disabled={isSaving}
+                className="w-full gap-2 sm:w-auto"
+              >
+                <ArrowLeftIcon className="h-4 w-4" />
                 Close
               </Button>
               <Button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="min-w-[140px]"
+                className="w-full gap-2 sm:w-auto"
               >
-                <SaveIcon className="mr-2 h-4 w-4" />
-                {isSaving ? "Saving..." : "Save Metadata"}
+                <SaveIcon className="h-4 w-4" />
+                {isSaving ? "Saving..." : "Save"}
               </Button>
             </div>
           </div>
         </SheetHeader>
 
         {/* ── Content: Two Columns ──────────────────────────────── */}
-        <div className="bg-muted/5 flex-grow overflow-hidden">
-          <div className="mx-auto flex h-full max-w-[1600px] flex-col md:flex-row">
+        <div className="bg-muted/5 flex-1 min-h-0 overflow-y-auto md:overflow-hidden">
+          <div className="mx-auto flex h-full min-h-0 max-w-[1600px] flex-col md:flex-row">
             {/* Left Column: Media Management */}
-            <div className="border-border/40 bg-background/50 flex-1 overflow-y-auto border-r p-6 md:p-8">
-              <div className="mx-auto max-w-3xl space-y-6">
+            <div className="border-border/40 bg-background/50 flex-1 overflow-visible border-r px-4 py-4 md:overflow-y-auto md:px-6 md:py-8">
+              <div className="mx-auto max-w-3xl space-y-5 sm:space-y-6">
                 <div>
-                  <h3 className="mb-1 text-lg font-semibold tracking-tight">
+                  <h3 className="mb-1 text-base font-semibold tracking-tight sm:text-lg">
                     Media Management
                   </h3>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs sm:text-sm">
                     Upload covers, screenshots, and videos. Changes here are
                     saved to disk immediately.
                   </p>
@@ -516,13 +521,13 @@ export function GameDetailSheet({
             </div>
 
             {/* Right Column: Metadata Editing */}
-            <div className="bg-background w-full flex-shrink-0 overflow-y-auto p-6 shadow-sm md:w-[450px] md:p-8 lg:w-[500px] xl:w-[550px]">
-              <div className="mx-auto max-w-lg space-y-6">
+            <div className="bg-background w-full flex-shrink-0 overflow-visible px-4 py-4 shadow-sm md:w-[450px] md:overflow-y-auto md:px-6 md:py-8 lg:w-[500px] xl:w-[550px]">
+              <div className="mx-auto max-w-lg space-y-5 sm:space-y-6">
                 <div>
-                  <h3 className="mb-1 text-lg font-semibold tracking-tight">
+                  <h3 className="mb-1 text-base font-semibold tracking-tight sm:text-lg">
                     Metadata
                   </h3>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-muted-foreground text-xs sm:text-sm">
                     Edit game information stored in gamelist.xml.
                   </p>
                 </div>
