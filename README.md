@@ -6,7 +6,7 @@
 
 [![Open Source](https://img.shields.io/badge/Open%20Source-100%25-green?style=for-the-badge)](https://github.com/AhmedBenAbdallahDev/es-cover-manager) [![Privacy First](https://img.shields.io/badge/Privacy-100%25%20Local-orange?style=for-the-badge)](#-100-client-side-processing)
 
-[![Next.js](https://img.shields.io/badge/Next.js-15-black?style=for-the-badge&logo=next.js)](https://nextjs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/) [![Bun](https://img.shields.io/badge/Bun-100%25-orange?style=for-the-badge&logo=bun)](https://bun.sh/)
 
 </div>
 
@@ -61,6 +61,7 @@
 - **Search by game name** and console system
 - **Download covers, logos, screenshots, and videos** automatically
 - **Server-side API calls** — your API keys stay private
+- **Video support** — fetch and preview video snaps with proper playback
 
 ### 🎮 Supported Media Types
 
@@ -171,7 +172,7 @@ Your privacy is our priority:
 
 ### Tech Stack
 
-- **Framework**: Next.js 15 with App Router
+- **Framework**: Next.js 16 with App Router
 - **Language**: TypeScript (Strict Mode)
 - **Styling**: Tailwind CSS
 - **UI Components**: Radix UI + shadcn/ui
