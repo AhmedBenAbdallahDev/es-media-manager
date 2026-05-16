@@ -127,6 +127,8 @@ export interface ScrapedArtwork {
   vote?: number;
   /** Region */
   region?: string;
+  /** File format: "png", "jpg", "mp4", etc. */
+  format?: string;
 }
 
 /**
