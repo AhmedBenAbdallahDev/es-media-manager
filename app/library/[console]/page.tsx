@@ -36,7 +36,7 @@ export default function ConsolePage({ params }: ConsolePageProps) {
         <p className="text-muted-foreground text-sm">
           Please open your SD card or ROM folder first.
         </p>
-        <Link href="/library">
+        <Link href="/">
           <Button
             variant="outline"
             className="font-pixel gap-2 text-xs tracking-wider"
@@ -74,7 +74,7 @@ export default function ConsolePage({ params }: ConsolePageProps) {
         <p className="text-muted-foreground text-sm">
           “{folderName}” was not detected in your library.
         </p>
-        <Link href="/library">
+        <Link href="/">
           <Button
             variant="outline"
             className="font-pixel gap-2 text-xs tracking-wider"
@@ -92,7 +92,7 @@ export default function ConsolePage({ params }: ConsolePageProps) {
     return (
       <div className="space-y-6 py-4">
         <div className="flex items-center gap-3">
-          <Link href="/library">
+          <Link href="/">
             <Button variant="ghost" size="icon" className="h-8 w-8">
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
@@ -122,7 +122,7 @@ export default function ConsolePage({ params }: ConsolePageProps) {
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-3">
-          <Link href="/library">
+          <Link href="/">
             <Button variant="ghost" size="icon" className="h-8 w-8 shrink-0">
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
@@ -155,7 +155,7 @@ export default function ConsolePage({ params }: ConsolePageProps) {
         </div>
 
         <div className="flex gap-2 self-start sm:self-auto">
-          <Link href="/library">
+          <Link href="/">
             <Button variant="outline" size="sm" className="gap-1.5">
               <RefreshCwIcon className="h-3.5 w-3.5" />
               All Consoles

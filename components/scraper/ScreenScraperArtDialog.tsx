@@ -40,6 +40,7 @@ import {
   Check,
   AlertTriangle,
   Sparkles,
+  VideoIcon,
 } from "lucide-react";
 import type { ScrapedArtwork } from "@/types/screenscraper";
 import { MEDIA_TYPES } from "@/lib/constants";
@@ -65,6 +66,24 @@ interface ScreenScraperArtDialogProps {
   onArtworkSaved?: (updatedGame: any) => void;
   /** Root directory handle for saving */
   mainDirHandle?: FileSystemDirectoryHandle | null;
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+/** Detect if an artwork is a video based on type, format, or URL extension */
+function isVideoArtwork(artwork: ScrapedArtwork | null): boolean {
+  if (!artwork) return false;
+  const type = artwork.mediaType || "";
+  const format = artwork.format || "";
+  const url = artwork.imageUrl || "";
+  return (
+    type === "video" ||
+    type === "video-normalized" ||
+    format === "mp4" ||
+    format === "webm" ||
+    url.endsWith(".mp4") ||
+    url.endsWith(".webm")
+  );
 }
 
 export function ScreenScraperArtDialog({
@@ -149,7 +168,7 @@ export function ScreenScraperArtDialog({
 
     setIsSaving(true);
     try {
-      // Step 1: Fetch the image blob through our CORS proxy
+      // Step 1: Fetch the media blob through our CORS proxy
       const proxyResponse = await fetch("/api/fetch-image", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -157,7 +176,7 @@ export function ScreenScraperArtDialog({
       });
 
       if (!proxyResponse.ok) {
-        throw new Error(`Failed to download image: ${proxyResponse.status}`);
+        throw new Error(`Failed to download media: ${proxyResponse.status}`);
       }
 
       let blob = await proxyResponse.blob();
@@ -168,19 +187,34 @@ export function ScreenScraperArtDialog({
         throw new Error(`Unknown media type: ${mediaType}`);
       }
 
-      // Step 3: Convert to correct format if needed
-      let file = new File(
-        [blob],
-        `image.${mediaTypeConfig.extension.replace(".", "")}`,
-        { type: mediaTypeConfig.accept }
-      );
+      // Step 3: Determine if this is a video or image
+      const isVideo = isVideoArtwork(selectedArtwork) || blob.type.startsWith("video/");
 
-      if (
-        blob.type === "image/webp" &&
-        mediaTypeConfig.accept === "image/jpeg"
-      ) {
-        const converted = await fromBlob(file, 100, "auto", "auto", "jpeg");
-        file = new File([converted], `image.jpg`, { type: "image/jpeg" });
+      let file: File;
+
+      if (isVideo) {
+        // Save as video file
+        file = new File(
+          [blob],
+          `video${mediaTypeConfig.extension}`,
+          { type: "video/mp4" }
+        );
+      } else {
+        // Save as image file
+        file = new File(
+          [blob],
+          `image.${mediaTypeConfig.extension.replace(".", "")}`,
+          { type: mediaTypeConfig.accept }
+        );
+
+        // Convert WebP to JPG if needed
+        if (
+          blob.type === "image/webp" &&
+          mediaTypeConfig.accept === "image/jpeg"
+        ) {
+          const converted = await fromBlob(file, 100, "auto", "auto", "jpeg");
+          file = new File([converted], `image.jpg`, { type: "image/jpeg" });
+        }
       }
 
       // Step 4: Save to the ES-DE folder structure
@@ -224,7 +258,7 @@ export function ScreenScraperArtDialog({
       );
 
       onArtworkSaved?.(updatedGame);
-      toast.success(`Cover art saved for "${gameName}"!`);
+      toast.success(`${isVideo ? "Video" : "Artwork"} saved for "${gameName}"!`);
       onOpenChange(false);
     } catch (err) {
       console.error("[ScreenScraperArtDialog] Save error:", err);
@@ -352,13 +386,33 @@ export function ScreenScraperArtDialog({
               {selectedArtwork ? (
                 <>
                   <div className="bg-muted relative mb-4 aspect-[3/4] w-full overflow-hidden rounded-lg border">
-                    <Image
-                      src={selectedArtwork.imageUrl}
-                      alt="Selected artwork"
-                      fill
-                      className="object-contain"
-                      unoptimized
-                    />
+                    {isVideoArtwork(selectedArtwork) ? (
+                      <video
+                        src={`/api/fetch-image?url=${encodeURIComponent(selectedArtwork.imageUrl)}`}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
+                        controls
+                        preload="auto"
+                        className="h-full w-full object-contain"
+                        onError={(e) => {
+                          // Fallback: try direct URL
+                          const vid = e.currentTarget;
+                          if (vid.src.includes("/api/fetch-image")) {
+                            vid.src = selectedArtwork.imageUrl;
+                          }
+                        }}
+                      />
+                    ) : (
+                      <Image
+                        src={selectedArtwork.imageUrl}
+                        alt="Selected artwork"
+                        fill
+                        className="object-contain"
+                        unoptimized
+                      />
+                    )}
                   </div>
 
                   <div className="space-y-2 text-xs">
@@ -443,7 +497,9 @@ export function ScreenScraperArtDialog({
                 ) : (
                   <>
                     <Download className="h-4 w-4" />
-                    Save Artwork
+                    {isVideoArtwork(selectedArtwork)
+                      ? "Save Video"
+                      : "Save Artwork"}
                   </>
                 )}
               </Button>
@@ -498,6 +554,16 @@ function ArtworkThumbnail({
         </div>
       )}
 
+      {/* Video badge */}
+      {isVideoArtwork(artwork) && (
+        <div className="absolute bottom-1.5 right-1.5 z-10">
+          <Badge className="gap-0.5 bg-black/60 px-1 py-0 text-[9px] text-white backdrop-blur-sm">
+            <VideoIcon className="h-2.5 w-2.5 text-red-400" />
+            VIDEO
+          </Badge>
+        </div>
+      )}
+
       {/* Region badge */}
       {artwork.region && (
         <div className="absolute bottom-1.5 left-1.5 z-10">
@@ -507,20 +573,42 @@ function ArtworkThumbnail({
         </div>
       )}
 
-      {/* Image */}
+      {/* Image / Video */}
       {!failed ? (
         <>
           {!loaded && (
             <div className="bg-muted absolute inset-0 animate-pulse" />
           )}
-          <img
-            src={artwork.imageUrl}
-            alt={`${artwork.mediaType} artwork`}
-            className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"} `}
-            onLoad={() => setLoaded(true)}
-            onError={() => setFailed(true)}
-            loading="lazy"
-          />
+          {isVideoArtwork(artwork) ? (
+            <video
+              src={`/api/fetch-image?url=${encodeURIComponent(artwork.imageUrl)}`}
+              autoPlay
+              loop
+              muted
+              playsInline
+              preload="auto"
+              className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"} `}
+              onLoadedData={() => setLoaded(true)}
+              onError={(e) => {
+                // Fallback: try direct URL
+                const vid = e.currentTarget;
+                if (vid.src.includes("/api/fetch-image")) {
+                  vid.src = artwork.imageUrl;
+                } else {
+                  setFailed(true);
+                }
+              }}
+            />
+          ) : (
+            <img
+              src={artwork.imageUrl}
+              alt={`${artwork.mediaType} artwork`}
+              className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${loaded ? "opacity-100" : "opacity-0"} `}
+              onLoad={() => setLoaded(true)}
+              onError={() => setFailed(true)}
+              loading="lazy"
+            />
+          )}
         </>
       ) : (
         <div className="bg-muted/50 absolute inset-0 flex flex-col items-center justify-center gap-1">

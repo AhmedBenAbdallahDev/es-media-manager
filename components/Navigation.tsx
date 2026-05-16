@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { cn } from "@/lib/utils";
-import { HomeIcon, LibraryIcon, GamepadIcon } from "lucide-react";
+import { LibraryIcon, GamepadIcon } from "lucide-react";
 import { useLibrary } from "@/hooks/useLibrary";
 import { Badge } from "@/components/ui/badge";
 
@@ -25,8 +25,7 @@ export function Navigation() {
   const totalConsoles = isReady ? state.consoles.length : 0;
 
   const navItems: NavItem[] = [
-    { href: "/", label: "Home", icon: HomeIcon },
-    { href: "/library", label: "Library", icon: LibraryIcon },
+    { href: "/", label: "Library", icon: LibraryIcon },
   ];
 
   return (
@@ -43,10 +42,7 @@ export function Navigation() {
         {/* Nav links */}
         <nav className="flex items-center gap-1">
           {navItems.map((item) => {
-            const active =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
+            const active = pathname === "/" || pathname.startsWith("/library");
             return (
               <Link
                 key={item.href}
@@ -62,7 +58,7 @@ export function Navigation() {
                 <span className="hidden md:inline">
                   {item.label.toUpperCase()}
                 </span>
-                {item.href === "/library" && isReady && totalConsoles > 0 && (
+                {item.href === "/" && isReady && totalConsoles > 0 && (
                   <Badge
                     variant="secondary"
                     className="ml-0.5 hidden h-4 px-1 text-[10px] md:flex"

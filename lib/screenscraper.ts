@@ -478,6 +478,7 @@ export function extractArtwork(
     resolution: m.resolution,
     vote: m.vote,
     region: m.region,
+    format: m.format,
   }));
 }
 
