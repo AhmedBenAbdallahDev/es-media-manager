@@ -1,303 +1,108 @@
-![ES Cover Manager](readme.png)
+# ES Cover Manager
 
-<div align="center">
+A web-based tool for managing game covers, logos, screenshots, and videos on retro handheld SD cards.
 
-**🎮 Cover & Media Manager for Retro Handheld SD Cards**
+Built for devices running **ArkOS**, **ROCKNIX**, **JELOS**, or other EmulationStation-based firmware (R36S, RG35XX, RG503, etc.).
 
-[![Open Source](https://img.shields.io/badge/Open%20Source-100%25-green?style=for-the-badge)](https://github.com/AhmedBenAbdallahDev/es-cover-manager) [![Privacy First](https://img.shields.io/badge/Privacy-100%25%20Local-orange?style=for-the-badge)](#-100-client-side-processing)
+> This is **not** ES-DE (EmulationStation Desktop Edition). ES-DE is a desktop frontend. This tool is for handheld SD cards with a different folder structure and media conventions.
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js)](https://nextjs.org/) [![TypeScript](https://img.shields.io/badge/TypeScript-100%25-blue?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/) [![Bun](https://img.shields.io/badge/Bun-100%25-orange?style=for-the-badge&logo=bun)](https://bun.sh/)
+## What it does
 
-</div>
-
----
-
-## 🎯 What Is This?
-
-**ES Cover Manager** is a web-based tool for managing game covers, logos, screenshots, and other media on **retro handheld SD cards** — devices like the **R36S**, **RG35XX**, **RG503**, and similar handhelds running **ArkOS**, **ROCKNIX**, **JELOS**, or other EmulationStation-based firmware.
-
-> ⚠️ **This is NOT ES-DE (EmulationStation Desktop Edition).** ES-DE is a desktop frontend. This tool is for **handheld SD cards** that use EmulationStation-based firmware (ArkOS, ROCKNIX, etc.) with a different folder structure and media conventions.
-
-### The Problem
-
-- 🔍 **Missing Covers**: Your SD card has hundreds of ROMs but many are missing box art
-- 📁 **Complex File Structure**: Media files need specific naming conventions and folder placement
-- 🖼️ **No Visual Management**: Hard to see which games have artwork and which don't
-- 💾 **Manual Work**: Copying/pasting files into nested directories is tedious
-- 🎨 **Limited Tools**: Existing tools are clunky or require technical knowledge
-
-### The Solution
-
-**ES Cover Manager** makes it easy to:
-
-- **Scan your SD card** and see which games are missing covers
-- **Fetch artwork** from ScreenScraper.fr automatically
-- **Generate media files** with correct naming and folder structure
-- **Edit metadata** directly in your `gamelist.xml` files
-- **Manage everything** in a clean, visual interface — all offline
-
----
-
-## ✨ Key Features
-
-### 📂 Library Scanner
-
-- **Auto-detect consoles** by scanning your SD card folder structure
-- **Parse `gamelist.xml`** files to get game metadata
-- **Show media status** — see which games have covers, logos, screenshots, videos
-- **Filter & search** — find games missing specific media types
+- **Scan your SD card** — auto-detects console folders and parses `gamelist.xml` files
+- **See what's missing** — shows which games have covers, logos, screenshots, and videos
+- **Fetch artwork** — searches [ScreenScraper.fr](https://www.screenscraper.fr/) for covers, logos, screenshots, and videos
 - **Edit metadata** — fix game names, descriptions, ratings, and more
+- **Save directly** — writes changes back to your SD card
 
-### 🎨 Media Generator
+Everything runs in your browser. No uploads, no accounts, no data collection.
 
-- **Drag & drop** images, videos, or paste URLs
-- **Auto-organize** files into the correct folder structure
-- **Image optimization** — compress images to save storage space
-- **Batch processing** — handle multiple games at once
-
-### 🔍 ScreenScraper Integration
-
-- **Fetch artwork** from [ScreenScraper.fr](https://www.screenscraper.fr/) API
-- **Search by game name** and console system
-- **Download covers, logos, screenshots, and videos** automatically
-- **Server-side API calls** — your API keys stay private
-- **Video support** — fetch and preview video snaps with proper playback
-
-### 🎮 Supported Media Types
-
-| Type | Folder | Suffix | Description |
-|------|--------|--------|-------------|
-| Box Art / Covers | `images/` | `-image` | Main cover art |
-| Wheel / Marquee | `images/` | `-marquee` | Game logo |
-| Video Snap | `images/` | `-video` | Gameplay video |
-| Screenshot | `images/` | `-image` | In-game screenshot |
-| Thumbnail | `images/` | `-thumb` | Smaller preview |
-
-### 🏆 Supported Consoles
-
-Supports **100+ console systems** including:
-
-- **Nintendo**: NES, SNES, N64, GameCube, GBA, DS, 3DS, Switch
-- **PlayStation**: PS1, PS2, PS3, PSP, Vita
-- **Sega**: Genesis, Saturn, Dreamcast, Game Gear, Master System
-- **Arcade**: MAME, FinalBurn Neo, CPS1/2/3, Neo Geo
-- **Handhelds**: Game Boy, Game Boy Color, Game Boy Advance, Atari Lynx
-- **And many more** — see `lib/constants.ts` for the full list
-
----
-
-## 🚀 Quick Start
-
-### Option 1: Run Locally
+## Quick start
 
 ```bash
-# Clone the repository
 git clone https://github.com/AhmedBenAbdallahDev/es-cover-manager.git
 cd es-cover-manager
-
-# Install dependencies
 bun install
-
-# Set up environment variables (see below)
 cp .env.example .env.local
-
-# Start development server
 bun run dev
-
-# Open http://localhost:3000
 ```
 
-### Option 2: Use the Web App
+Open http://localhost:3000
 
-**👉 [Open ES Cover Manager](https://es-cover-manager.vercel.app/)**
+## Environment variables
 
-No installation required! Works in any modern web browser.
-
----
-
-## 🔧 Environment Variables
-
-Create a `.env.local` file in the project root:
+Create a `.env.local` file:
 
 ```env
-# ScreenScraper API credentials (for fetching artwork)
 SCREENSCRAPER_DEVID=your_developer_id
 SCREENSCRAPER_DEVPASSWORD=your_developer_password
 ```
 
-> ⚠️ **Never commit `.env.local` to version control.** It's already in `.gitignore`.
+Never commit `.env.local` — it's already in `.gitignore`.
 
----
+## How it works
 
-## 📂 How It Works
+1. **Open your SD card** — click "Open SD Card" and select the root folder
+2. **Auto-scan** — detects all console folders and reads gamelists
+3. **Browse your library** — see which games have artwork and which don't
+4. **Fetch or upload** — use ScreenScraper to find artwork, or upload your own
+5. **Save changes** — writes directly to your SD card
 
-### 1. **Library Mode** — Scan & Manage Your SD Card
+## Supported media types
 
-1. **Connect your SD card** to your PC
-2. **Click "Open SD Card"** and select the root folder
-3. **Auto-scan** detects all console folders and parses `gamelist.xml`
-4. **Browse your library** — see which games have artwork and which don't
-5. **Edit metadata** — fix names, descriptions, ratings, and more
-6. **Save changes** — writes directly to your SD card
+| Type | Description |
+|------|-------------|
+| Box Art / Covers | Main cover art |
+| Wheel / Marquee | Game logo |
+| Video Snap | Gameplay video |
+| Screenshot | In-game screenshot |
+| Thumbnail | Smaller preview |
 
-### 2. **Generator Mode** — Create Media Files
+## Supported consoles
 
-1. **Upload media** — drag & drop images/videos or paste URLs
-2. **Select console** — choose the target platform
-3. **Generate** — files are organized into the correct folder structure
-4. **Save to SD card** — grant browser access and files are placed automatically
+100+ systems including NES, SNES, N64, GBA, DS, PS1, PS2, PSP, Genesis, Saturn, Dreamcast, MAME, Neo Geo, and many more. See `lib/constants.ts` for the full list.
 
-### 3. **ScreenScraper Mode** — Fetch Artwork
+## Tech stack
 
-1. **Search for a game** by name and console
-2. **Browse results** from ScreenScraper.fr
-3. **Download artwork** — covers, logos, screenshots, videos
-4. **Save to SD card** — files are placed in the correct locations
+- Next.js 16 (App Router)
+- TypeScript (Strict Mode)
+- Tailwind CSS
+- Radix UI + shadcn/ui
+- Bun (package manager)
+- Turbopack (build tool)
 
----
-
-## 🔒 100% Client-Side Processing
-
-Your privacy is our priority:
-
-- ✅ **No Server Uploads**: Files are processed entirely in your browser
-- ✅ **No Data Collection**: We don't collect or store any personal information
-- ✅ **Offline Capable**: Works without an internet connection (after initial load)
-- ✅ **No Registration**: Use immediately without creating accounts
-- ✅ **Open Source**: Fully transparent code you can audit yourself
-
----
-
-## 🛠️ Development
-
-### Tech Stack
-
-- **Framework**: Next.js 16 with App Router
-- **Language**: TypeScript (Strict Mode)
-- **Styling**: Tailwind CSS
-- **UI Components**: Radix UI + shadcn/ui
-- **File Processing**: Web APIs (FileSystem Access API, Canvas, etc.)
-- **Image Optimization**: Built-in image compression
-- **Build Tool**: Turbopack
-- **Package Manager**: Bun
-
-### Project Structure
-
-```
-├── app/                    # Next.js app router pages
-│   ├── api/               # API routes (ScreenScraper, image fetching)
-│   ├── generator/         # Media generator page
-│   └── library/           # Library scanner & manager
-├── components/            # React components
-│   ├── browser/           # Library browser components
-│   ├── scraper/           # ScreenScraper components
-│   └── ui/                # UI component library (shadcn/ui)
-├── hooks/                 # Custom React hooks
-├── lib/                   # Utilities, constants, helpers
-│   ├── constants.ts       # Console list, media types
-│   ├── screenscraper.ts   # ScreenScraper API client
-│   ├── sdScanner.ts       # SD card scanner
-│   └── gamelistParser.ts  # gamelist.xml parser
-├── types/                 # TypeScript type definitions
-└── public/                # Static assets (logos, etc.)
-```
-
-### Development Commands
+## Development commands
 
 ```bash
-bun run dev             # Start development server
-bun run build           # Build for production
-bun run lint            # Run ESLint
-bun run format          # Format with Prettier
-bun run dev:debug       # Start with debugger attached
+bun run dev       # Start development server
+bun run build     # Build for production
+bun run format    # Format with Prettier
 ```
 
----
+## Project structure
 
-## 📝 License
+```
+app/              # Next.js app router pages and API routes
+components/       # React components (browser, scraper, ui)
+hooks/            # Custom React hooks
+lib/              # Utilities, constants, API clients
+types/            # TypeScript type definitions
+public/           # Static assets
+```
 
-Open source — use it however you like. Contributions welcome!
+## Contributing
 
----
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Submit a pull request
 
-## 🤝 Contributing
+## Credits
 
-We welcome contributions! Here's how you can help:
+Inspired by [Ashref-dev's ES-DE Custom Cover Generator](https://github.com/Ashref-dev/es-de-custom-cover-generator). This is a separate project adapted for retro handheld SD cards.
 
-1. **🐛 Report Issues**: Found a bug? [Open an issue](https://github.com/AhmedBenAbdallahDev/es-cover-manager/issues)
-2. **💡 Suggest Features**: Have an idea? [Start a discussion](https://github.com/AhmedBenAbdallahDev/es-cover-manager/discussions)
-3. **🔧 Submit Pull Requests**:
-   - Fork the repository
-   - Create a feature branch
-   - Make your changes
-   - Submit a pull request
+## License
 
-### Development Setup
-
-1. Fork and clone the repository
-2. Install dependencies: `bun install`
-3. Start development server: `bun run dev`
-4. Make your changes and test
-5. Submit a pull request
-
----
-
-## 📸 Screenshots
-
-<details>
-<summary>🖼️ Click to view screenshots</summary>
-
-### Home Page
-
-![Home Page](docs/screenshots/home.png)
-
-### Generator Mode
-
-![Generator](docs/screenshots/generator.png)
-
-### Browse Mode
-
-![Browse](docs/screenshots/browse.png)
-
-### Media Management
-
-![Media Management](docs/screenshots/media-management.png)
-
-</details>
-
----
-
-## ❤️ Support the Project
-
-If you find this project helpful:
-
-- ⭐ **Star the repository** to show your support
-- 🐛 **Report issues** to help improve the tool
-- 🔄 **Share with others** in the retro gaming community
-- 💡 **Contribute features** or improvements
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Credits & Acknowledgments
-
-This project is **inspired by and built upon** the work of **[Ashref-dev](https://github.com/Ashref-dev)** on the [ES-DE Custom Cover Generator](https://github.com/Ashref-dev/es-de-custom-cover-generator). The original project was designed for **ES-DE (EmulationStation Desktop Edition)** — a desktop frontend. This fork/adaptation repurposes and extends that work for **retro handheld SD cards** (R36S, RG35XX, ArkOS, ROCKNIX, etc.), which use a different folder structure and media conventions.
-
-> **Note:** This is a separate project and is **not affiliated with or endorsed by** Ashref-dev or the original ES-DE Custom Cover Generator.
-
-- **EmulationStation Desktop Edition** team for creating an amazing frontend
-- The **retro gaming community** for inspiration and feedback
-- **Open source contributors** who make projects like this possible
-- **Beta testers** who helped shape the user experience
-
----
-
-<div align="center">
+MIT
 
 **🎮 Happy Gaming! 🎮**
 
