@@ -10,8 +10,8 @@ export const MEDIA_TYPES = [
     suffix: "-image",
     extension: ".png",
     accept: "image/png",
-    label: "Box Art",
-    description: "Main cover art for the game",
+    label: "Combo Art / Cover Art",
+    description: "Mixed cover art with box art, screenshots, or composite art",
   },
   {
     key: "marquees",

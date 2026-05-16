@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { searchGame, extractArtwork } from "@/lib/screenscraper";
+import {
+  extractArtwork,
+  getScreenScraperDisplayName,
+  parseScreenScraperSearchHints,
+  searchGame,
+} from "@/lib/screenscraper";
 import type { ScrapedArtwork } from "@/types/screenscraper";
 
 /**
@@ -57,9 +62,14 @@ export async function POST(request: NextRequest) {
     }
 
     const targetType = mediaType || "covers";
+    const queryHints = parseScreenScraperSearchHints(gameName.trim());
 
     // Query ScreenScraper (credentials from env, not exposed to client)
-    const gameInfo = await searchGame(gameName.trim(), consoleFolder.trim());
+    const gameInfo = await searchGame(
+      queryHints.searchTerm,
+      consoleFolder.trim(),
+      queryHints.preferredRegion
+    );
 
     if (!gameInfo) {
       return NextResponse.json(
@@ -74,15 +84,16 @@ export async function POST(request: NextRequest) {
     }
 
     // Extract and sort artwork options
-    const artworks: ScrapedArtwork[] = extractArtwork(gameInfo, targetType);
+    const artworks: ScrapedArtwork[] = extractArtwork(
+      gameInfo,
+      targetType,
+      queryHints.preferredRegion
+    );
 
-    // Extract game name from noms array
-    const matchedName =
-      gameInfo.noms?.find((n) => n.region === "ss")?.text ||
-      gameInfo.noms?.[0]?.text ||
-      gameInfo.nom ||
-      gameInfo.name ||
-      gameName;
+    const matchedName = getScreenScraperDisplayName(
+      gameInfo,
+      queryHints.preferredRegion
+    );
 
     return NextResponse.json({
       success: true,

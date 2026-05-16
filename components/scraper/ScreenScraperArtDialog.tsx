@@ -256,7 +256,7 @@ export function ScreenScraperArtDialog({
           <div className="flex items-center gap-2">
             <Sparkles className="text-primary h-5 w-5" />
             <DialogTitle className="font-pixel text-lg tracking-wider">
-              FETCH COVER ART — {mediaTypeLabel.toUpperCase()}
+              FETCH ARTWORK — {mediaTypeLabel.toUpperCase()}
             </DialogTitle>
           </div>
           <DialogDescription className="text-sm">
@@ -443,7 +443,7 @@ export function ScreenScraperArtDialog({
                 ) : (
                   <>
                     <Download className="h-4 w-4" />
-                    Save Cover
+                    Save Artwork
                   </>
                 )}
               </Button>
@@ -494,6 +494,15 @@ function ArtworkThumbnail({
           <Badge className="gap-0.5 bg-black/60 px-1 py-0 text-[9px] text-white backdrop-blur-sm">
             <Star className="h-2.5 w-2.5 text-yellow-400" />
             {artwork.vote}
+          </Badge>
+        </div>
+      )}
+
+      {/* Region badge */}
+      {artwork.region && (
+        <div className="absolute bottom-1.5 left-1.5 z-10">
+          <Badge variant="secondary" className="bg-background/80 px-1 py-0 text-[9px] uppercase backdrop-blur-sm">
+            {artwork.region}
           </Badge>
         </div>
       )}

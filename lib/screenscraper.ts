@@ -164,6 +164,152 @@ export const CONSOLE_TO_SS_SYSTEM_ID: Record<string, number> = {
  */
 const FALLBACK_SYSTEM_ID = 0;
 
+type PreferredRegion = "us" | "eu" | "jp" | "fr" | "wor";
+
+interface SearchQueryHints {
+  searchTerm: string;
+  preferredRegion?: PreferredRegion;
+}
+
+const REGION_TOKEN_MAP: Array<{
+  region: PreferredRegion;
+  patterns: RegExp[];
+}> = [
+  { region: "us", patterns: [/\busa\b/i, /\bus\b/i, /\bnorth america\b/i] },
+  { region: "eu", patterns: [/\beur\b/i, /\beu\b/i, /\beurope\b/i] },
+  { region: "jp", patterns: [/\bjpn\b/i, /\bjp\b/i, /\bjapan\b/i] },
+  { region: "fr", patterns: [/\bfra\b/i, /\bfr\b/i, /\bfrance\b/i] },
+];
+
+function normalizeForMatch(value: string): string {
+  return value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .trim()
+    .toLowerCase();
+}
+
+function parseSearchQuery(query: string): SearchQueryHints {
+  let searchTerm = query.trim();
+  let preferredRegion: PreferredRegion | undefined;
+
+  for (const entry of REGION_TOKEN_MAP) {
+    if (entry.patterns.some((pattern) => pattern.test(searchTerm))) {
+      preferredRegion = entry.region;
+      searchTerm = searchTerm
+        .replace(
+          /\s*[\(\[]\s*(?:USA|US|EUR|EU|Europe|JPN|JP|Japan|FRA|FR|France)\s*[\)\]]\s*$/i,
+          ""
+        )
+        .replace(
+          /\s+(?:USA|US|EUR|EU|Europe|JPN|JP|Japan|FRA|FR|France)\s*$/i,
+          ""
+        )
+        .trim();
+      break;
+    }
+  }
+
+  return { searchTerm, preferredRegion };
+}
+
+function getDisplayNameForGame(
+  game: ScreenScraperGameInfo,
+  preferredRegion?: PreferredRegion
+): string {
+  const regionTitle =
+    (preferredRegion &&
+      game.noms?.find((entry) => entry.region.toLowerCase() === preferredRegion)
+        ?.text) ||
+    game.noms?.find((entry) => entry.region === "ss")?.text;
+
+  return regionTitle || game.nom || game.name || "Unknown";
+}
+
+function getGameTitleCandidates(game: ScreenScraperGameInfo): string[] {
+  const titles = new Set<string>();
+
+  if (game.nom) titles.add(game.nom);
+  if (game.name) titles.add(game.name);
+  for (const entry of game.noms || []) {
+    if (entry?.text) titles.add(entry.text);
+  }
+
+  return [...titles];
+}
+
+function scoreGameCandidate(
+  game: ScreenScraperGameInfo,
+  searchTerm: string,
+  preferredRegion?: PreferredRegion
+): number {
+  const query = normalizeForMatch(searchTerm);
+  if (!query) return 0;
+
+  const queryTokens = query.split(" ").filter(Boolean);
+  let bestScore = Number.NEGATIVE_INFINITY;
+
+  for (const title of getGameTitleCandidates(game)) {
+    const candidate = normalizeForMatch(title);
+    if (!candidate) continue;
+
+    let score = 0;
+
+    if (candidate === query) {
+      score += 10_000;
+    } else if (candidate.startsWith(`${query} `)) {
+      score += 8_000;
+    } else if (candidate.startsWith(query)) {
+      score += 7_000;
+    } else if (candidate.includes(` ${query} `) || candidate.endsWith(` ${query}`)) {
+      score += 6_000;
+    }
+
+    const candidateTokens = new Set(candidate.split(" ").filter(Boolean));
+    const overlap =
+      queryTokens.length > 0
+        ? queryTokens.filter((token) => candidateTokens.has(token)).length /
+          queryTokens.length
+        : 0;
+    score += overlap * 2_000;
+
+    const lengthPenalty = Math.max(0, candidate.length - query.length);
+    score -= lengthPenalty * 4;
+
+    if (!/\d/.test(query) && /\d/.test(candidate) && candidate.startsWith(query)) {
+      score -= 800;
+    }
+
+    if (preferredRegion && game.noms?.some((entry) => entry.region === preferredRegion)) {
+      score += 250;
+    }
+
+    if (score > bestScore) {
+      bestScore = score;
+    }
+  }
+
+  return bestScore === Number.NEGATIVE_INFINITY ? 0 : bestScore;
+}
+
+function getRegionPriority(
+  region?: string,
+  preferredRegion?: PreferredRegion
+): number {
+  if (!region) return 4;
+
+  const normalized = region.toLowerCase();
+
+  if (preferredRegion && normalized === preferredRegion) return 0;
+  if (normalized === "wor") return preferredRegion ? 1 : 0;
+  if (!preferredRegion && (normalized === "us" || normalized === "eu")) return 1;
+  if (!preferredRegion && (normalized === "jp" || normalized === "fr")) return 2;
+  if (normalized === preferredRegion) return 1;
+
+  return 3;
+}
+
 // ─── Core API Functions ─────────────────────────────────────────────────────
 
 /**
@@ -191,7 +337,8 @@ function buildAuthParams(): URLSearchParams {
  */
 export async function searchGame(
   gameName: string,
-  consoleFolderName: string
+  consoleFolderName: string,
+  preferredRegion?: PreferredRegion
 ): Promise<ScreenScraperGameInfo | null> {
   const systemId =
     CONSOLE_TO_SS_SYSTEM_ID[consoleFolderName.toLowerCase()] ??
@@ -237,14 +384,14 @@ export async function searchGame(
     return null;
   }
 
-  // Take the first (best match) game
-  const bestMatch = games[0];
+  // Pick the most relevant match from the result set.
+  const bestMatch = [...games].sort(
+    (a, b) =>
+      scoreGameCandidate(b, gameName, preferredRegion) -
+      scoreGameCandidate(a, gameName, preferredRegion)
+  )[0];
 
-  // Extract game name from noms array
-  const matchedName =
-    bestMatch.noms?.find((n: { region: string }) => n.region === "ss")?.text ||
-    bestMatch.noms?.[0]?.text ||
-    "Unknown";
+  const matchedName = getDisplayNameForGame(bestMatch, preferredRegion);
 
   console.log(
     `[ScreenScraper] Found: ${matchedName} (${bestMatch.medias?.length || 0} media items)`
@@ -265,16 +412,18 @@ export async function searchGame(
  */
 export function extractArtwork(
   gameInfo: ScreenScraperGameInfo,
-  preferredMediaType: string = "covers"
+  preferredMediaType: string = "covers",
+  preferredRegion?: PreferredRegion
 ): ScrapedArtwork[] {
   if (!gameInfo.medias || !Array.isArray(gameInfo.medias)) {
     return [];
   }
 
-  // Filter to the preferred media type and alternates
+  // Filter to the preferred media type and alternates.
+  // For covers, prefer combo art first, then plain box art.
   const typeKeys =
     preferredMediaType === "covers"
-      ? ["box-2D", "box-2D-alt", "mixrbv1", "mixrbv2"]
+      ? ["mixrbv1", "mixrbv2", "box-2D", "box-2D-alt"]
       : preferredMediaType === "marquees"
         ? ["wheel", "wheel-hd", "wheel-st", "wheel-carbon", "wheel-steel"]
         : preferredMediaType === "screenshots"
@@ -284,7 +433,7 @@ export function extractArtwork(
             : preferredMediaType === "fanart"
               ? ["fanart"]
               : preferredMediaType === "videos"
-                ? ["video"]
+                ? ["video", "video-normalized"]
                 : preferredMediaType === "titlescreens"
                   ? ["sstitle"]
                   : preferredMediaType === "backcovers"
@@ -293,12 +442,24 @@ export function extractArtwork(
                       ? ["support-2D", "support-3D"]
                       : [preferredMediaType];
 
+  const typePriority = new Map(typeKeys.map((type, index) => [type, index]));
+
   const filtered = (gameInfo.medias as ScreenScraperMedia[]).filter(
     (m) => typeKeys.includes(m.type) && m.parent === "jeu"
   );
 
-  // Sort by vote score (highest first), then by resolution
+  // Sort by type preference, region preference, vote score, then by resolution.
   const sorted = filtered.sort((a, b) => {
+    const typeDiff =
+      (typePriority.get(a.type) ?? Number.MAX_SAFE_INTEGER) -
+      (typePriority.get(b.type) ?? Number.MAX_SAFE_INTEGER);
+    if (typeDiff !== 0) return typeDiff;
+
+    const regionDiff =
+      getRegionPriority(a.region, preferredRegion) -
+      getRegionPriority(b.region, preferredRegion);
+    if (regionDiff !== 0) return regionDiff;
+
     const voteDiff = (b.vote || 0) - (a.vote || 0);
     if (voteDiff !== 0) return voteDiff;
     // Prefer higher resolution
@@ -317,4 +478,15 @@ export function extractArtwork(
     vote: m.vote,
     region: m.region,
   }));
+}
+
+export function parseScreenScraperSearchHints(gameName: string): SearchQueryHints {
+  return parseSearchQuery(gameName);
+}
+
+export function getScreenScraperDisplayName(
+  game: ScreenScraperGameInfo,
+  preferredRegion?: PreferredRegion
+): string {
+  return getDisplayNameForGame(game, preferredRegion);
 }
