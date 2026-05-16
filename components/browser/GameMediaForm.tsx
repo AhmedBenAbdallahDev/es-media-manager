@@ -21,6 +21,7 @@ import {
   Search,
   Trash2,
   Eye,
+  Sparkles,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
@@ -511,7 +512,7 @@ export function GameMediaForm({
                 <Button
                   variant="outline"
                   size="default"
-                  className="border-primary/50 text-primary hover:bg-primary/10 h-10 min-w-[90px] gap-2"
+                  className="border-primary/50 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/70 h-10 min-w-[110px] gap-2 font-semibold tracking-wide"
                   onClick={(e) => {
                     e.stopPropagation();
                     setScraperDialog({
@@ -522,8 +523,8 @@ export function GameMediaForm({
                   }}
                   disabled={isUploading}
                 >
-                  <Search className="h-4 w-4" />
-                  Fetch Online
+                  <Sparkles className="h-4 w-4" />
+                  Fetch Art
                 </Button>
               </TooltipTrigger>
               <TooltipContent>

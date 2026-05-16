@@ -305,9 +305,9 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                             <Tooltip>
                               <TooltipTrigger asChild>
                                 <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="text-primary hover:text-primary hover:bg-primary/10 h-7 w-7 shrink-0"
+                                  variant="outline"
+                                  size="sm"
+                                  className="border-primary/40 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/60 h-7 shrink-0 gap-1.5 px-2 text-xs font-semibold tracking-wide"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleFetchArt(game);
@@ -315,9 +315,10 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                                   title="Fetch cover art from ScreenScraper"
                                 >
                                   <Sparkles className="h-3.5 w-3.5" />
+                                  FETCH
                                 </Button>
                               </TooltipTrigger>
-                              <TooltipContent>Fetch cover art</TooltipContent>
+                              <TooltipContent>Fetch cover art from ScreenScraper</TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
                         )}
