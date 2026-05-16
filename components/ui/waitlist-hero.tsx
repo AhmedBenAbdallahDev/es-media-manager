@@ -165,156 +165,147 @@ export function WaitlistHero() {
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,75,43,0.18),transparent_32%),radial-gradient(circle_at_top_right,rgba(255,65,108,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.06),transparent_40%)]" />
       <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_right,rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:32px_32px]" />
 
-      <div className="relative grid min-h-[calc(100dvh-12rem)] gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
-        <div className="space-y-6">
-          <div className="flex flex-wrap gap-2">
-            <Badge variant="secondary" className="font-pixel tracking-widest">
-              OFFLINE
-            </Badge>
-            <Badge variant="secondary" className="font-pixel tracking-widest">
-              PIXEL UI
-            </Badge>
-            <Badge variant="secondary" className="font-pixel tracking-widest">
-              MOBILE READY
-            </Badge>
-          </div>
+      <div className="relative mx-auto flex min-h-[calc(100dvh-12rem)] max-w-6xl flex-col items-center justify-center gap-8 text-center">
+        <div className="flex flex-wrap justify-center gap-2">
+          <Badge variant="secondary" className="font-pixel tracking-widest">
+            OFFLINE
+          </Badge>
+          <Badge variant="secondary" className="font-pixel tracking-widest">
+            PIXEL UI
+          </Badge>
+          <Badge variant="secondary" className="font-pixel tracking-widest">
+            MOBILE READY
+          </Badge>
+        </div>
 
-          <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border bg-background/80 px-3 py-1.5 shadow-sm backdrop-blur-sm">
-              <div className="retro-step h-8 w-8 shrink-0">
-                <GamepadIcon className="gradient-icon h-4 w-4" />
-              </div>
-              <span className="font-pixel text-xs tracking-[0.28em] text-muted-foreground">
-                SCAN LAUNCHER
-              </span>
+        <div className="space-y-4">
+          <div className="inline-flex items-center gap-2 rounded-full border bg-background/80 px-3 py-1.5 shadow-sm backdrop-blur-sm">
+            <div className="retro-step h-8 w-8 shrink-0">
+              <GamepadIcon className="gradient-icon h-4 w-4" />
             </div>
-
-            <h1 className="font-pixel neon-glow max-w-2xl text-5xl leading-[0.9] tracking-wider sm:text-6xl lg:text-7xl">
-              CONNECT.
-              <br />
-              SCAN.
-              <br />
-              BROWSE.
-            </h1>
-
-            <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed sm:text-base lg:text-lg">
-              Open the root of your SD card or ROM folder, let Retro Scraper
-              read the library locally, then browse games with cleaner controls
-              and real console logos.
-            </p>
+            <span className="font-pixel text-xs tracking-[0.28em] text-muted-foreground">
+              SCAN LAUNCHER
+            </span>
           </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button
-              size="lg"
-              className="retro-btn-glow font-pixel w-full gap-2 px-5 text-xs tracking-[0.22em] sm:w-auto"
-              onClick={openAndScan}
-              disabled={isScanning}
-            >
-              <PrimaryIcon
-                className={`h-4 w-4 ${isScanning ? "animate-spin" : ""}`}
-              />
-              {primaryLabel}
-            </Button>
+          <h1 className="font-pixel neon-glow max-w-3xl text-5xl leading-[0.9] tracking-wider sm:text-6xl lg:text-7xl">
+            CONNECT.
+            <br />
+            SCAN.
+            <br />
+            BROWSE.
+          </h1>
 
-            <Link href="/library" className="w-full sm:w-auto">
-              <Button
-                size="lg"
-                variant="outline"
-                className="font-pixel w-full gap-2 px-5 text-xs tracking-[0.22em] sm:w-auto"
-              >
-                <LibraryIcon className="h-4 w-4" />
-                BROWSE LIBRARY
-              </Button>
-            </Link>
-          </div>
+          <p className="text-muted-foreground mx-auto max-w-2xl text-sm leading-relaxed sm:text-base lg:text-lg">
+            Open the root of your SD card or ROM folder, let Retro Scraper read
+            the library locally, then browse games with cleaner controls and
+            real console logos.
+          </p>
+        </div>
 
-          <div className="flex flex-wrap gap-2 text-xs">
-            <span className="retro-tag">NO UPLOADS</span>
-            <span className="retro-tag">NO ACCOUNTS</span>
-            <span className="retro-tag">ONE FOLDER TO SCAN</span>
-          </div>
+        <div className="relative w-full max-w-[44rem] aspect-square">
+          <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(255,75,43,0.18),transparent_62%)] blur-3xl" />
 
-          <div className="grid gap-3 sm:grid-cols-3">
-            {QUICK_STEPS.map(({ icon: Icon, title, desc }) => (
-              <div
-                key={title}
-                className="retro-card bg-background/80 p-3 shadow-sm"
-              >
-                <div className="flex items-center gap-2">
-                  <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
-                    <Icon className="gradient-icon h-4 w-4" />
-                  </div>
-                  <div>
-                    <p className="font-pixel text-xs tracking-[0.22em]">
-                      {title}
-                    </p>
-                  </div>
+          {ORBIT_RINGS.map((ring) => (
+            <OrbitRing key={ring.duration} {...ring} />
+          ))}
+
+          <div className="absolute inset-0 z-20 flex items-center justify-center px-2">
+            <Card className="w-[min(92%,26rem)] border border-white/10 bg-background/92 shadow-2xl backdrop-blur-md">
+              <CardContent className="space-y-5 p-5 sm:p-6">
+                <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+                  <SearchIcon className="gradient-icon h-6 w-6" />
                 </div>
-                <p className="text-muted-foreground mt-2 text-xs leading-relaxed">
-                  {desc}
-                </p>
-              </div>
-            ))}
+
+                <div className="space-y-1">
+                  <p className="font-pixel text-[11px] tracking-[0.28em] text-muted-foreground">
+                    {statusLabel}
+                  </p>
+                  <h2 className="text-lg font-semibold tracking-tight">
+                    {statusTitle}
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {statusDescription}
+                  </p>
+                </div>
+
+                {isScanning ? (
+                  <div className="space-y-2">
+                    <Progress value={progressValue} className="h-2" />
+                    <div className="flex items-center justify-between text-xs text-muted-foreground">
+                      <span>{state.progress.currentFolder || "Scanning..."}</span>
+                      <span>{progressValue}%</span>
+                    </div>
+                  </div>
+                ) : isReady ? (
+                  <div className="grid grid-cols-3 gap-2">
+                    <StatTile label="Consoles" value={String(totalConsoles)} />
+                    <StatTile label="Games" value={String(totalGames)} />
+                    <StatTile label="Art" value={String(gamesWithImages)} />
+                  </div>
+                ) : (
+                  <div className="rounded-2xl border border-dashed bg-muted/20 p-4 text-sm text-muted-foreground">
+                    Tap the center button to connect your library, or browse a
+                    console first.
+                  </div>
+                )}
+
+                <div className="flex flex-col gap-2 sm:flex-row">
+                  <Button
+                    size="lg"
+                    className="retro-btn-glow font-pixel w-full gap-2 px-5 text-xs tracking-[0.22em] sm:w-auto"
+                    onClick={openAndScan}
+                    disabled={isScanning}
+                  >
+                    <PrimaryIcon
+                      className={`h-4 w-4 ${isScanning ? "animate-spin" : ""}`}
+                    />
+                    {primaryLabel}
+                  </Button>
+
+                  <Link href="/library" className="w-full sm:w-auto">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="font-pixel w-full gap-2 px-5 text-xs tracking-[0.22em] sm:w-auto"
+                    >
+                      <LibraryIcon className="h-4 w-4" />
+                      BROWSE LIBRARY
+                    </Button>
+                  </Link>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
-        <div className="relative flex items-center justify-center">
-          <div className="relative aspect-square w-full max-w-[34rem] sm:max-w-[38rem] lg:max-w-[42rem]">
-            <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(255,75,43,0.18),transparent_62%)] blur-3xl" />
+        <div className="flex flex-wrap justify-center gap-2 text-xs">
+          <span className="retro-tag">NO UPLOADS</span>
+          <span className="retro-tag">NO ACCOUNTS</span>
+          <span className="retro-tag">ONE FOLDER TO SCAN</span>
+        </div>
 
-            {ORBIT_RINGS.map((ring) => (
-              <OrbitRing key={ring.duration} {...ring} />
-            ))}
-
-            <div className="absolute inset-0 z-20 flex items-center justify-center px-2">
-              <Card className="w-[min(86%,22rem)] border border-white/10 bg-background/92 shadow-2xl backdrop-blur-md">
-                <CardContent className="space-y-4 p-5 sm:p-6">
-                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
-                    <SearchIcon className="gradient-icon h-6 w-6" />
-                  </div>
-
-                  <div className="space-y-1 text-center">
-                    <p className="font-pixel text-[11px] tracking-[0.28em] text-muted-foreground">
-                      {statusLabel}
-                    </p>
-                    <h2 className="text-lg font-semibold tracking-tight">
-                      {statusTitle}
-                    </h2>
-                    <p className="text-sm text-muted-foreground">
-                      {statusDescription}
-                    </p>
-                  </div>
-
-                  {isScanning ? (
-                    <div className="space-y-2">
-                      <Progress value={progressValue} className="h-2" />
-                      <div className="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{state.progress.currentFolder || "Scanning..."}</span>
-                        <span>{progressValue}%</span>
-                      </div>
-                    </div>
-                  ) : isReady ? (
-                    <div className="grid grid-cols-3 gap-2">
-                      <StatTile label="Consoles" value={String(totalConsoles)} />
-                      <StatTile label="Games" value={String(totalGames)} />
-                      <StatTile label="Art" value={String(gamesWithImages)} />
-                    </div>
-                  ) : (
-                    <div className="rounded-2xl border border-dashed bg-muted/20 p-4 text-sm text-muted-foreground">
-                      Tap the folder button to connect your library, or browse a
-                      console first.
-                    </div>
-                  )}
-
-                  <p className="text-center text-xs text-muted-foreground">
-                    Use the buttons on the left to launch the scan or jump
-                    straight into the library.
+        <div className="grid w-full gap-3 sm:grid-cols-3">
+          {QUICK_STEPS.map(({ icon: Icon, title, desc }) => (
+            <div
+              key={title}
+              className="retro-card bg-background/80 p-3 text-left shadow-sm"
+            >
+              <div className="flex items-center gap-2">
+                <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-lg">
+                  <Icon className="gradient-icon h-4 w-4" />
+                </div>
+                <div>
+                  <p className="font-pixel text-xs tracking-[0.22em]">
+                    {title}
                   </p>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
+              <p className="text-muted-foreground mt-2 text-xs leading-relaxed">
+                {desc}
+              </p>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
