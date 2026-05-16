@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 import {
   FolderOpenIcon,
   GamepadIcon,
@@ -16,7 +17,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
-const FEATURED_CONSOLES = [
+type LogoAsset = {
+  label: string;
+  src: string;
+};
+
+const ORBIT_LOGOS: LogoAsset[] = [
   { label: "NES", src: "/logos/nes.png" },
   { label: "SNES", src: "/logos/snes.png" },
   { label: "GBA", src: "/logos/gba.png" },
@@ -33,23 +39,52 @@ const FEATURED_CONSOLES = [
   { label: "PC Engine", src: "/logos/pcengine.png" },
   { label: "Switch", src: "/logos/switch.png" },
   { label: "DS", src: "/logos/nds.png" },
+  { label: "Game Gear", src: "/logos/gamegear.png" },
+  { label: "Saturn", src: "/logos/saturn.png" },
+];
+
+const ORBIT_RINGS = [
+  {
+    logos: ORBIT_LOGOS.slice(0, 8),
+    radius: "clamp(6rem, 20vw, 9rem)",
+    duration: "58s",
+    reverse: false,
+    tileClassName: "h-12 w-12 sm:h-14 sm:w-14 lg:h-16 lg:w-16",
+    ringClassName: "opacity-75",
+  },
+  {
+    logos: ORBIT_LOGOS.slice(8, 14),
+    radius: "clamp(4.5rem, 15vw, 6.75rem)",
+    duration: "44s",
+    reverse: true,
+    tileClassName: "h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14",
+    ringClassName: "opacity-60",
+  },
+  {
+    logos: ORBIT_LOGOS.slice(14),
+    radius: "clamp(2.75rem, 10vw, 4.5rem)",
+    duration: "32s",
+    reverse: false,
+    tileClassName: "h-9 w-9 sm:h-10 sm:w-10 lg:h-12 lg:w-12",
+    ringClassName: "opacity-50",
+  },
 ] as const;
 
 const QUICK_STEPS = [
   {
     icon: FolderOpenIcon,
     title: "Connect",
-    desc: "Open your SD card or ROM folder root.",
+    desc: "Open the root of your SD card or ROM folder.",
   },
   {
     icon: SearchIcon,
     title: "Scan",
-    desc: "Read folders and gamelist.xml locally.",
+    desc: "Read your folders and gamelist.xml locally.",
   },
   {
     icon: LibraryIcon,
     title: "Browse",
-    desc: "Open a console and edit media fast.",
+    desc: "Jump into the library and manage media cleanly.",
   },
 ] as const;
 
@@ -61,7 +96,10 @@ export function WaitlistHero() {
 
   const totalConsoles = isReady ? state.consoles.length : 0;
   const totalGames = isReady
-    ? state.consoles.reduce((sum, consoleItem) => sum + consoleItem.games.length, 0)
+    ? state.consoles.reduce(
+        (sum, consoleItem) => sum + consoleItem.games.length,
+        0
+      )
     : 0;
   const gamesWithImages = isReady
     ? state.consoles.reduce(
@@ -69,16 +107,23 @@ export function WaitlistHero() {
         0
       )
     : 0;
+
   const progressValue =
     isScanning && state.progress.total > 0
       ? Math.round((state.progress.current / state.progress.total) * 100)
       : 0;
 
-  const primaryLabel = isReady
-    ? "RESCAN SD CARD"
-    : isScanning
-      ? "SCANNING..."
+  const primaryLabel = isScanning
+    ? "SCANNING..."
+    : isReady
+      ? "RESCAN SD CARD"
       : "OPEN SD CARD";
+
+  const PrimaryIcon = isScanning
+    ? Loader2
+    : isReady
+      ? RefreshCwIcon
+      : FolderOpenIcon;
 
   const statusLabel = isReady
     ? "READY"
@@ -86,19 +131,41 @@ export function WaitlistHero() {
       ? "SCANNING"
       : "WAITING";
 
+  const statusTitle = isReady
+    ? "Your library is ready"
+    : isScanning
+      ? "Scanning your folders"
+      : "Connect your SD card to begin";
+
   const statusDescription = isReady
     ? `Loaded ${totalGames} games across ${totalConsoles} consoles.`
     : isScanning
-      ? `Scanning ${state.progress.currentFolder || "your library"}...`
-      : "Connect your SD card or ROM folder root to load the library.";
+      ? `Reading ${state.progress.currentFolder || "your library"}...`
+      : "Choose the root of your SD card or ROM folder and we’ll scan it locally.";
 
   return (
-    <section className="scanlines relative overflow-hidden rounded-[2rem] border bg-card/85 p-4 shadow-2xl sm:p-6 lg:p-8">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,75,43,0.18),transparent_32%),radial-gradient(circle_at_top_right,rgba(255,65,108,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.06),transparent_40%)]" />
-      <div className="absolute inset-0 opacity-[0.15] [background-image:linear-gradient(to_right,rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:32px_32px]" />
+    <section className="scanlines relative isolate overflow-hidden rounded-[2rem] border bg-card/95 p-4 shadow-2xl sm:p-6 lg:p-8">
+      <style>{`
+        @keyframes orbit-spin {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        @keyframes orbit-spin-reverse {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(-360deg); }
+        }
+        .orbit-spin {
+          animation: orbit-spin 58s linear infinite;
+        }
+        .orbit-spin-reverse {
+          animation: orbit-spin-reverse 44s linear infinite;
+        }
+      `}</style>
 
-      <div className="relative grid gap-6 lg:grid-cols-[1.15fr_0.85fr] lg:items-start">
-        {/* Left: hero copy */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,75,43,0.18),transparent_32%),radial-gradient(circle_at_top_right,rgba(255,65,108,0.12),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.06),transparent_40%)]" />
+      <div className="absolute inset-0 opacity-[0.12] [background-image:linear-gradient(to_right,rgba(255,255,255,0.12)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.12)_1px,transparent_1px)] [background-size:32px_32px]" />
+
+      <div className="relative grid min-h-[calc(100dvh-12rem)] gap-8 lg:grid-cols-[1.05fr_0.95fr] lg:items-center">
         <div className="space-y-6">
           <div className="flex flex-wrap gap-2">
             <Badge variant="secondary" className="font-pixel tracking-widest">
@@ -113,24 +180,27 @@ export function WaitlistHero() {
           </div>
 
           <div className="space-y-4">
-            <div className="inline-flex items-center gap-2 rounded-full border bg-background/75 px-3 py-1.5 shadow-sm backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 rounded-full border bg-background/80 px-3 py-1.5 shadow-sm backdrop-blur-sm">
               <div className="retro-step h-8 w-8 shrink-0">
                 <GamepadIcon className="gradient-icon h-4 w-4" />
               </div>
               <span className="font-pixel text-xs tracking-[0.28em] text-muted-foreground">
-                RETRO SCRAPER
+                SCAN LAUNCHER
               </span>
             </div>
 
-            <h1 className="font-pixel neon-glow max-w-2xl text-5xl leading-[0.88] tracking-wider sm:text-6xl lg:text-7xl">
-              CLEAN LIBRARY.
+            <h1 className="font-pixel neon-glow max-w-2xl text-5xl leading-[0.9] tracking-wider sm:text-6xl lg:text-7xl">
+              CONNECT.
               <br />
-              PIXEL CONTROL.
+              SCAN.
+              <br />
+              BROWSE.
             </h1>
 
             <p className="text-muted-foreground max-w-2xl text-sm leading-relaxed sm:text-base lg:text-lg">
-              Connect your SD card, scan the folder, and manage covers, logos,
-              videos, and metadata without the clutter.
+              Open the root of your SD card or ROM folder, let Retro Scraper
+              read the library locally, then browse games with cleaner controls
+              and real console logos.
             </p>
           </div>
 
@@ -141,13 +211,9 @@ export function WaitlistHero() {
               onClick={openAndScan}
               disabled={isScanning}
             >
-              {isScanning ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : isReady ? (
-                <RefreshCwIcon className="h-4 w-4" />
-              ) : (
-                <FolderOpenIcon className="h-4 w-4" />
-              )}
+              <PrimaryIcon
+                className={`h-4 w-4 ${isScanning ? "animate-spin" : ""}`}
+              />
               {primaryLabel}
             </Button>
 
@@ -193,105 +259,118 @@ export function WaitlistHero() {
           </div>
         </div>
 
-        {/* Right: status and logo wall */}
-        <div className="space-y-4">
-          <Card className="retro-card border-border/80 bg-background/80 shadow-lg">
-            <CardContent className="space-y-4 p-4 sm:p-5">
-              <div className="flex items-start justify-between gap-3">
-                <div className="space-y-1">
-                  <p className="font-pixel text-xs tracking-[0.28em] text-muted-foreground">
-                    LIBRARY STATUS
-                  </p>
-                  <p className="text-sm font-semibold sm:text-base">
-                    {isReady
-                      ? "Connected and ready to browse"
-                      : isScanning
-                        ? "Scanning your folders now"
-                        : "Waiting for your SD card"}
-                  </p>
-                </div>
-                <Badge variant={isReady ? "default" : "secondary"}>
-                  {statusLabel}
-                </Badge>
-              </div>
+        <div className="relative flex items-center justify-center">
+          <div className="relative aspect-square w-full max-w-[34rem] sm:max-w-[38rem] lg:max-w-[42rem]">
+            <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle,rgba(255,75,43,0.18),transparent_62%)] blur-3xl" />
 
-              {isScanning ? (
-                <div className="space-y-3">
-                  <Progress value={progressValue} className="h-2" />
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <span>{state.progress.currentFolder || "Scanning..."}</span>
-                    <span>{progressValue}%</span>
+            {ORBIT_RINGS.map((ring) => (
+              <OrbitRing key={ring.duration} {...ring} />
+            ))}
+
+            <div className="absolute inset-0 z-20 flex items-center justify-center px-2">
+              <Card className="w-[min(86%,22rem)] border border-white/10 bg-background/92 shadow-2xl backdrop-blur-md">
+                <CardContent className="space-y-4 p-5 sm:p-6">
+                  <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10">
+                    <SearchIcon className="gradient-icon h-6 w-6" />
                   </div>
-                </div>
-              ) : isReady ? (
-                <div className="grid grid-cols-3 gap-3">
-                  <StatTile label="Consoles" value={String(totalConsoles)} />
-                  <StatTile label="Games" value={String(totalGames)} />
-                  <StatTile
-                    label="With art"
-                    value={String(gamesWithImages)}
-                  />
-                </div>
-              ) : (
-                <div className="rounded-2xl border border-dashed bg-muted/20 p-4 text-sm text-muted-foreground">
-                  {statusDescription}
-                </div>
-              )}
 
-              <p className="text-muted-foreground text-xs">
-                {isReady
-                  ? statusDescription
-                  : "Tip: open the root of your SD card or ROM folder."}
-              </p>
-            </CardContent>
-          </Card>
+                  <div className="space-y-1 text-center">
+                    <p className="font-pixel text-[11px] tracking-[0.28em] text-muted-foreground">
+                      {statusLabel}
+                    </p>
+                    <h2 className="text-lg font-semibold tracking-tight">
+                      {statusTitle}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {statusDescription}
+                    </p>
+                  </div>
 
-          <Card className="retro-card border-border/80 bg-background/80 shadow-lg">
-            <CardContent className="space-y-4 p-4 sm:p-5">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="font-pixel text-xs tracking-[0.28em] text-muted-foreground">
-                    POPULAR SYSTEMS
-                  </p>
-                  <p className="text-sm font-semibold">Local console logos</p>
-                </div>
-                <Badge variant="secondary" className="text-[10px]">
-                  16 SYSTEMS
-                </Badge>
-              </div>
-
-              <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
-                {FEATURED_CONSOLES.map((console) => (
-                  <div
-                    key={console.label}
-                    className="flex flex-col items-center gap-1 rounded-xl border bg-background/70 p-2 text-center transition-transform duration-200 hover:-translate-y-0.5"
-                  >
-                    <div className="flex h-12 w-full items-center justify-center">
-                      <Image
-                        src={console.src}
-                        alt={console.label}
-                        width={48}
-                        height={48}
-                        className="h-10 w-10 object-contain"
-                        unoptimized
-                      />
+                  {isScanning ? (
+                    <div className="space-y-2">
+                      <Progress value={progressValue} className="h-2" />
+                      <div className="flex items-center justify-between text-xs text-muted-foreground">
+                        <span>{state.progress.currentFolder || "Scanning..."}</span>
+                        <span>{progressValue}%</span>
+                      </div>
                     </div>
-                    <span className="text-[10px] font-medium leading-tight text-muted-foreground">
-                      {console.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                  ) : isReady ? (
+                    <div className="grid grid-cols-3 gap-2">
+                      <StatTile label="Consoles" value={String(totalConsoles)} />
+                      <StatTile label="Games" value={String(totalGames)} />
+                      <StatTile label="Art" value={String(gamesWithImages)} />
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-dashed bg-muted/20 p-4 text-sm text-muted-foreground">
+                      Tap the folder button to connect your library, or browse a
+                      console first.
+                    </div>
+                  )}
 
-              <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                <span>Supports ES-DE style media folders.</span>
-                <span className="hidden sm:inline">Pixel perfect-ish.</span>
-              </div>
-            </CardContent>
-          </Card>
+                  <p className="text-center text-xs text-muted-foreground">
+                    Use the buttons on the left to launch the scan or jump
+                    straight into the library.
+                  </p>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     </section>
+  );
+}
+
+function OrbitRing({
+  logos,
+  radius,
+  duration,
+  reverse,
+  tileClassName,
+  ringClassName,
+}: {
+  logos: LogoAsset[];
+  radius: string;
+  duration: string;
+  reverse: boolean;
+  tileClassName: string;
+  ringClassName: string;
+}) {
+  const ringStyle = { animationDuration: duration } as CSSProperties;
+
+  return (
+    <div
+      className={`absolute inset-0 pointer-events-none ${
+        reverse ? "orbit-spin-reverse" : "orbit-spin"
+      } ${ringClassName}`}
+      style={ringStyle}
+    >
+      {logos.map((logo, index) => {
+        const angle = (360 / logos.length) * index;
+
+        return (
+          <div
+            key={logo.label}
+            className="absolute left-1/2 top-1/2"
+            style={{
+              transform: `translate(-50%, -50%) rotate(${angle}deg) translateY(calc(-1 * ${radius})) rotate(${-angle}deg)`,
+            }}
+          >
+            <div
+              className={`relative overflow-hidden rounded-2xl border bg-background/85 p-2 shadow-lg shadow-black/20 backdrop-blur-sm ${tileClassName}`}
+            >
+              <Image
+                src={logo.src}
+                alt={logo.label}
+                fill
+                className="object-contain p-2.5"
+                unoptimized
+              />
+            </div>
+          </div>
+        );
+      })}
+    </div>
   );
 }
 
