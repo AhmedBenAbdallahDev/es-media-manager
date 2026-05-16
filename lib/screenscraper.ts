@@ -241,13 +241,13 @@ export async function searchGame(
   const bestMatch = games[0];
 
   // Extract game name from noms array
-  const gameName =
+  const matchedName =
     bestMatch.noms?.find((n: { region: string }) => n.region === "ss")?.text ||
     bestMatch.noms?.[0]?.text ||
     "Unknown";
 
   console.log(
-    `[ScreenScraper] Found: ${gameName} (${bestMatch.medias?.length || 0} media items)`
+    `[ScreenScraper] Found: ${matchedName} (${bestMatch.medias?.length || 0} media items)`
   );
 
   return bestMatch as ScreenScraperGameInfo;
