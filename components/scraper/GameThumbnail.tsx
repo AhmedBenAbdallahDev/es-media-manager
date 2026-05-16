@@ -3,15 +3,14 @@
 /**
  * GameThumbnail
  *
- * Lazily loads a game's cover art from the SD card's FileSystem dirHandle.
- * Uses IntersectionObserver so images only load when they scroll into view.
+ * Loads a game's cover art from the SD card's FileSystem dirHandle.
+ * Uses a direct blob URL so thumbnails show reliably without relying on
+ * observer timing or next/image blob handling.
  */
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useEffect, useState } from "react";
 import { ImageOffIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { MEDIA_TYPES } from "@/lib/constants";
 
 interface GameThumbnailProps {
   dirHandle: FileSystemDirectoryHandle | undefined;
@@ -65,37 +64,29 @@ export function GameThumbnail({
   className,
   iconSize = "h-6 w-6",
 }: GameThumbnailProps) {
-  const ref = useRef<HTMLDivElement>(null);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
   const [loaded, setLoaded] = useState(false);
-  const [visible, setVisible] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  // Observe when this element enters the viewport
+  // Load the image as soon as the inputs are available.
   useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "200px" }
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+    const trimmedPath = imagePath?.trim();
+    if (!dirHandle || !trimmedPath) {
+      setBlobUrl(null);
+      setLoaded(false);
+      setFailed(false);
+      return;
+    }
 
-  // Load the image once visible
-  useEffect(() => {
-    if (!visible || !dirHandle || !imagePath?.trim()) return;
-    let revoked = false;
+    let cancelled = false;
     let url: string | null = null;
 
-    resolveImageUrl(dirHandle, imagePath).then((resolved) => {
-      if (revoked) {
+    setBlobUrl(null);
+    setLoaded(false);
+    setFailed(false);
+
+    resolveImageUrl(dirHandle, trimmedPath).then((resolved) => {
+      if (cancelled) {
         if (resolved) URL.revokeObjectURL(resolved);
         return;
       }
@@ -108,16 +99,15 @@ export function GameThumbnail({
     });
 
     return () => {
-      revoked = true;
+      cancelled = true;
       if (url) URL.revokeObjectURL(url);
     };
-  }, [visible, dirHandle, imagePath]);
+  }, [dirHandle, imagePath]);
 
   const hasPath = Boolean(imagePath?.trim());
 
   return (
     <div
-      ref={ref}
       className={cn(
         "bg-muted/40 relative flex items-center justify-center overflow-hidden",
         className
@@ -144,16 +134,16 @@ export function GameThumbnail({
 
       {/* Loaded image */}
       {blobUrl && (
-        <Image
+        <img
           src={blobUrl}
           alt={alt}
-          fill
+          loading="eager"
           className={cn(
-            "object-contain transition-opacity duration-300",
+            "absolute inset-0 h-full w-full object-contain transition-opacity duration-300",
             loaded ? "opacity-100" : "opacity-0"
           )}
-          unoptimized
           onLoad={() => setLoaded(true)}
+          onError={() => setFailed(true)}
         />
       )}
     </div>
