@@ -398,22 +398,22 @@ export function GameMediaForm({
             <Button
               variant={hasContent ? "outline" : "default"}
               size="default"
-              className="font-pixel h-9 min-w-0 flex-1 gap-2 px-2 text-[10px] tracking-tight sm:h-10 sm:px-3 sm:text-xs sm:tracking-normal"
+              className="h-9 min-w-0 flex-1 gap-2 px-3 text-xs font-medium sm:h-10 sm:text-sm"
               onClick={(e) => {
                 e.stopPropagation();
                 fileInputRefs.current[mediaType.key]?.click();
               }}
               disabled={isUploading}
             >
-              <Upload className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
-              <span className="truncate">{hasContent ? "REPLACE" : "UPLOAD"}</span>
+              <Upload className="h-4 w-4 shrink-0" />
+              <span className="truncate">{hasContent ? "Replace" : "Upload"}</span>
             </Button>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
                   size="default"
-                  className="font-pixel border-primary/50 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/70 h-9 min-w-0 flex-1 gap-2 px-2 text-[10px] tracking-tight sm:h-10 sm:px-3 sm:text-xs sm:tracking-normal"
+                  className="border-primary/50 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/70 h-9 min-w-0 flex-1 gap-2 px-3 text-xs font-medium sm:h-10 sm:text-sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     setScraperDialog({
@@ -424,8 +424,8 @@ export function GameMediaForm({
                   }}
                   disabled={isUploading}
                 >
-                  <Search className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
-                  <span className="truncate">FETCH</span>
+                  <Search className="h-4 w-4 shrink-0" />
+                  <span className="truncate">Fetch</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -462,7 +462,7 @@ export function GameMediaForm({
               {coreMedia.length} types
             </Badge>
           </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
             {coreMedia.map(renderMediaCard)}
           </div>
         </div>
@@ -474,7 +474,7 @@ export function GameMediaForm({
               {optionalMedia.length} types
             </Badge>
           </div>
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
             {optionalMedia.map(renderMediaCard)}
           </div>
         </div>
