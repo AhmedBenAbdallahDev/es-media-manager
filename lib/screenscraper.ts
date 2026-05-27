@@ -195,21 +195,30 @@ function parseSearchQuery(query: string): SearchQueryHints {
   let searchTerm = query.trim();
   let preferredRegion: PreferredRegion | undefined;
 
+  // 1. Strip leading path markers (./ or .\)
+  searchTerm = searchTerm.replace(/^[./\\]+/, "");
+
+  // 2. Strip common file extensions
+  searchTerm = searchTerm.replace(/\.(zip|7z|rar|iso|chd|bin|cue|gba|nes|snes|n64|ps1|ps2|rvz|wbfs)$/i, "");
+
+  // 3. Extract region from tags BEFORE stripping them
   for (const entry of REGION_TOKEN_MAP) {
     if (entry.patterns.some((pattern) => pattern.test(searchTerm))) {
       preferredRegion = entry.region;
-      searchTerm = searchTerm
-        .replace(
-          /\s*[\(\[]\s*(?:USA|US|EUR|EU|Europe|JPN|JP|Japan|FRA|FR|France)\s*[\)\]]\s*$/i,
-          ""
-        )
-        .replace(
-          /\s+(?:USA|US|EUR|EU|Europe|JPN|JP|Japan|FRA|FR|France)\s*$/i,
-          ""
-        )
-        .trim();
       break;
     }
+  }
+
+  // 4. Strip ALL bracketed and parenthetical content (e.g., (World), (En), [v1.0], (Switch))
+  // We do this globally to clean out any metadata that might confuse the search engine
+  searchTerm = searchTerm
+    .replace(/\s*[\(\[][^\]\)]*[\)\]]/g, "")
+    .replace(/\s{2,}/g, " ") // Clean up double spaces
+    .trim();
+
+  // 5. Special case: if we stripped everything, fall back to original (rare)
+  if (!searchTerm) {
+    searchTerm = query.trim().replace(/^[./\\]+/, "").split(".")[0];
   }
 
   return { searchTerm, preferredRegion };
