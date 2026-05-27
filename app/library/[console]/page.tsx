@@ -20,6 +20,16 @@ import {
 import { Button } from "@/components/ui/button";
 import { GameTable } from "@/components/scraper/GameTable";
 import { useLibrary } from "@/hooks/useLibrary";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface ConsolePageProps {
   params: Promise<{ console: string }>;
@@ -29,8 +39,9 @@ export default function ConsolePage({ params }: ConsolePageProps) {
   const { console: encodedName } = use(params);
   const folderName = decodeURIComponent(encodedName);
   const [isCreating, setIsCreating] = useState(false);
+  const [showChoiceDialog, setShowChoiceDialog] = useState(false);
 
-  const { state, getConsole, createGamelist } = useLibrary();
+  const { state, getConsole, createGamelist, createAllMissingGamelists } = useLibrary();
 
   // ── Library not ready ────────────────────────────────────────────
   if (state.status === "idle" || state.status === "error") {
@@ -96,14 +107,29 @@ export default function ConsolePage({ params }: ConsolePageProps) {
 
   // ── No gamelist ──────────────────────────────────────────────────
   if (!consoleLib.hasGamelist) {
-    const handleCreateGamelist = async () => {
+    const handleCreateOnlyThis = async () => {
       setIsCreating(true);
+      setShowChoiceDialog(false);
       try {
         await createGamelist(folderName);
       } finally {
         setIsCreating(false);
       }
     };
+
+    const handleCreateAllMissing = async () => {
+      setIsCreating(true);
+      setShowChoiceDialog(false);
+      try {
+        await createAllMissingGamelists();
+      } finally {
+        setIsCreating(false);
+      }
+    };
+
+    const missingOtherCount = state.status === "ready" 
+      ? state.consoles.filter(c => !c.hasGamelist && c.folderName !== folderName).length
+      : 0;
 
     return (
       <div className="space-y-6 py-4">
@@ -130,7 +156,7 @@ export default function ConsolePage({ params }: ConsolePageProps) {
           </p>
           <div className="mt-8 flex flex-col items-center gap-4">
             <Button
-              onClick={handleCreateGamelist}
+              onClick={() => missingOtherCount > 0 ? setShowChoiceDialog(true) : handleCreateOnlyThis()}
               disabled={isCreating}
               className="retro-btn-glow font-pixel gap-2 text-xs tracking-wider"
             >
@@ -147,6 +173,36 @@ export default function ConsolePage({ params }: ConsolePageProps) {
             </p>
           </div>
         </div>
+
+        <AlertDialog open={showChoiceDialog} onOpenChange={setShowChoiceDialog}>
+          <AlertDialogContent className="max-w-md">
+            <AlertDialogHeader>
+              <AlertDialogTitle className="font-pixel text-sm tracking-widest">
+                CREATE GAMELISTS
+              </AlertDialogTitle>
+              <AlertDialogDescription className="text-sm">
+                You have <span className="text-foreground font-semibold">{missingOtherCount}</span> other console{missingOtherCount !== 1 ? "s" : ""} missing a gamelist.xml.
+                Would you like to scan and generate XML files for all of them at once?
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter className="flex-col sm:flex-row gap-2">
+              <AlertDialogCancel className="mt-0">Cancel</AlertDialogCancel>
+              <Button
+                variant="outline"
+                className="border-primary/20 hover:bg-primary/5"
+                onClick={handleCreateOnlyThis}
+              >
+                Just this console
+              </Button>
+              <AlertDialogAction
+                className="bg-primary hover:bg-primary/90"
+                onClick={handleCreateAllMissing}
+              >
+                All missing consoles
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   }

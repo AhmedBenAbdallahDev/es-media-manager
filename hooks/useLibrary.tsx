@@ -41,6 +41,8 @@ interface LibraryContextValue {
   getConsole: (folderName: string) => ConsoleLibrary | undefined;
   /** Creates a gamelist.xml from scratch for a console that doesn't have one */
   createGamelist: (consoleFolderName: string) => Promise<void>;
+  /** Automatically creates gamelist.xml for all consoles that are missing one */
+  createAllMissingGamelists: () => Promise<void>;
 }
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -246,6 +248,68 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
     [state]
   );
 
+  /**
+   * Automatically creates gamelist.xml for all consoles that are missing one.
+   */
+  const createAllMissingGamelists = useCallback(async () => {
+    if (state.status !== "ready") return;
+
+    const missingConsoles = state.consoles.filter((c) => !c.hasGamelist);
+
+    if (missingConsoles.length === 0) {
+      toast.info("No consoles are missing a gamelist.xml.");
+      return;
+    }
+
+    const loadingToast = toast.loading(
+      `Generating gamelists for ${missingConsoles.length} consoles...`
+    );
+
+    let successCount = 0;
+    const updatedConsoles = [...state.consoles];
+
+    for (const consoleEntry of missingConsoles) {
+      try {
+        const generatedGames = await generateGamelistFromRoms(
+          consoleEntry.dirHandle
+        );
+
+        if (generatedGames.length > 0) {
+          await writeGamelist(consoleEntry.dirHandle, generatedGames);
+
+          const idx = updatedConsoles.findIndex(
+            (c) => c.folderName === consoleEntry.folderName
+          );
+          if (idx !== -1) {
+            updatedConsoles[idx] = {
+              ...consoleEntry,
+              games: generatedGames,
+              hasGamelist: true,
+              gamesWithImages: 0,
+              gamesWithoutImages: generatedGames.length,
+            };
+          }
+          successCount++;
+        }
+      } catch (err) {
+        console.error(`Failed to auto-create for ${consoleEntry.folderName}`, err);
+      }
+    }
+
+    setState({
+      status: "ready",
+      consoles: updatedConsoles,
+      rootName: state.rootName,
+    });
+
+    toast.dismiss(loadingToast);
+    if (successCount > 0) {
+      toast.success(`Broadly generated ${successCount} gamelist.xml files!`);
+    } else {
+      toast.error("Failed to generate any gamelists. Ensure permissions are set.");
+    }
+  }, [state]);
+
   /** Convenience getter for a single console */
   const getConsole = useCallback(
     (folderName: string): ConsoleLibrary | undefined => {
@@ -265,6 +329,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
         saveGame,
         getConsole,
         createGamelist,
+        createAllMissingGamelists,
       }}
     >
       {children}
