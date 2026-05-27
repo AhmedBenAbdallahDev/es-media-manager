@@ -142,17 +142,19 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
   return (
     <div className="flex flex-col gap-4">
       {/* ── Stats bar ─────────────────────────────────────────────── */}
-      <div className="flex flex-wrap items-center gap-2">
-        <span className="retro-tag">TOTAL: {games.length}</span>
+      <div className="no-scrollbar flex items-center gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
+        <span className="retro-tag shrink-0 whitespace-nowrap">
+          TOTAL: {games.length}
+        </span>
         <span
-          className="retro-tag"
+          className="retro-tag shrink-0 whitespace-nowrap"
           style={{ borderColor: "green", color: "green" }}
         >
           ✓ {withImage} WITH IMAGE
         </span>
         {missingImage > 0 && (
           <span
-            className="retro-tag"
+            className="retro-tag shrink-0 whitespace-nowrap"
             style={{ borderColor: "orange", color: "orange" }}
           >
             ✗ {missingImage} MISSING
@@ -160,7 +162,7 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
         )}
         {withVideo > 0 && (
           <span
-            className="retro-tag"
+            className="retro-tag shrink-0 whitespace-nowrap"
             style={{ borderColor: "blue", color: "blue" }}
           >
             ▶ {withVideo} VIDEO
@@ -173,31 +175,49 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
         <div className="relative flex-1">
           <SearchIcon className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <Input
-            placeholder="Search by name or filename…"
+            placeholder="Search games…"
             value={search}
             onChange={(e) => handleSearch(e.target.value)}
-            className="pl-9"
+            className="h-9 pl-9 text-sm sm:h-10"
           />
         </div>
-        <Select
-          value={filter}
-          onValueChange={(v) => handleFilter(v as GameFilter)}
-        >
-          <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Filter" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All games</SelectItem>
-            <SelectItem value="has-image">Has image</SelectItem>
-            <SelectItem value="missing-image">Missing image</SelectItem>
-          </SelectContent>
-        </Select>
-        {/* View toggle */}
-        <div className="flex gap-1 rounded-md border p-0.5">
-          <Button
-            variant={view === "list" ? "secondary" : "ghost"}
-            size="icon"
-            className="h-8 w-8"
+        <div className="flex gap-2">
+          <Select
+            value={filter}
+            onValueChange={(v) => handleFilter(v as GameFilter)}
+          >
+            <SelectTrigger className="h-9 w-full text-sm sm:h-10 sm:w-44">
+              <SelectValue placeholder="Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All games</SelectItem>
+              <SelectItem value="has-image">Has image</SelectItem>
+              <SelectItem value="missing-image">Missing image</SelectItem>
+            </SelectContent>
+          </Select>
+          {/* View toggle */}
+          <div className="flex h-9 items-center gap-1 rounded-md border p-0.5 sm:h-10">
+            <Button
+              variant={view === "list" ? "secondary" : "ghost"}
+              size="icon"
+              className="h-7 w-7 sm:h-8 sm:w-8"
+              onClick={() => handleView("list")}
+              title="List view"
+            >
+              <LayoutListIcon className="h-4 w-4" />
+            </Button>
+            <Button
+              variant={view === "cards" ? "secondary" : "ghost"}
+              size="icon"
+              className="h-7 w-7 sm:h-8 sm:w-8"
+              onClick={() => handleView("cards")}
+              title="Card view"
+            >
+              <LayoutGridIcon className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
             onClick={() => handleView("list")}
             title="List view"
           >
@@ -306,7 +326,7 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="border-primary/40 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/60 h-7 shrink-0 gap-1 px-2 text-[11px] font-medium"
+                                  className="border-primary/40 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/60 h-7 shrink-0 gap-1 px-1.5 text-[11px] font-medium sm:px-2"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleFetchArt(game);
@@ -314,10 +334,12 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
                                   title="Fetch cover art from ScreenScraper"
                                 >
                                   <SearchIcon className="h-3.5 w-3.5" />
-                                  Fetch
+                                  <span className="hidden sm:inline">Fetch</span>
                                 </Button>
                               </TooltipTrigger>
-                              <TooltipContent>Fetch cover art from ScreenScraper</TooltipContent>
+                              <TooltipContent>
+                                Fetch cover art from ScreenScraper
+                              </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
                         )}
@@ -451,54 +473,64 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
 
       {/* ── Pagination ────────────────────────────────────────────── */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
-          <p className="text-muted-foreground text-sm">
-            Page {safePage} of {totalPages}
+        <div className="flex flex-col items-center justify-between gap-4 py-2 sm:flex-row">
+          <p className="text-muted-foreground order-2 text-xs sm:order-1 sm:text-sm">
+            Showing page <span className="text-foreground font-medium">{safePage}</span> of {totalPages}
           </p>
-          <div className="flex items-center gap-1">
+          <div className="order-1 flex items-center gap-1 sm:order-2">
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8"
+              className="h-9 w-9"
               onClick={() => setPage((p) => Math.max(1, p - 1))}
               disabled={safePage === 1}
             >
               <ChevronLeftIcon className="h-4 w-4" />
             </Button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1)
-              .filter(
-                (p) =>
-                  p === 1 || p === totalPages || Math.abs(p - safePage) <= 2
-              )
-              .reduce<(number | "…")[]>((acc, p, i, arr) => {
-                if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push("…");
-                acc.push(p);
-                return acc;
-              }, [])
-              .map((item, i) =>
-                item === "…" ? (
-                  <span
-                    key={`e-${i}`}
-                    className="text-muted-foreground px-1 text-sm"
-                  >
-                    …
-                  </span>
-                ) : (
-                  <Button
-                    key={item}
-                    variant={item === safePage ? "default" : "outline"}
-                    size="icon"
-                    className="h-8 w-8 text-xs"
-                    onClick={() => setPage(item as number)}
-                  >
-                    {item}
-                  </Button>
+            
+            {/* Page buttons - hidden on tiny mobile, or limited */}
+            <div className="flex items-center gap-1">
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (p) =>
+                    p === 1 || 
+                    p === totalPages || 
+                    (window.innerWidth > 640 ? Math.abs(p - safePage) <= 2 : Math.abs(p - safePage) <= 1)
                 )
-              )}
+                .reduce<(number | "…")[]>((acc, p, i, arr) => {
+                  if (i > 0 && p - (arr[i - 1] as number) > 1) acc.push("…");
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((item, i) =>
+                  item === "…" ? (
+                    <span
+                      key={`e-${i}`}
+                      className="text-muted-foreground px-1 text-sm"
+                    >
+                      …
+                    </span>
+                  ) : (
+                    <Button
+                      key={item}
+                      variant={item === safePage ? "default" : "outline"}
+                      size="icon"
+                      className={cn(
+                        "h-9 w-9 text-xs",
+                        item !== safePage && "hidden sm:inline-flex"
+                      )}
+                      onClick={() => setPage(item as number)}
+                    >
+                      {item}
+                    </Button>
+                  )
+                )}
+            </div>
+
             <Button
               variant="outline"
               size="icon"
-              className="h-8 w-8"
+              className="h-9 w-9"
               onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
               disabled={safePage === totalPages}
             >

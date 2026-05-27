@@ -39,16 +39,12 @@ import {
 } from "lucide-react";
 import type { GamelistGame } from "@/types/scraper";
 import { useLibrary } from "@/hooks/useLibrary";
-import { cn } from "@/lib/utils";
-import { toast } from "sonner";
-import { GameMediaForm } from "@/components/browser/GameMediaForm";
-import { Game } from "@/types";
-import { MEDIA_TYPES } from "@/lib/constants";
-import { sanitizeBasenameForSave } from "@/lib/gameMediaHelpers";
 import {
-  loadFileAsUrl,
-  resolveMediaFileHandle,
-} from "@/lib/mediaFileOperations";
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
 
 interface GameDetailSheetProps {
   game: GamelistGame | null;
@@ -461,143 +457,208 @@ export function GameDetailSheet({
           </div>
         </SheetHeader>
 
-        {/* ── Content: Two Columns ──────────────────────────────── */}
-        <div className="bg-muted/5 flex-1 min-h-0 overflow-y-auto md:overflow-hidden">
-          <div className="mx-auto flex h-full min-h-0 max-w-[1600px] flex-col md:flex-row">
-            {/* Left Column: Media Management */}
-            <div className="border-border/40 bg-background/50 flex-1 overflow-visible border-r px-4 py-4 md:overflow-y-auto md:px-6 md:py-8">
-              <div className="mx-auto max-w-3xl space-y-5 sm:space-y-6">
-                <div>
-                  <h3 className="mb-1 text-base font-semibold tracking-tight sm:text-lg">
-                    Media Management
-                  </h3>
-                  <p className="text-muted-foreground text-xs sm:text-sm">
-                    Upload covers, screenshots, and videos. Changes here are
-                    saved to disk immediately.
-                  </p>
-                </div>
-                <Separator />
-
-                <GameMediaForm
-                  game={gameAdapter}
-                  mainDirHandle={rootHandle}
-                  currentMediaUrls={currentMediaUrls}
-                  isLoadingUrls={isLoadingUrls}
-                  onGameUpdate={handleMediaUpdate}
-                  onClearBrokenAsset={(mediaKey) => {
-                    // Clear the broken asset reference from the draft
-                    if (!draft) return;
-                    const newDraft = { ...draft };
-                    switch (mediaKey) {
-                      case "covers":
-                        newDraft.image = undefined;
-                        newDraft.thumbnail = undefined;
-                        break;
-                      case "marquees":
-                        newDraft.marquee = undefined;
-                        break;
-                      case "videos":
-                        newDraft.video = undefined;
-                        break;
-                      case "fanart":
-                        newDraft.fanart = undefined;
-                        break;
-                      case "screenshots":
-                        newDraft.thumbnail = undefined;
-                        break;
-                      default:
-                        break;
-                    }
-                    setDraft(newDraft);
-                    // Auto-save the cleared reference
-                    if (game?.path) {
-                      saveGame(consoleFolderName, newDraft, game.path)
-                        .then(() => toast.success("Cleared broken reference"))
-                        .catch(() => toast.error("Failed to save changes"));
-                    }
-                  }}
-                />
+        {/* ── Content: Tabbed View ──────────────────────────────── */}
+        <div className="flex-1 min-h-0 bg-muted/5">
+          <Tabs defaultValue="metadata" className="h-full flex flex-col">
+            <div className="bg-background border-b px-4 sm:px-6">
+              <div className="mx-auto max-w-[1600px]">
+                <TabsList className="h-12 w-full justify-start gap-4 bg-transparent p-0">
+                  <TabsTrigger
+                    value="metadata"
+                    className="data-[state=active]:border-primary h-full rounded-none border-b-2 border-transparent bg-transparent px-2 font-pixel text-xs tracking-wider transition-none data-[state=active]:bg-transparent data-[state=active]:shadow-none sm:px-4 sm:text-sm"
+                  >
+                    METADATA
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="media"
+                    className="data-[state=active]:border-primary h-full rounded-none border-b-2 border-transparent bg-transparent px-2 font-pixel text-xs tracking-wider transition-none data-[state=active]:bg-transparent data-[state=active]:shadow-none sm:px-4 sm:text-sm"
+                  >
+                    MEDIA
+                  </TabsTrigger>
+                </TabsList>
               </div>
             </div>
 
-            {/* Right Column: Metadata Editing */}
-            <div className="bg-background w-full flex-shrink-0 overflow-visible px-4 py-4 shadow-sm md:w-[450px] md:overflow-y-auto md:px-6 md:py-8 lg:w-[500px] xl:w-[550px]">
-              <div className="mx-auto max-w-lg space-y-5 sm:space-y-6">
-                <div>
-                  <h3 className="mb-1 text-base font-semibold tracking-tight sm:text-lg">
-                    Metadata
-                  </h3>
-                  <p className="text-muted-foreground text-xs sm:text-sm">
-                    Edit game information stored in gamelist.xml.
-                  </p>
-                </div>
-                <Separator />
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="mx-auto max-w-[1600px] h-full">
+                <TabsContent value="metadata" className="m-0 p-0 h-full">
+                  <div className="mx-auto max-w-4xl px-4 py-6 md:px-8">
+                    <div className="grid gap-8 md:grid-cols-[1fr,350px]">
+                      {/* Left: Main Metadata */}
+                      <div className="space-y-6">
+                        <FieldRow
+                          label="Game Name"
+                          present={Boolean(draft.name?.trim())}
+                        >
+                          <Input
+                            value={draft.name}
+                            onChange={(e) => set("name", e.target.value)}
+                            className="font-medium"
+                          />
+                        </FieldRow>
 
-                <div className="space-y-4">
-                  <FieldRow
-                    label="Game Name"
-                    present={Boolean(draft.name?.trim())}
-                  >
-                    <Input
-                      value={draft.name}
-                      onChange={(e) => set("name", e.target.value)}
-                    />
-                  </FieldRow>
+                        <FieldRow
+                          label="Description"
+                          present={Boolean(draft.desc?.trim())}
+                        >
+                          <Textarea
+                            value={draft.desc ?? ""}
+                            onChange={(e) => set("desc", e.target.value)}
+                            placeholder="No description scraped…"
+                            rows={12}
+                            className="resize-none text-sm leading-relaxed"
+                          />
+                        </FieldRow>
+                      </div>
 
-                  <FieldRow
-                    label="Description"
-                    present={Boolean(draft.desc?.trim())}
-                  >
-                    <Textarea
-                      value={draft.desc ?? ""}
-                      onChange={(e) => set("desc", e.target.value)}
-                      placeholder="No description scraped…"
-                      rows={6}
-                      className="resize-y text-sm leading-relaxed"
-                    />
-                  </FieldRow>
+                      {/* Right: Technical Details */}
+                      <div className="space-y-6">
+                        <div className="rounded-lg border bg-card p-4 space-y-4">
+                          <h4 className="font-pixel text-[10px] tracking-widest text-muted-foreground uppercase">
+                            Technical Details
+                          </h4>
+                          
+                          <div className="grid grid-cols-1 gap-4">
+                            <FieldRow
+                              label="Developer"
+                              present={Boolean(draft.developer?.trim())}
+                            >
+                              <Input
+                                value={draft.developer ?? ""}
+                                onChange={(e) => set("developer", e.target.value)}
+                                placeholder="—"
+                                size={1} // Fix for grid layout
+                                className="h-8 text-xs"
+                              />
+                            </FieldRow>
+                            <FieldRow
+                              label="Publisher"
+                              present={Boolean(draft.publisher?.trim())}
+                            >
+                              <Input
+                                value={draft.publisher ?? ""}
+                                onChange={(e) => set("publisher", e.target.value)}
+                                placeholder="—"
+                                className="h-8 text-xs"
+                              />
+                            </FieldRow>
+                            <FieldRow
+                              label="Genre"
+                              present={Boolean(draft.genre?.trim())}
+                            >
+                              <Input
+                                value={draft.genre ?? ""}
+                                onChange={(e) => set("genre", e.target.value)}
+                                placeholder="—"
+                                className="h-8 text-xs"
+                              />
+                            </FieldRow>
+                          </div>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <FieldRow
-                      label="Developer"
-                      present={Boolean(draft.developer?.trim())}
-                    >
-                      <Input
-                        value={draft.developer ?? ""}
-                        onChange={(e) => set("developer", e.target.value)}
-                        placeholder="—"
-                      />
-                    </FieldRow>
-                    <FieldRow
-                      label="Publisher"
-                      present={Boolean(draft.publisher?.trim())}
-                    >
-                      <Input
-                        value={draft.publisher ?? ""}
-                        onChange={(e) => set("publisher", e.target.value)}
-                        placeholder="—"
-                      />
-                    </FieldRow>
+                          <div className="grid grid-cols-2 gap-3">
+                            <FieldRow
+                              label="Release Date"
+                              present={Boolean(draft.releasedate?.trim())}
+                            >
+                              <Input
+                                type="date"
+                                value={esDateToInput(draft.releasedate)}
+                                onChange={(e) =>
+                                  set("releasedate", inputToEsDate(e.target.value))
+                                }
+                                className="h-8 text-xs"
+                              />
+                            </FieldRow>
+                            <FieldRow
+                              label="Players"
+                              present={Boolean(draft.players?.trim())}
+                            >
+                              <Input
+                                value={draft.players ?? ""}
+                                onChange={(e) => set("players", e.target.value)}
+                                placeholder="—"
+                                className="h-8 text-xs"
+                              />
+                            </FieldRow>
+                          </div>
+
+                          <FieldRow
+                            label="Rating (0.0 - 10.0)"
+                            present={Boolean(draft.rating?.trim())}
+                          >
+                            <div className="flex items-center gap-3">
+                              <Input
+                                type="number"
+                                step="0.5"
+                                min="0"
+                                max="10"
+                                value={esRatingDisplay(draft.rating)}
+                                onChange={(e) =>
+                                  set("rating", ratingToEs(e.target.value))
+                                }
+                                className="h-8 w-20 text-xs"
+                              />
+                              <div className="flex-1 h-1.5 bg-muted rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-yellow-500" 
+                                  style={{ width: `${(parseFloat(esRatingDisplay(draft.rating)) || 0) * 10}%` }}
+                                />
+                              </div>
+                            </div>
+                          </FieldRow>
+                        </div>
+                      </div>
+                    </div>
                   </div>
+                </TabsContent>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <FieldRow
-                      label="Genre"
-                      present={Boolean(draft.genre?.trim())}
-                    >
-                      <Input
-                        value={draft.genre ?? ""}
-                        onChange={(e) => set("genre", e.target.value)}
-                        placeholder="—"
-                      />
-                    </FieldRow>
-                    <FieldRow
-                      label="Players"
-                      present={Boolean(draft.players?.trim())}
-                    >
-                      <Input
-                        value={draft.players ?? ""}
-                        onChange={(e) => set("players", e.target.value)}
+                <TabsContent value="media" className="m-0 p-0 h-full">
+                  <div className="mx-auto max-w-4xl px-4 py-6 md:px-8">
+                    <GameMediaForm
+                      game={gameAdapter}
+                      mainDirHandle={rootHandle}
+                      currentMediaUrls={currentMediaUrls}
+                      isLoadingUrls={isLoadingUrls}
+                      onGameUpdate={handleMediaUpdate}
+                      onClearBrokenAsset={(mediaKey) => {
+                        // Clear the broken asset reference from the draft
+                        if (!draft) return;
+                        const newDraft = { ...draft };
+                        switch (mediaKey) {
+                          case "covers":
+                            newDraft.image = undefined;
+                            newDraft.thumbnail = undefined;
+                            break;
+                          case "marquees":
+                            newDraft.marquee = undefined;
+                            break;
+                          case "videos":
+                            newDraft.video = undefined;
+                            break;
+                          case "fanart":
+                            newDraft.fanart = undefined;
+                            break;
+                          case "screenshots":
+                            newDraft.thumbnail = undefined;
+                            break;
+                          default:
+                            break;
+                        }
+                        setDraft(newDraft);
+                        // Auto-save the cleared reference
+                        if (game?.path) {
+                          saveGame(consoleFolderName, newDraft, game.path)
+                            .then(() => toast.success("Cleared broken reference"))
+                            .catch(() => toast.error("Failed to save changes"));
+                        }
+                      }}
+                    />
+                  </div>
+                </TabsContent>
+              </div>
+            </div>
+          </Tabs>
+        </div>
                         placeholder="1"
                       />
                     </FieldRow>

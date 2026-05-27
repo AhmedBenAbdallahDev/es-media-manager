@@ -330,6 +330,37 @@ const ROM_EXTENSIONS = new Set([
 ]);
 
 /**
+ * Scans a directory for ROM files and returns them as a basic GamelistGame list.
+ * This is used to "auto-generate" a library when no gamelist.xml is found.
+ */
+export async function generateGamelistFromRoms(
+  dirHandle: FileSystemDirectoryHandle
+): Promise<GamelistGame[]> {
+  const games: GamelistGame[] = [];
+  try {
+    for await (const [name, handle] of (dirHandle as any).entries()) {
+      if (handle.kind !== "file") continue;
+      const extIndex = name.lastIndexOf(".");
+      if (extIndex === -1) continue;
+      
+      const ext = name.substring(extIndex).toLowerCase();
+      if (ROM_EXTENSIONS.has(ext)) {
+        // Create a standard ES-style entry
+        games.push({
+          path: `./${name}`,
+          name: name.substring(0, extIndex), // Use filename as default name
+        });
+      }
+    }
+  } catch (err) {
+    console.error("Error generating gamelist from ROMs:", err);
+  }
+  
+  // Sort alphabetically by name
+  return games.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/**
  * Counts ROM files in a directory (one level deep, no recursion).
  */
 async function countRoms(

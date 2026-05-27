@@ -10,7 +10,7 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
 import type { ConsoleLibrary, ScanProgress } from "@/types/scraper";
 import type { GamelistGame } from "@/types/scraper";
-import { pickSdCardRoot, scanSdCard } from "@/lib/sdScanner";
+import { pickSdCardRoot, scanSdCard, generateGamelistFromRoms } from "@/lib/sdScanner";
 import { writeGamelist } from "@/lib/gamelistParser";
 import { toast } from "sonner";
 
@@ -39,6 +39,8 @@ interface LibraryContextValue {
   ) => Promise<void>;
   /** Returns a single ConsoleLibrary by folder name, or undefined */
   getConsole: (folderName: string) => ConsoleLibrary | undefined;
+  /** Creates a gamelist.xml from scratch for a console that doesn't have one */
+  createGamelist: (consoleFolderName: string) => Promise<void>;
 }
 
 // ─── Context ─────────────────────────────────────────────────────────────────
@@ -181,6 +183,69 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
     [state]
   );
 
+  /**
+   * Scans the console folder for ROMs, creates a GamelistGame array,
+   * writes it to gamelist.xml, and updates the local state.
+   */
+  const createGamelist = useCallback(
+    async (consoleFolderName: string) => {
+      if (state.status !== "ready") return;
+
+      const consoleIndex = state.consoles.findIndex(
+        (c) => c.folderName === consoleFolderName
+      );
+      if (consoleIndex === -1) {
+        toast.error(`Console "${consoleFolderName}" not found.`);
+        return;
+      }
+
+      const consoleEntry = state.consoles[consoleIndex];
+      if (consoleEntry.hasGamelist) {
+        toast.info("This console already has a gamelist.xml.");
+        return;
+      }
+
+      try {
+        const loadingToast = toast.loading(`Generating games list for ${consoleFolderName}...`);
+        
+        // 1. Scan the folder for ROMs
+        const generatedGames = await generateGamelistFromRoms(consoleEntry.dirHandle);
+        
+        if (generatedGames.length === 0) {
+          toast.dismiss(loadingToast);
+          toast.error("No ROM files detected in this folder.");
+          return;
+        }
+
+        // 2. Write to disk
+        await writeGamelist(consoleEntry.dirHandle, generatedGames);
+        
+        // 3. Update local state
+        const updatedConsoles = [...state.consoles];
+        updatedConsoles[consoleIndex] = {
+          ...consoleEntry,
+          games: generatedGames,
+          hasGamelist: true,
+          gamesWithImages: 0,
+          gamesWithoutImages: generatedGames.length,
+        };
+
+        setState({
+          status: "ready",
+          consoles: updatedConsoles,
+          rootName: state.rootName,
+        });
+
+        toast.dismiss(loadingToast);
+        toast.success(`Created gamelist.xml with ${generatedGames.length} games!`);
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        toast.error(`Auto-creation failed: ${msg}`);
+      }
+    },
+    [state]
+  );
+
   /** Convenience getter for a single console */
   const getConsole = useCallback(
     (folderName: string): ConsoleLibrary | undefined => {
@@ -192,7 +257,15 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <LibraryContext.Provider
-      value={{ state, rootHandle, openAndScan, rescan, saveGame, getConsole }}
+      value={{
+        state,
+        rootHandle,
+        openAndScan,
+        rescan,
+        saveGame,
+        getConsole,
+        createGamelist,
+      }}
     >
       {children}
     </LibraryContext.Provider>
