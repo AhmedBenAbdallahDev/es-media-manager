@@ -139,6 +139,26 @@ export function GameDetailSheet({
   const consoleLib = getConsole(consoleFolderName);
   const dirHandle = consoleLib?.dirHandle;
 
+  const isDirty = useMemo(() => {
+    if (!game || !draft) return false;
+    // Compare essential metadata fields to see if user changed anything
+    return (
+      draft.name !== game.name ||
+      draft.desc !== game.desc ||
+      draft.developer !== game.developer ||
+      draft.publisher !== game.publisher ||
+      draft.genre !== game.genre ||
+      draft.rating !== game.rating ||
+      draft.players !== game.players ||
+      draft.releasedate !== game.releasedate ||
+      draft.region !== game.region ||
+      draft.image !== game.image ||
+      draft.video !== game.video ||
+      draft.marquee !== game.marquee ||
+      draft.thumbnail !== game.thumbnail
+    );
+  }, [game, draft]);
+
   // Debug logging
   useEffect(() => {
     console.log(`[GameDetailSheet] State check:`, {
@@ -463,18 +483,20 @@ export function GameDetailSheet({
               </Button>
               <Button
                 onClick={handleSave}
-                disabled={isSaving}
+                disabled={isSaving || (!isDirty && !isSaving)}
                 className={cn(
-                  "w-full gap-2 sm:w-auto",
-                  missingCount > 0 ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-600" : ""
+                  "w-full gap-2 sm:w-auto transition-all duration-300",
+                  isDirty 
+                    ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-600 shadow-[0_0_15px_rgba(245,158,11,0.3)]" 
+                    : "bg-primary hover:bg-primary/90"
                 )}
               >
                 {isSaving ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <SaveIcon className={cn("h-4 w-4", missingCount > 0 && "animate-pulse")} />
+                  <SaveIcon className={cn("h-4 w-4", isDirty && "animate-pulse")} />
                 )}
-                {isSaving ? "Saving..." : missingCount > 0 ? "Save (Unfinished)" : "Save"}
+                {isSaving ? "SAVING..." : isDirty ? "SAVE CHANGES ⚠️" : "CHANGES SAVED"}
               </Button>
             </div>
           </div>
