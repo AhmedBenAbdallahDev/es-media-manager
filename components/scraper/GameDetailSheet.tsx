@@ -372,37 +372,29 @@ export function GameDetailSheet({
       }
     }
 
-    // We also need to update currentMediaUrls to show the new image immediately
-    const newUrls = { ...currentMediaUrls };
-    
-    // Crucial: Revoke old blob to prevent memory leaks and ensure refresh
-    if (newUrls[updatedGame.mediaStatus.videos ? "videos" : updatedGame.mediaStatus.covers ? "covers" : ""]?.startsWith("blob:")) {
-       // logic simplified below
-    }
+    // Refresh current media previews immediately so videos/images render
+    // without requiring a close/reopen cycle.
+    const nextUrls = { ...currentMediaUrls };
+    const refreshUrl = async (mediaKey: string) => {
+      const handleKey = MEDIA_KEY_TO_GAME_HANDLE[mediaKey];
+      const handle = handleKey ? updatedGame[handleKey] : undefined;
 
-    const updateUrl = async (key: string, handleKey: keyof Game) => {
-      const handle = updatedGame[handleKey];
-      if (handle) {
-        // Revoke old URL if it exists
-        if (newUrls[key]?.startsWith("blob:")) {
-          URL.revokeObjectURL(newUrls[key]);
-        }
-        newUrls[key] = await loadFileAsUrl(handle);
+      if (!handle) return;
+
+      const previousUrl = nextUrls[mediaKey];
+      if (previousUrl?.startsWith("blob:")) {
+        URL.revokeObjectURL(previousUrl);
       }
+
+      nextUrls[mediaKey] = await loadFileAsUrl(handle);
     };
 
-    // Refresh URLs and trigger state update
-    const currentKeys = Object.keys(updatedGame.mediaStatus).filter(k => (updatedGame.mediaStatus as any)[k]);
-    
-    for (const k of currentKeys) {
-       const hKey = MEDIA_KEY_TO_GAME_HANDLE[k];
-       if (hKey && updatedGame[hKey]) {
-          if (newUrls[k]?.startsWith("blob:")) URL.revokeObjectURL(newUrls[k]);
-          newUrls[k] = await loadFileAsUrl(updatedGame[hKey]);
-       }
+    for (const [mediaKey, enabled] of Object.entries(updatedGame.mediaStatus)) {
+      if (!enabled) continue;
+      await refreshUrl(mediaKey);
     }
 
-    setCurrentMediaUrls({ ...newUrls });
+    setCurrentMediaUrls(nextUrls);
   };
 
   if (!draft) return null;

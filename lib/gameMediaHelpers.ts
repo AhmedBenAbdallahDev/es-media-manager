@@ -18,6 +18,7 @@ export const MEDIA_KEY_TO_GAME_HANDLE: Record<string, keyof Game | undefined> =
     "3dboxes": "box3dFileHandle",
     backcovers: "backCoverFileHandle",
     fanart: "fanartFileHandle",
+    videos: "videoFileHandle",
     physicalmedia: "physicalMediaFileHandle",
     titlescreens: "titleScreenFileHandle",
   };

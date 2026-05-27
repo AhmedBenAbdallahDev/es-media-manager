@@ -97,6 +97,7 @@ export interface Game {
   box3dFileHandle?: any;
   backCoverFileHandle?: any;
   fanartFileHandle?: any;
+  videoFileHandle?: any;
   physicalMediaFileHandle?: any;
   titleScreenFileHandle?: any;
   // Add handles for other types like manuals (PDFs) or videos if needed for future display
