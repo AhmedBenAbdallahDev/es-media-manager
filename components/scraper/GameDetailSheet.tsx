@@ -36,6 +36,7 @@ import {
   MonitorIcon,
   XIcon,
   ArrowLeftIcon,
+  Loader2,
 } from "lucide-react";
 import type { GamelistGame } from "@/types/scraper";
 import { useLibrary } from "@/hooks/useLibrary";
@@ -50,7 +51,7 @@ import { toast } from "sonner";
 import { GameMediaForm } from "@/components/browser/GameMediaForm";
 import { Game } from "@/types";
 import { MEDIA_TYPES } from "@/lib/constants";
-import { sanitizeBasenameForSave } from "@/lib/gameMediaHelpers";
+import { sanitizeBasenameForSave, MEDIA_KEY_TO_GAME_HANDLE } from "@/lib/gameMediaHelpers";
 import {
   loadFileAsUrl,
   resolveMediaFileHandle,
@@ -359,7 +360,7 @@ export function GameDetailSheet({
     if (game?.path) {
       try {
         await saveGame(consoleFolderName, newDraft, game.path);
-        toast.success("Gamelist updated with new media!");
+        // Toast is handled in UI flow now to avoid doubles
       } catch (e) {
         console.error("Auto-save failed", e);
         toast.error("Media saved but gamelist update failed.");
@@ -367,28 +368,36 @@ export function GameDetailSheet({
     }
 
     // We also need to update currentMediaUrls to show the new image immediately
-    // GameMediaForm passes the updated Game object which might have file handles
     const newUrls = { ...currentMediaUrls };
+    
+    // Crucial: Revoke old blob to prevent memory leaks and ensure refresh
+    if (newUrls[updatedGame.mediaStatus.videos ? "videos" : updatedGame.mediaStatus.covers ? "covers" : ""]?.startsWith("blob:")) {
+       // logic simplified below
+    }
+
     const updateUrl = async (key: string, handleKey: keyof Game) => {
       const handle = updatedGame[handleKey];
       if (handle) {
+        // Revoke old URL if it exists
+        if (newUrls[key]?.startsWith("blob:")) {
+          URL.revokeObjectURL(newUrls[key]);
+        }
         newUrls[key] = await loadFileAsUrl(handle);
       }
     };
 
-    // We can run this asynchronously
-    Promise.all([
-      updateUrl("covers", "coverFileHandle"),
-      updateUrl("marquees", "logoFileHandle"),
-      updateUrl("videos", "hasVideo" as any), // Video handle isn't stored in hasVideo prop, wait.
-      // types/index.ts doesn't have videoFileHandle explicitly in Game interface shown earlier?
-      // actually GameMediaForm doesn't store video handle in Game object in the interface I saw.
-      // But updateGameWithMediaFile might?
-      // Let's just rely on re-render for now or the local state of GameMediaForm.
-      // GameMediaForm has its own local preview state (editableMediaFiles).
-    ]).then(() => {
-      setCurrentMediaUrls(newUrls);
-    });
+    // Refresh URLs and trigger state update
+    const currentKeys = Object.keys(updatedGame.mediaStatus).filter(k => (updatedGame.mediaStatus as any)[k]);
+    
+    for (const k of currentKeys) {
+       const hKey = MEDIA_KEY_TO_GAME_HANDLE[k];
+       if (hKey && updatedGame[hKey]) {
+          if (newUrls[k]?.startsWith("blob:")) URL.revokeObjectURL(newUrls[k]);
+          newUrls[k] = await loadFileAsUrl(updatedGame[hKey]);
+       }
+    }
+
+    setCurrentMediaUrls({ ...newUrls });
   };
 
   if (!draft) return null;
@@ -458,10 +467,17 @@ export function GameDetailSheet({
               <Button
                 onClick={handleSave}
                 disabled={isSaving}
-                className="w-full gap-2 sm:w-auto"
+                className={cn(
+                  "w-full gap-2 sm:w-auto",
+                  missingCount > 0 ? "bg-amber-500 hover:bg-amber-600 text-white border-amber-600" : ""
+                )}
               >
-                <SaveIcon className="h-4 w-4" />
-                {isSaving ? "Saving..." : "Save"}
+                {isSaving ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <SaveIcon className={cn("h-4 w-4", missingCount > 0 && "animate-pulse")} />
+                )}
+                {isSaving ? "Saving..." : missingCount > 0 ? "Save (Unfinished)" : "Save"}
               </Button>
             </div>
           </div>
