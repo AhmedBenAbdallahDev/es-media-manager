@@ -253,13 +253,18 @@ export function GameDetailSheet({
 
     return () => {
       isMounted = false;
-      // Cleanup URLs
-      Object.values(currentMediaUrls).forEach((url) => {
-        if (url && url.startsWith("blob:")) URL.revokeObjectURL(url);
-      });
+      // Cleanup URLs - ONLY on unmount, not on every re-run
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [draft?.name, draft?.path, dirHandle]); // Re-run when game name/path or dirHandle changes
+  }, [
+    draft?.name,
+    draft?.path,
+    draft?.image,
+    draft?.video,
+    draft?.marquee,
+    draft?.fanart,
+    dirHandle,
+  ]); // Re-run when paths change to refresh previews immediately
 
   // Adapter to convert GamelistGame to Game (for GameMediaForm)
   const gameAdapter: Game = useMemo(() => {
