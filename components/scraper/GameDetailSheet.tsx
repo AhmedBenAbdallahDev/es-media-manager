@@ -45,6 +45,16 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
+import { cn } from "@/lib/utils";
+import { toast } from "sonner";
+import { GameMediaForm } from "@/components/browser/GameMediaForm";
+import { Game } from "@/types";
+import { MEDIA_TYPES } from "@/lib/constants";
+import { sanitizeBasenameForSave } from "@/lib/gameMediaHelpers";
+import {
+  loadFileAsUrl,
+  resolveMediaFileHandle,
+} from "@/lib/mediaFileOperations";
 
 interface GameDetailSheetProps {
   game: GamelistGame | null;
@@ -658,101 +668,6 @@ export function GameDetailSheet({
               </div>
             </div>
           </Tabs>
-        </div>
-                        placeholder="1"
-                      />
-                    </FieldRow>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <FieldRow
-                      label="Release Date"
-                      present={Boolean(draft.releasedate?.trim())}
-                    >
-                      <Input
-                        type="date"
-                        value={esDateToInput(draft.releasedate)}
-                        onChange={(e) =>
-                          set("releasedate", inputToEsDate(e.target.value))
-                        }
-                      />
-                    </FieldRow>
-                    <FieldRow
-                      label="Rating (0–10)"
-                      present={Boolean(draft.rating?.trim())}
-                    >
-                      <Input
-                        type="number"
-                        min={0}
-                        max={10}
-                        step={0.1}
-                        value={esRatingDisplay(draft.rating)}
-                        onChange={(e) =>
-                          set("rating", ratingToEs(e.target.value))
-                        }
-                        placeholder="—"
-                      />
-                    </FieldRow>
-                  </div>
-
-                  <FieldRow
-                    label="Region"
-                    present={Boolean(draft.region?.trim())}
-                  >
-                    <Input
-                      value={draft.region ?? ""}
-                      onChange={(e) => set("region", e.target.value)}
-                      placeholder="usa / eu / japan / world"
-                    />
-                  </FieldRow>
-
-                  <Separator className="my-2" />
-                  <p className="text-muted-foreground text-xs font-medium tracking-wide uppercase">
-                    File Paths (Advanced)
-                  </p>
-
-                  <FieldRow label="Image Path" present={hasImg}>
-                    <Input
-                      value={draft.image ?? ""}
-                      onChange={(e) => set("image", e.target.value)}
-                      placeholder="./images/game.png"
-                      className="font-mono text-xs"
-                    />
-                  </FieldRow>
-
-                  <FieldRow label="Video Path" present={hasVideo}>
-                    <Input
-                      value={draft.video ?? ""}
-                      onChange={(e) => set("video", e.target.value)}
-                      placeholder="./videos/game.mp4"
-                      className="font-mono text-xs"
-                    />
-                  </FieldRow>
-
-                  <FieldRow label="Marquee Path" present={hasMarquee}>
-                    <Input
-                      value={draft.marquee ?? ""}
-                      onChange={(e) => set("marquee", e.target.value)}
-                      placeholder="./marquees/game.png"
-                      className="font-mono text-xs"
-                    />
-                  </FieldRow>
-                </div>
-
-                <div className="pt-4 pb-2">
-                  <Button
-                    onClick={handleSave}
-                    disabled={isSaving}
-                    className="w-full"
-                    size="lg"
-                  >
-                    <SaveIcon className="mr-2 h-4 w-4" />
-                    {isSaving ? "Saving Metadata..." : "Save Metadata Changes"}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </SheetContent>
     </Sheet>

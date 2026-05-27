@@ -218,22 +218,6 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
           </div>
         </div>
       </div>
-            onClick={() => handleView("list")}
-            title="List view"
-          >
-            <LayoutListIcon className="h-4 w-4" />
-          </Button>
-          <Button
-            variant={view === "cards" ? "secondary" : "ghost"}
-            size="icon"
-            className="h-8 w-8"
-            onClick={() => handleView("cards")}
-            title="Card view"
-          >
-            <LayoutGridIcon className="h-4 w-4" />
-          </Button>
-        </div>
-      </div>
 
       {/* ── Results count ─────────────────────────────────────────── */}
       <p className="text-muted-foreground text-sm">

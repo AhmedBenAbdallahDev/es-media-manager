@@ -8,7 +8,7 @@
  * Works entirely with the browser File System Access API — no server, no uploads.
  */
 
-import type { ConsoleLibrary, ScanProgress } from "@/types/scraper";
+import type { ConsoleLibrary, ScanProgress, GamelistGame } from "@/types/scraper";
 import { parseGamelist } from "@/lib/gamelistParser";
 import { resolveMediaFileHandle } from "@/lib/mediaFileOperations";
 
