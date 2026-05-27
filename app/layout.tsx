@@ -19,6 +19,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  icons: {
+    icon: "/icon-source.svg",
+  },
   title: {
     template: "%s | Retro Scraper",
     default: "Retro Scraper — The Modern Game Media Manager",

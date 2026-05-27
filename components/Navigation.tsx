@@ -33,16 +33,7 @@ export function Navigation() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         {/* Logo */}
         <Link href="/" className="flex shrink-0 items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-md bg-linear-to-br from-[#FF0080] to-[#7928CA] p-1 shadow-sm">
-            <svg viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" className="h-full w-full text-white">
-               <path d="M160 120 L352 120 L384 180 L384 400 L128 400 L128 180 Z" fill="currentColor" fillOpacity="0.2" />
-               <path d="M160 120 L352 120 L384 180 L384 400 L128 400 L128 180 Z" stroke="currentColor" strokeWidth="32" strokeLinejoin="round" />
-               <rect x="180" y="150" width="152" height="120" rx="4" fill="currentColor" fillOpacity="0.3" />
-               <circle cx="210" cy="330" r="30" fill="currentColor" />
-               <circle cx="280" cy="330" r="15" fill="currentColor" />
-               <circle cx="310" cy="330" r="15" fill="currentColor" />
-            </svg>
-          </div>
+          <GamepadIcon className="gradient-icon h-6 w-6" />
           <span className="font-pixel hidden text-sm tracking-wider sm:inline">
             RETRO SCRAPER
           </span>
