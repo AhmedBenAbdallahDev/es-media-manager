@@ -16,7 +16,6 @@ import {
   AlertCircle,
   Upload,
   X,
-  ExternalLink,
   Check,
   Search,
   Trash2,
@@ -68,8 +67,6 @@ export function GameMediaForm({
   const [isSaving, setIsSaving] = useState<boolean>(false);
   const [saveError, setSaveError] = useState<string | null>(null);
   const [uploadingKeys, setUploadingKeys] = useState<Set<string>>(new Set());
-  const [urlInputs, setUrlInputs] = useState<Record<string, string>>({});
-  const [expandedCards, setExpandedCards] = useState<Set<string>>(new Set());
 
   // Broken asset dialog state
   const [brokenAssetDialog, setBrokenAssetDialog] = useState<{
@@ -138,7 +135,6 @@ export function GameMediaForm({
         );
 
         setEditableMediaFiles((prev) => ({ ...prev, [mediaKey]: null }));
-        setUrlInputs((prev) => ({ ...prev, [mediaKey]: "" }));
         onGameUpdate(updatedGame);
 
         toast.success(`${mediaType.label} saved for ${game.name}`);
@@ -157,69 +153,11 @@ export function GameMediaForm({
     [game, mainDirHandle, onGameUpdate]
   );
 
-  const handleUrlUpload = useCallback(
-    async (mediaKey: string, url: string) => {
-      if (!url.trim()) return;
-
-      setUploadingKeys((prev) => new Set(prev).add(mediaKey));
-      try {
-        const mediaType = MEDIA_TYPES.find((m) => m.key === mediaKey);
-        if (!mediaType) throw new Error("Unknown media type: " + mediaKey);
-
-        const response = await fetch("/api/fetch-image", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ imageUrl: url }),
-        });
-
-        if (!response.ok) throw new Error("Failed to fetch image");
-
-        let blob = await response.blob();
-        let file = new File(
-          [blob],
-          `image.${mediaType.extension.replace(".", "")}`,
-          { type: mediaType.accept }
-        );
-
-        // Convert WebP to JPG if needed
-        if (blob.type === "image/webp" && mediaType.accept === "image/jpeg") {
-          const converted = await fromBlob(file, 100, "auto", "auto", "jpeg");
-          file = new File([converted], `image.jpg`, { type: "image/jpeg" });
-        }
-
-        await handleMediaFileChange(mediaKey, file);
-      } catch (err) {
-        console.error("Error fetching from URL:", err);
-        toast.error("Failed to fetch image from URL");
-        setUploadingKeys((prev) => {
-          const next = new Set(prev);
-          next.delete(mediaKey);
-          return next;
-        });
-      }
-    },
-    [handleMediaFileChange]
-  );
-
-  const toggleCard = useCallback((mediaKey: string) => {
-    setExpandedCards((prev) => {
-      const next = new Set(prev);
-      if (next.has(mediaKey)) {
-        next.delete(mediaKey);
-      } else {
-        next.add(mediaKey);
-      }
-      return next;
-    });
-  }, []);
-
   const renderMediaCard = (mediaType: MediaTypeConfig) => {
     const currentUrl = currentMediaUrls[mediaType.key];
     const newFile = editableMediaFiles[mediaType.key];
     const isVideo = mediaType.key === "videos";
     const isUploading = uploadingKeys.has(mediaType.key);
-    const isExpanded = expandedCards.has(mediaType.key);
-    const urlInput = urlInputs[mediaType.key] || "";
 
     const isReferencedInGamelist = isVideo
       ? game.hasVideo
@@ -318,30 +256,12 @@ export function GameMediaForm({
                 <TooltipContent>Delete media</TooltipContent>
               </Tooltip>
             )}
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className={`h-8 w-8 transition-transform ${isExpanded ? "rotate-180" : ""}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleCard(mediaType.key);
-                  }}
-                >
-                  <ExternalLink className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>
-                {isExpanded ? "Collapse" : "Expand"}
-              </TooltipContent>
-            </Tooltip>
           </div>
         </div>
 
         {/* Preview Area - Larger */}
         <div
-          className={`relative overflow-hidden transition-all duration-300 ${isExpanded ? "h-56 sm:h-64" : "h-44 sm:h-52"} `}
+          className="relative h-44 overflow-hidden transition-all duration-300 sm:h-52"
         >
           {isLoadingUrls && !newFile ? (
             <div className="bg-muted flex h-full w-full animate-pulse items-center justify-center">
@@ -462,7 +382,7 @@ export function GameMediaForm({
 
         {/* Upload Actions - Always visible with proper spacing */}
         <div className="border-border/50 bg-muted/20 border-t px-4 py-3 sm:px-5 sm:py-4">
-          <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+          <div className="flex flex-wrap items-center gap-2">
             <input
               ref={(el) => {
                 fileInputRefs.current[mediaType.key] = el;
@@ -478,40 +398,22 @@ export function GameMediaForm({
             <Button
               variant={hasContent ? "outline" : "default"}
               size="default"
-              className="h-9 w-full gap-2 px-3 text-xs sm:h-10 sm:text-sm"
+              className="font-pixel h-9 min-w-0 flex-1 gap-2 px-2 text-[10px] tracking-tight sm:h-10 sm:px-3 sm:text-xs sm:tracking-normal"
               onClick={(e) => {
                 e.stopPropagation();
                 fileInputRefs.current[mediaType.key]?.click();
               }}
               disabled={isUploading}
             >
-              <Upload className="h-4 w-4" />
-              <span>{hasContent ? "Replace" : "Upload"}</span>
+              <Upload className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+              <span className="truncate">{hasContent ? "REPLACE" : "UPLOAD"}</span>
             </Button>
             <Tooltip>
               <TooltipTrigger asChild>
                 <Button
                   variant="outline"
                   size="default"
-                  className="h-9 w-full gap-2 px-3 text-xs sm:h-10 sm:text-sm"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    toggleCard(mediaType.key);
-                  }}
-                  disabled={isUploading}
-                >
-                  <ExternalLink className="h-4 w-4" />
-                  <span>URL</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Paste image URL</TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="default"
-                  className="border-primary/50 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/70 h-9 w-full gap-2 px-3 text-xs font-medium sm:h-10 sm:text-sm"
+                  className="font-pixel border-primary/50 bg-primary/5 text-primary hover:bg-primary/15 hover:border-primary/70 h-9 min-w-0 flex-1 gap-2 px-2 text-[10px] tracking-tight sm:h-10 sm:px-3 sm:text-xs sm:tracking-normal"
                   onClick={(e) => {
                     e.stopPropagation();
                     setScraperDialog({
@@ -522,8 +424,8 @@ export function GameMediaForm({
                   }}
                   disabled={isUploading}
                 >
-                  <Search className="h-4 w-4" />
-                  <span>Fetch</span>
+                  <Search className="h-3.5 w-3.5 shrink-0 sm:h-4 sm:w-4" />
+                  <span className="truncate">FETCH</span>
                 </Button>
               </TooltipTrigger>
               <TooltipContent>
@@ -531,47 +433,6 @@ export function GameMediaForm({
               </TooltipContent>
             </Tooltip>
           </div>
-
-          {/* URL Input - Expandable */}
-          {isExpanded && (
-            <div className="animate-in slide-in-from-top-2 mt-4">
-              <div className="relative">
-                <Input
-                  type="url"
-                  placeholder="Paste image URL..."
-                  value={urlInput}
-                  onChange={(e) =>
-                    setUrlInputs((prev) => ({
-                      ...prev,
-                      [mediaType.key]: e.target.value,
-                    }))
-                  }
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && urlInput.trim()) {
-                      handleUrlUpload(mediaType.key, urlInput);
-                    }
-                  }}
-                  disabled={isUploading}
-                  className="h-9 pr-20 sm:h-10 sm:pr-24"
-                />
-                <Button
-                  size="sm"
-                  variant="default"
-                  className="absolute top-1.5 right-1.5 h-7 px-2 text-xs sm:px-3"
-                  onClick={() =>
-                    urlInput.trim() && handleUrlUpload(mediaType.key, urlInput)
-                  }
-                  disabled={isUploading || !urlInput.trim()}
-                >
-                  Go
-                </Button>
-              </div>
-              <p className="text-muted-foreground mt-2 text-xs">
-                Supports JPG, PNG, WebP (auto-converts to{" "}
-                {mediaType.extension.replace(".", "").toUpperCase()})
-              </p>
-            </div>
-          )}
         </div>
       </div>
     );
