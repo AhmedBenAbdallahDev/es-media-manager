@@ -21,22 +21,44 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: {
     template: "%s | Retro Scraper",
-    default: "Retro Scraper",
+    default: "Retro Scraper — The Modern Game Media Manager",
   },
   description:
-    "Manage your retro handheld game library. Scan your SD card, see which games have artwork, and edit metadata — all offline.",
+    "The ultimate browser-based media manager for retro handhelds. Scan SD cards, fetch high-quality artwork from ScreenScraper, and edit XML metadata for ArkOS, ROCKNIX, and ES-DE.",
   keywords: [
-    "retro",
-    "emulation",
-    "scraper",
-    "gamelist",
+    "retro handheld",
+    "game scraper",
+    "metadata editor",
+    "gamelist.xml",
+    "screenscraper",
     "r36s",
-    "anbernic",
-    "miyoo",
-    "arkos",
+    "rg35xx",
+    "miyoo mini",
+    "arkos manager",
     "rocknix",
-    "emulationstation",
   ],
+  openGraph: {
+    title: "Retro Scraper — Modern Game Media Manager",
+    description: "Manage your retro handheld library directly in your browser. No installation, no data collection, just pure retro gaming management.",
+    url: "https://retro-scraper.vercel.app", // Adjust if needed
+    siteName: "Retro Scraper",
+    images: [
+      {
+        url: "/og-image.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Retro Scraper UI Preview",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Retro Scraper — Game Media Manager",
+    description: "Manage your retro handheld library directly in your browser. Fetch artwork and edit metadata with ease.",
+    images: ["/og-image.jpg"],
+  },
 };
 
 export default function RootLayout({
