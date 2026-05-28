@@ -98,7 +98,7 @@ public/           # Static assets
 
 ## Credits
 
-Inspired by [Ashref-dev's ES-DE Custom Cover Generator](https://github.com/Ashref-dev/es-de-custom-cover-generator). This is a separate project adapted for retro handheld SD cards.
+Inspired by [Ashref-dev's ES-DE Custom Cover Generator](https://github.com/Ashref-dev/es-de-custom-cover-generator). This is a separate project adapted for retro handhelds.
 
 ## License
 
