@@ -4,7 +4,7 @@ A web-based tool for managing game covers, logos, screenshots, and videos on ret
 
 Built for devices running **ArkOS**, **ROCKNIX**, **JELOS**, or other EmulationStation-based firmware (R36S, RG35XX, RG503, etc.).
 
-> This is **not** ES-DE (EmulationStation Desktop Edition). ES-DE is a desktop frontend. This tool is for handheld SD cards with a different folder structure and media conventions.
+> This is **not** tested on many devices, edge cases may revea lbugs, proceed with caution!
 
 ## What it does
 
