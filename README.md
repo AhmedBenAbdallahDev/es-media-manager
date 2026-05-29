@@ -1,10 +1,14 @@
-# ES Cover Manager
+<div align="center">
+  <img width="1200" alt="Banner" src="banner.webp" />
+</div>
+
+# ES Media Manager
 
 A web-based tool for managing game covers, logos, screenshots, and videos on retro handheld SD cards.
 
 Built for devices running **ArkOS**, **ROCKNIX**, **JELOS**, or other EmulationStation-based firmware (R36S, RG35XX, RG503, etc.).
 
-> This is **not** tested on many devices, edge cases may revea lbugs, proceed with caution!
+> This is **not** tested on many devices, edge cases may reveal bugs, proceed with caution!
 
 ## What it does
 
