@@ -506,3 +506,62 @@ export async function scanSdCard(
     return a.label.localeCompare(b.label);
   });
 }
+
+/**
+ * Scans a single directory handle as a console folder.
+ * 
+ * @param dirHandle The FileSystemDirectoryHandle to scan
+ * @param forcedFolderName Optional folder name to use (defaults to handle name)
+ */
+export async function scanConsoleFolder(
+  dirHandle: FileSystemDirectoryHandle,
+  forcedFolderName?: string
+): Promise<ConsoleLibrary> {
+  const folderName = forcedFolderName || dirHandle.name;
+
+  // Get the console label (known or fallback to capitalized folder name)
+  const knownConsole = CONSOLE_NAME_MAP[folderName.toLowerCase()];
+  const label =
+    knownConsole?.label ??
+    folderName.charAt(0).toUpperCase() + folderName.slice(1);
+  const logoSrc = knownConsole?.logo;
+
+  // Check for gamelist.xml
+  const gamelistHandle = await findGamelistHandle(dirHandle);
+  const hasGamelist = gamelistHandle !== null;
+
+  let games = [];
+  if (hasGamelist && gamelistHandle) {
+    try {
+      const file = await gamelistHandle.getFile();
+      const xmlText = await file.text();
+      games = parseGamelist(xmlText);
+    } catch {
+      // If XML is malformed, show 0 games but still show the console
+      games = [];
+    }
+  }
+
+  // Fast scan: count games with `image` or `thumbnail` set (no disk I/O).
+  const gamesWithImages = games.filter(
+    (g) =>
+      (g.image && g.image.trim() !== "") ||
+      (g.thumbnail && g.thumbnail.trim() !== "")
+  ).length;
+  const gamesWithoutImages = games.length - gamesWithImages;
+
+  // Count ROM files
+  const totalRoms = await countRoms(dirHandle);
+
+  return {
+    folderName,
+    label,
+    logoSrc,
+    games,
+    totalRoms,
+    gamesWithImages,
+    gamesWithoutImages,
+    hasGamelist,
+    dirHandle,
+  };
+}

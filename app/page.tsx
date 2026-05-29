@@ -13,15 +13,26 @@ import { useLibrary } from "@/hooks/useLibrary";
 import { ConsoleGrid } from "@/components/scraper/ConsoleGrid";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import {
   FolderOpenIcon,
   RefreshCwIcon,
   GamepadIcon,
   AlertCircleIcon,
+  PlusCircleIcon,
+  InfoIcon,
 } from "lucide-react";
 
 export default function HomePage() {
-  const { state, openAndScan, rescan } = useLibrary();
+  const { state, openAndScan, addConsole, rescan } = useLibrary();
+  const isMobile = useIsMobile();
 
   // ── Idle: prompt to open folder ──────────────────────────────────
   if (state.status === "idle") {
@@ -33,19 +44,60 @@ export default function HomePage() {
         <div className="space-y-2">
           <h1 className="font-pixel text-2xl tracking-wider">YOUR LIBRARY</h1>
           <p className="text-muted-foreground max-w-md text-sm">
-            Select your SD card or ROM folder to scan your game collection. The
-            app will automatically detect all consoles and parse your gamelists.
+            Select your SD card or ROM folder to scan your game collection. 
+            {isMobile 
+              ? " Pick individual console folders (like /gba or /nes) to build your library."
+              : " The app will automatically detect all consoles and parse your gamelists."}
           </p>
         </div>
         <div className="flex flex-col items-center gap-3">
-          <Button
-            size="lg"
-            onClick={openAndScan}
-            className="retro-btn-glow font-pixel gap-2 text-sm tracking-wider"
-          >
-            <FolderOpenIcon className="h-5 w-5" />
-            OPEN SD CARD
-          </Button>
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {!isMobile && (
+              <Button
+                size="lg"
+                onClick={openAndScan}
+                className="retro-btn-glow font-pixel gap-2 text-sm tracking-wider"
+              >
+                <FolderOpenIcon className="h-5 w-5" />
+                OPEN SD CARD
+              </Button>
+            )}
+            
+            <div className="flex items-center gap-2">
+              <Button
+                size={isMobile ? "lg" : "default"}
+                variant={isMobile ? "default" : "outline"}
+                onClick={addConsole}
+                className={cn(
+                  "font-pixel gap-2 text-sm tracking-wider",
+                  isMobile && "retro-btn-glow"
+                )}
+              >
+                <PlusCircleIcon className="h-5 w-5" />
+                ADD SINGLE CONSOLE
+              </Button>
+
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                      <InfoIcon className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-[250px] space-y-2 p-3 text-left">
+                    <p className="font-bold">Android / Root Fix</p>
+                    <p>
+                      If Android blocks access to the SD card root, use this button to select individual 
+                      folders like <code className="text-primary-foreground">/gba</code> or <code className="text-primary-foreground">/nes</code> directly.
+                    </p>
+                    <p>
+                      You can add multiple consoles one by one to build your library.
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
           <p className="text-muted-foreground text-xs">
             Requires Chrome or Edge 86+. Read-write access is needed to save
             changes.
@@ -152,7 +204,7 @@ export default function HomePage() {
             )}
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             variant="outline"
             size="sm"
@@ -162,15 +214,28 @@ export default function HomePage() {
             <RefreshCwIcon className="h-3.5 w-3.5" />
             RESCAN
           </Button>
+          
           <Button
             variant="outline"
             size="sm"
-            onClick={openAndScan}
+            onClick={addConsole}
             className="font-pixel gap-1.5 text-xs tracking-wider"
           >
-            <FolderOpenIcon className="h-3.5 w-3.5" />
-            CHANGE FOLDER
+            <PlusCircleIcon className="h-3.5 w-3.5" />
+            ADD CONSOLE
           </Button>
+
+          {!isMobile && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={openAndScan}
+              className="font-pixel gap-1.5 text-xs tracking-wider"
+            >
+              <FolderOpenIcon className="h-3.5 w-3.5" />
+              CHANGE ROOT
+            </Button>
+          )}
         </div>
       </div>
 

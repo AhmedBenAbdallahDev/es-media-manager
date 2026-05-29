@@ -10,7 +10,7 @@
 import React, { createContext, useCallback, useContext, useState } from "react";
 import type { ConsoleLibrary, ScanProgress } from "@/types/scraper";
 import type { GamelistGame } from "@/types/scraper";
-import { pickSdCardRoot, scanSdCard, generateGamelistFromRoms } from "@/lib/sdScanner";
+import { pickSdCardRoot, scanSdCard, generateGamelistFromRoms, scanConsoleFolder } from "@/lib/sdScanner";
 import { writeGamelist } from "@/lib/gamelistParser";
 import { toast } from "sonner";
 
@@ -29,6 +29,8 @@ interface LibraryContextValue {
   rootHandle: FileSystemDirectoryHandle | null;
   /** Opens a directory picker and scans the SD card */
   openAndScan: () => Promise<void>;
+  /** Adds a single console folder to the library */
+  addConsole: () => Promise<void>;
   /** Re-scans the already-selected root handle */
   rescan: () => Promise<void>;
   /** Updates a single game's metadata in memory and on disk */
@@ -99,6 +101,54 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
       }
     }
   }, [runScan]);
+
+  /** Opens a directory picker for a single console and adds it to the library */
+  const addConsole = useCallback(async () => {
+    try {
+      if (!("showDirectoryPicker" in window)) {
+        throw new Error("Your browser does not support the File System Access API.");
+      }
+
+      const handle = await (window as any).showDirectoryPicker({
+        mode: "readwrite",
+      });
+
+      // Show scanning state if it's the first console being added
+      if (state.status === "idle") {
+        setState({
+          status: "scanning",
+          progress: { current: 0, total: 1, currentFolder: handle.name },
+        });
+      }
+
+      const newConsole = await scanConsoleFolder(handle);
+
+      setState((prev) => {
+        const existingConsoles = prev.status === "ready" ? prev.consoles : [];
+        const rootName = prev.status === "ready" ? prev.rootName : "Manual Selection";
+
+        // Avoid duplicates
+        const filteredConsoles = existingConsoles.filter(
+          (c) => c.folderName !== newConsole.folderName
+        );
+
+        return {
+          status: "ready",
+          consoles: [...filteredConsoles, newConsole].sort((a, b) => 
+            a.label.localeCompare(b.label)
+          ),
+          rootName,
+        };
+      });
+
+      toast.success(`Added console: ${newConsole.label}`);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
+      if (!msg.includes("cancelled")) {
+        toast.error(`Failed to add console: ${msg}`);
+      }
+    }
+  }, [state.status]);
 
   /** Re-scans the current root handle */
   const rescan = useCallback(async () => {
@@ -325,6 +375,7 @@ export function LibraryProvider({ children }: { children: React.ReactNode }) {
         state,
         rootHandle,
         openAndScan,
+        addConsole,
         rescan,
         saveGame,
         getConsole,
