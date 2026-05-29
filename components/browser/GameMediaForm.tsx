@@ -46,6 +46,8 @@ import { ScreenScraperArtDialog } from "@/components/scraper/ScreenScraperArtDia
 interface GameMediaFormProps {
   game: Game;
   mainDirHandle: any;
+  /** Optional: direct console directory handle (bypasses mainDirHandle lookup) */
+  consoleDirHandle?: any;
   currentMediaUrls: Record<string, string>;
   isLoadingUrls: boolean;
   onGameUpdate: (updatedGame: Game) => void;
@@ -56,6 +58,7 @@ interface GameMediaFormProps {
 export function GameMediaForm({
   game,
   mainDirHandle,
+  consoleDirHandle,
   currentMediaUrls,
   isLoadingUrls,
   onGameUpdate,
@@ -112,7 +115,8 @@ export function GameMediaForm({
 
       setUploadingKeys((prev) => new Set(prev).add(mediaKey));
       try {
-        const consoleDirHandle = await getOrCreateConsoleDirectory(
+        // Use direct console handle if available, otherwise look up from root
+        const targetDirHandle = consoleDirHandle || await getOrCreateConsoleDirectory(
           mainDirHandle,
           game.console
         );
@@ -121,7 +125,7 @@ export function GameMediaForm({
         if (!mediaType) throw new Error("Unknown media type: " + mediaKey);
 
         const fileHandle = await saveMediaFile(
-          consoleDirHandle,
+          targetDirHandle,
           mediaType,
           game.name,
           file

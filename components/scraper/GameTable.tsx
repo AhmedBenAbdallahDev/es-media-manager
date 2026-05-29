@@ -541,6 +541,7 @@ export function GameTable({ games, consoleFolderName }: GameTableProps) {
         console={consoleFolderName}
         mediaType="covers"
         mainDirHandle={rootHandle}
+        consoleDirHandle={dirHandle}
         onArtworkSaved={handleArtworkSaved}
       />
     </div>

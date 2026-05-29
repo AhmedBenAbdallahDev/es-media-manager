@@ -662,6 +662,7 @@ export function GameDetailSheet({
                     <GameMediaForm
                       game={gameAdapter}
                       mainDirHandle={rootHandle}
+                      consoleDirHandle={dirHandle}
                       currentMediaUrls={currentMediaUrls}
                       isLoadingUrls={isLoadingUrls}
                       onGameUpdate={handleMediaUpdate}

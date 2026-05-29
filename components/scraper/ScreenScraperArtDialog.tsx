@@ -66,6 +66,8 @@ interface ScreenScraperArtDialogProps {
   onArtworkSaved?: (updatedGame: any) => void;
   /** Root directory handle for saving */
   mainDirHandle?: FileSystemDirectoryHandle | null;
+  /** Optional: direct console directory handle (bypasses mainDirHandle lookup) */
+  consoleDirHandle?: FileSystemDirectoryHandle | null;
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
@@ -94,6 +96,7 @@ export function ScreenScraperArtDialog({
   mediaType = "covers",
   onArtworkSaved,
   mainDirHandle,
+  consoleDirHandle,
 }: ScreenScraperArtDialogProps) {
   // State
   const [isSearching, setIsSearching] = useState(false);
@@ -161,7 +164,7 @@ export function ScreenScraperArtDialog({
 
   // Download and save the selected artwork to the ES-DE media folder
   const handleSaveArtwork = useCallback(async () => {
-    if (!selectedArtwork || !mainDirHandle) {
+    if (!selectedArtwork || (!mainDirHandle && !consoleDirHandle)) {
       toast.error("No artwork selected or folder not connected.");
       return;
     }
@@ -218,13 +221,13 @@ export function ScreenScraperArtDialog({
       }
 
       // Step 4: Save to the ES-DE folder structure
-      const consoleDirHandle = await getOrCreateConsoleDirectory(
+      const targetDirHandle = consoleDirHandle || await getOrCreateConsoleDirectory(
         mainDirHandle,
         consoleFolder
       );
 
       const fileHandle = await saveMediaFile(
-        consoleDirHandle,
+        targetDirHandle,
         mediaTypeConfig,
         gameName,
         file
@@ -486,7 +489,7 @@ export function ScreenScraperArtDialog({
               </Button>
               <Button
                 onClick={handleSaveArtwork}
-                disabled={!selectedArtwork || isSaving || !mainDirHandle}
+                disabled={!selectedArtwork || isSaving || (!mainDirHandle && !consoleDirHandle)}
                 className="min-w-[140px] gap-2"
               >
                 {isSaving ? (
