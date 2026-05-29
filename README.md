@@ -107,11 +107,3 @@ Inspired by [Ashref-dev's ES-DE Custom Cover Generator](https://github.com/Ashre
 ## License
 
 MIT
-
-**🎮 Happy Gaming! 🎮**
-
-_Made with ❤️ for the retro gaming community_
-
-[![GitHub](https://img.shields.io/badge/View%20on%20GitHub-100%25-green?style=for-the-badge&logo=github)](https://github.com/AhmedBenAbdallahDev/es-cover-manager)
-
-</div>
